@@ -4,15 +4,20 @@ description: |
   Manages persistent project knowledge across Claude Code sessions.
   Stores and retrieves decisions, patterns, tasks, and insights with semantic search.
 
-  ⚠️ CRITICAL: You MUST use markers when outputting knowledge:
-  [DECISION: topic] text  |  [PATTERN: name] text  |  [TASK: priority] text  |  [INSIGHT] text
-  Use [/] to end multi-line markers. WITHOUT MARKERS, KNOWLEDGE IS LOST.
+  ⚠️ CRITICAL REQUIREMENTS:
 
-  MANDATORY: Before debugging issues, proposing solutions, or investigating errors,
-  ALWAYS search project memory first. Past solutions may already exist.
+  1. USE MARKERS THROUGHOUT THE SESSION - Not just at the end!
+     [D] topic: text  |  [P] name: text  |  [T] text  |  [I] text
+     Add markers IMMEDIATELY when making decisions, not in a summary.
+     PreCompact and SessionEnd hooks extract only marked content.
 
-  Use when: debugging, troubleshooting, making decisions, establishing patterns,
-  or when encountering ANY technical problem.
+  2. SEARCH MEMORY FIRST - Before ANY debugging, architecture, or problem-solving.
+     Past sessions contain solutions you need. Use search.ts before investigating.
+
+  3. REFERENCE SESSION DATA - When loaded, cite and build on past decisions.
+     "Based on session 003's decision on auth, I'll continue with JWT..."
+
+  WITHOUT MARKERS, KNOWLEDGE IS LOST TO FUTURE SESSIONS.
 ---
 
 # Project Memory Skill
@@ -156,83 +161,87 @@ When loading multiple items, show cumulative usage:
 Loaded 3 sessions: 12,450 tokens (15.6% of budget)
 ```
 
-## ⚠️ CRITICAL: Knowledge Output Format - YOU MUST USE MARKERS
+## ⚠️ CRITICAL: Use Markers THROUGHOUT The Session
 
-**THIS IS MANDATORY.** When making ANY decision, establishing ANY pattern, noting ANY task, or discovering ANY insight during a conversation, you **MUST** output structured markers. Without markers, knowledge will NOT be captured to project memory.
+**THIS IS MANDATORY.** When making ANY decision, establishing ANY pattern, noting ANY task, or discovering ANY insight during a conversation, you **MUST** output compact markers **IMMEDIATELY** - not in a summary at the end.
+
+**WHY THIS MATTERS:**
+- The PreCompact hook may trigger ANYTIME during the session
+- If you wait until the end to add markers, they may be lost to auto-compaction
+- Only marked content is reliably extracted
+- Unmarked decisions from the first half of a session WILL BE LOST
+
+**CORRECT APPROACH:**
+```
+User: "Should we use SQLite or PostgreSQL?"
+
+Claude: Based on your needs for embedded storage, I recommend SQLite.
+
+[D] database: Using SQLite for embedded storage - no separate server needed
+
+Let me explain the trade-offs...
+```
+
+**WRONG APPROACH:**
+```
+User: "Should we use SQLite or PostgreSQL?"
+
+Claude: Based on your needs, I recommend SQLite. Let me explain...
+[...long discussion without markers...]
+[Markers only added at session end - TOO LATE if PreCompact already ran]
+```
 
 **FAILURE TO USE MARKERS = LOST KNOWLEDGE**
 
-### Decision Markers
+### Compact Marker Format
 
-**Single-line format:**
-```
-[DECISION: topic] The decision text describing what was chosen and why
-```
+The marker format is designed to minimize token usage while remaining human-readable:
 
-**Multi-line format (use `[/]` to end):**
-```
-[DECISION: topic]
-The decision with more detail:
-- Reason one
-- Reason two
-- Trade-offs considered
-[/]
-```
+| Type | Format | Example |
+|------|--------|---------|
+| Decision | `[D] topic: text` | `[D] database: Using SQLite for embedded storage` |
+| Pattern | `[P] name: text` | `[P] error-handling: Wrap async in try-catch` |
+| Task | `[T] text` | `[T] Add unit tests for auth module` |
+| Insight | `[I] text` | `[I] API rate limits are per-user not per-app` |
 
-Example:
-```
-[DECISION: database] Using SQLite for storage because it's embedded and requires no separate server process
+### Decision Markers `[D]`
 
-[DECISION: authentication]
-Implementing JWT tokens for stateless session management:
-- Access tokens expire in 15 minutes
-- Refresh tokens stored in HttpOnly cookies
-- Token rotation on each refresh
-[/]
-```
-
-### Pattern Markers
-
-When establishing a coding pattern or convention:
+Use for technology choices, architectural decisions, and confirmed approaches:
 
 ```
-[PATTERN: name] Description of the pattern and when to use it
+[D] runtime: Using Bun for fast TypeScript execution
+[D] auth: JWT tokens with 15-minute expiry and refresh rotation
+[D] styling: Tailwind CSS with custom design tokens
 ```
 
-Example:
-```
-[PATTERN: error-boundary] Wrap async route handlers in try-catch with standardized error response
-[PATTERN: barrel-exports] Use index.ts files to re-export from feature directories
-```
+### Pattern Markers `[P]`
 
-### Task Markers
-
-When noting work that needs to be done:
+Use when establishing coding patterns or conventions:
 
 ```
-[TASK: priority] Description of what needs to be done
+[P] error-boundary: Wrap async route handlers in try-catch with logging
+[P] barrel-exports: Use index.ts to re-export from feature directories
+[P] naming: Use kebab-case for files, PascalCase for components
 ```
 
-Priority can be: `high`, `medium`, or `low`
+### Task Markers `[T]`
 
-Example:
-```
-[TASK: high] Add unit tests for the authentication module
-[TASK: medium] Update documentation with new configuration options
-```
-
-### Insight Markers
-
-When noting a discovery or important observation:
+Use for noting work that needs to be done:
 
 ```
-[INSIGHT] The observation or discovery
+[T] Add unit tests for the authentication module
+[T] Update documentation with new configuration options
+[T] Fix timezone handling in date picker component
 ```
 
-Example:
+### Insight Markers `[I]`
+
+Use for discoveries, observations, or important technical details:
+
 ```
-[INSIGHT] The API rate limits are per-user not per-app which affects our caching strategy
-[INSIGHT] Safari handles date parsing differently than Chrome causing timezone issues
+[I] Safari handles date parsing differently than Chrome causing timezone issues
+[I] The ORM auto-commits transactions so manual rollback is needed
+[I] Bun.stdin.text() hangs in subprocesses - use file argument workaround
 ```
 
 ### When to Use Markers
@@ -249,15 +258,50 @@ Example:
 - In prose paragraphs
 - In summaries
 
-The extraction system will automatically parse these markers and store them in project memory for future reference.
+Each marker must be on its own line. The extraction system will automatically parse these markers and store them in project memory for future reference.
 
-## Session End Behavior
+## Referencing Session Data
 
-At the end of each session, the plugin automatically:
-1. Captures the full transcript
-2. Extracts decisions, patterns, tasks, insights from markers
-3. Falls back to heuristic extraction for unmarked content
-4. Generates embeddings for semantic search
-5. Updates the project index
+When session data is loaded (via /load-session, /load-recent, or auto-load), you MUST:
+
+1. **Cite previous decisions when relevant:**
+   ```
+   Based on the decision from session 003, we're using SQLite for storage.
+   Building on that, I'll implement the caching layer using...
+   ```
+
+2. **Build on established patterns:**
+   ```
+   Following the error-handling pattern established in session 002,
+   I'll wrap this async operation in a try-catch with logging.
+   ```
+
+3. **Reference insights when troubleshooting:**
+   ```
+   Session 004 noted that Bun.stdin.text() hangs in subprocesses.
+   I'll use the file argument workaround instead.
+   ```
+
+4. **Update decisions explicitly when changing them:**
+   ```
+   [D] accent-color: Changing from amber to teal for better accessibility
+
+   (This updates the previous decision from session 005)
+   ```
+
+This creates continuity across sessions and prevents re-solving the same problems.
+
+## Session Capture Behavior
+
+The plugin captures sessions at two points:
+1. **PreCompact hook** - Runs before auto-compaction (may happen mid-session)
+2. **SessionEnd hook** - Runs when session ends normally
+
+Because PreCompact can trigger anytime, markers must be added THROUGHOUT the session, not just at the end.
+
+When the same session is captured multiple times:
+- Same-topic decisions are merged (newer replaces older)
+- Same-name patterns are merged
+- Insights and tasks are deduplicated
 
 No manual action required from user or Claude.

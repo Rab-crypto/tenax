@@ -63,11 +63,11 @@ async function main() {
 
   console.log("=== All Data Cleared ===");
   console.log("\nProject memory is now empty and ready for new sessions.");
-  console.log("New sessions will use the marker format for reliable extraction:");
-  console.log("  [DECISION: topic] decision text");
-  console.log("  [PATTERN: name] pattern description");
-  console.log("  [TASK: priority] task description");
-  console.log("  [INSIGHT] insight text");
+  console.log("Use compact markers THROUGHOUT the session for reliable extraction:");
+  console.log("  [D] topic: decision text");
+  console.log("  [P] name: pattern description");
+  console.log("  [T] task description");
+  console.log("  [I] insight text");
 }
 
 main().catch(console.error);

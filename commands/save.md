@@ -41,16 +41,16 @@ When the user runs `/project-memory:save`, automatically:
    }
    ```
 
-3. **Report summary** using markers for visibility:
+3. **Report summary** using compact markers for visibility:
    ```
    Saved to project memory:
 
-   [DECISION: storage] Using SQLite for local data because no separate server is needed
-   [DECISION: api] Going with REST over GraphQL for simpler implementation
+   [D] storage: Using SQLite for local data because no separate server is needed
+   [D] api: Going with REST over GraphQL for simpler implementation
 
-   [PATTERN: error-handler] Wrap async routes in try-catch with standardized error response
+   [P] error-handler: Wrap async routes in try-catch with standardized error response
 
-   [INSIGHT] Rate limiting should be per-user not global for better resource distribution
+   [I] Rate limiting should be per-user not global for better resource distribution
    ```
 
 ## Example

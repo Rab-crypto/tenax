@@ -284,20 +284,18 @@ const DECISION_TOPICS = [
 ];
 
 // ============================================
-// MARKER-BASED EXTRACTION (HIGHEST PRIORITY)
+// MARKER-BASED EXTRACTION
 // ============================================
 
-// Single-line markers: [DECISION: topic] text (must not end with : which indicates multi-line)
-const DECISION_MARKER_SINGLE = /\[DECISION:\s*([^\]]+)\]\s*(.+[^:\s])$/gim;
-const PATTERN_MARKER_SINGLE = /\[PATTERN:\s*([^\]]+)\]\s*(.+[^:\s])$/gim;
-const TASK_MARKER_SINGLE = /\[TASK:\s*([^\]]+)\]\s*(.+[^:\s])$/gim;
-const INSIGHT_MARKER_SINGLE = /\[INSIGHT\]\s*(.+[^:\s])$/gim;
-
-// Multi-line markers: [DECISION: topic]...[/]
-const DECISION_MARKER_MULTI = /\[DECISION:\s*([^\]]+)\]\s*\n([\s\S]*?)\[\/\]/gi;
-const PATTERN_MARKER_MULTI = /\[PATTERN:\s*([^\]]+)\]\s*\n([\s\S]*?)\[\/\]/gi;
-const TASK_MARKER_MULTI = /\[TASK:\s*([^\]]+)\]\s*\n([\s\S]*?)\[\/\]/gi;
-const INSIGHT_MARKER_MULTI = /\[INSIGHT\]\s*\n([\s\S]*?)\[\/\]/gi;
+// COMPACT FORMAT - token efficient, readable:
+// [D] topic: decision text
+// [P] name: pattern description
+// [I] insight text
+// [T] task description
+const DECISION_MARKER = /^\[D\]\s*([^:]+):\s*(.+)$/gim;
+const PATTERN_MARKER = /^\[P\]\s*([^:]+):\s*(.+)$/gim;
+const TASK_MARKER = /^\[T\]\s*(.+)$/gim;
+const INSIGHT_MARKER = /^\[I\]\s*(.+)$/gim;
 
 // ============================================
 // FALLBACK PATTERNS (LOWER PRIORITY)
@@ -337,38 +335,12 @@ export async function extractDecisions(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract from multi-line markers [DECISION: topic]...[/]
-  const multiRegex = new RegExp(DECISION_MARKER_MULTI.source, "gi");
-  let multiMatch;
-  while ((multiMatch = multiRegex.exec(fullText)) !== null) {
-    const topic = (multiMatch[1] || "general").trim().toLowerCase();
-    const decisionText = (multiMatch[2] || "").trim();
-
-    // Skip documentation/example content
-    if (isDocumentationContent(decisionText)) continue;
-
-    if (decisionText.length >= 10 && decisionText.length <= 2000) {
-      const normalized = decisionText.toLowerCase().replace(/\s+/g, " ").trim();
-      if (!seenContent.has(normalized)) {
-        seenContent.add(normalized);
-        decisions.push({
-          id: generateId(),
-          topic,
-          decision: decisionText,
-          rationale: "",
-          sessionId,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
-  // PHASE 1b: Extract from single-line markers [DECISION: topic] text
-  const singleRegex = new RegExp(DECISION_MARKER_SINGLE.source, "gim");
-  let singleMatch;
-  while ((singleMatch = singleRegex.exec(fullText)) !== null) {
-    const topic = (singleMatch[1] || "general").trim().toLowerCase();
-    const decisionText = (singleMatch[2] || "").trim();
+  // Extract from compact markers: [D] topic: text
+  const markerRegex = new RegExp(DECISION_MARKER.source, "gim");
+  let match;
+  while ((match = markerRegex.exec(fullText)) !== null) {
+    const topic = (match[1] || "general").trim().toLowerCase();
+    const decisionText = (match[2] || "").trim();
 
     // Skip documentation/example content
     if (isDocumentationContent(decisionText)) continue;
@@ -552,38 +524,12 @@ export async function extractPatterns(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract from multi-line markers [PATTERN: name]...[/]
-  const multiRegex = new RegExp(PATTERN_MARKER_MULTI.source, "gi");
-  let multiMatch;
-  while ((multiMatch = multiRegex.exec(fullText)) !== null) {
-    const name = (multiMatch[1] || "pattern").trim().toLowerCase();
-    const description = (multiMatch[2] || "").trim();
-
-    // Skip documentation/example content
-    if (isDocumentationContent(description) || isDocumentationContent(name)) continue;
-
-    if (description.length >= 10 && description.length <= 2000) {
-      const normalized = description.toLowerCase().replace(/\s+/g, " ").trim();
-      if (!seenContent.has(normalized)) {
-        seenContent.add(normalized);
-        patterns.push({
-          id: generateId(),
-          name,
-          description,
-          usage: "",
-          sessionId,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
-  // PHASE 1b: Extract from single-line markers [PATTERN: name] description
-  const singleRegex = new RegExp(PATTERN_MARKER_SINGLE.source, "gim");
-  let singleMatch;
-  while ((singleMatch = singleRegex.exec(fullText)) !== null) {
-    const name = (singleMatch[1] || "pattern").trim().toLowerCase();
-    const description = (singleMatch[2] || "").trim();
+  // Extract from compact markers: [P] name: description
+  const markerRegex = new RegExp(PATTERN_MARKER.source, "gim");
+  let match;
+  while ((match = markerRegex.exec(fullText)) !== null) {
+    const name = (match[1] || "pattern").trim().toLowerCase();
+    const description = (match[2] || "").trim();
 
     // Skip documentation/example content
     if (isDocumentationContent(description) || isDocumentationContent(name)) continue;
@@ -703,44 +649,14 @@ export async function extractTasks(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract from multi-line markers [TASK: priority]...[/]
-  const multiRegex = new RegExp(TASK_MARKER_MULTI.source, "gi");
-  let multiMatch;
-  while ((multiMatch = multiRegex.exec(fullText)) !== null) {
-    const priorityStr = (multiMatch[1] || "medium").trim().toLowerCase();
-    const taskText = (multiMatch[2] || "").trim();
-    const priority = priorityStr === "high" ? "high" : priorityStr === "low" ? "low" : "medium";
+  // Extract from compact markers: [T] task description
+  const markerRegex = new RegExp(TASK_MARKER.source, "gim");
+  let match;
+  while ((match = markerRegex.exec(fullText)) !== null) {
+    const taskText = (match[1] || "").trim();
 
     // Skip documentation/example content
     if (isDocumentationContent(taskText)) continue;
-
-    if (taskText.length >= 10 && taskText.length <= 2000) {
-      const normalized = taskText.toLowerCase().replace(/\s+/g, " ").trim();
-      if (!seenContent.has(normalized)) {
-        seenContent.add(normalized);
-        tasks.push({
-          id: generateId(),
-          title: taskText.substring(0, 100),
-          description: taskText.length > 100 ? taskText : undefined,
-          status: "pending",
-          priority,
-          sessionCreated: sessionId,
-          timestampCreated: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
-  // PHASE 1b: Extract from single-line markers [TASK: priority] description
-  const singleRegex = new RegExp(TASK_MARKER_SINGLE.source, "gim");
-  let singleMatch;
-  while ((singleMatch = singleRegex.exec(fullText)) !== null) {
-    const priorityStr = (singleMatch[1] || "medium").trim().toLowerCase();
-    const taskText = (singleMatch[2] || "").trim();
-
-    // Skip documentation/example content
-    if (isDocumentationContent(taskText)) continue;
-    const priority = priorityStr === "high" ? "high" : priorityStr === "low" ? "low" : "medium";
 
     if (taskText.length >= 10 && taskText.length <= 500) {
       const normalized = taskText.toLowerCase().replace(/\s+/g, " ").trim();
@@ -751,7 +667,6 @@ export async function extractTasks(
           title: taskText.substring(0, 100),
           description: taskText.length > 100 ? taskText : undefined,
           status: "pending",
-          priority,
           sessionCreated: sessionId,
           timestampCreated: new Date().toISOString(),
         });
@@ -826,34 +741,11 @@ export async function extractInsights(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract from multi-line markers [INSIGHT]...[/]
-  const multiRegex = new RegExp(INSIGHT_MARKER_MULTI.source, "gi");
-  let multiMatch;
-  while ((multiMatch = multiRegex.exec(fullText)) !== null) {
-    const insightText = (multiMatch[1] || "").trim();
-
-    // Skip documentation/example content
-    if (isDocumentationContent(insightText)) continue;
-
-    if (insightText.length >= 10 && insightText.length <= 2000) {
-      const normalized = insightText.toLowerCase().replace(/\s+/g, " ").trim();
-      if (!seenContent.has(normalized)) {
-        seenContent.add(normalized);
-        insights.push({
-          id: generateId(),
-          content: insightText,
-          sessionId,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
-  // PHASE 1b: Extract from single-line markers [INSIGHT] text
-  const singleRegex = new RegExp(INSIGHT_MARKER_SINGLE.source, "gim");
-  let singleMatch;
-  while ((singleMatch = singleRegex.exec(fullText)) !== null) {
-    const insightText = (singleMatch[1] || "").trim();
+  // Extract from compact markers: [I] insight text
+  const markerRegex = new RegExp(INSIGHT_MARKER.source, "gim");
+  let match;
+  while ((match = markerRegex.exec(fullText)) !== null) {
+    const insightText = (match[1] || "").trim();
 
     // Skip documentation/example content
     if (isDocumentationContent(insightText)) continue;
@@ -948,7 +840,7 @@ export function generateSummary(transcript: ParsedTranscript): string {
   }
 
   // Use the first meaningful user request as primary summary
-  if (meaningfulUserMessages.length > 0) {
+  if (meaningfulUserMessages.length > 0 && meaningfulUserMessages[0]) {
     summaryParts.push(meaningfulUserMessages[0].substring(0, 150));
   }
 

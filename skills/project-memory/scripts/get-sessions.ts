@@ -55,12 +55,15 @@ async function main(): Promise<void> {
         .slice(0, recentCount)
         .map((s) => s.id);
     } else if (positionals.length > 0) {
-      // Get specific sessions by ID
-      sessionIds = positionals.map((id) => normalizeSessionId(id, config.sessionIdPadding));
+      // Get specific sessions by ID - handle comma-separated and space-separated
+      const rawIds = positionals.flatMap((id) => id.split(",").map((s) => s.trim()).filter(Boolean));
+      sessionIds = rawIds.map((id) => normalizeSessionId(id, config.sessionIdPadding));
     } else {
-      output.message = "Usage: get-sessions.ts <id1,id2,...> or --recent N";
-      console.log(JSON.stringify(output, null, 2));
-      process.exit(1);
+      // No arguments - load last 3 sessions by default (budget-aware)
+      sessionIds = index.sessions
+        .sort((a, b) => new Date(b.endTime).getTime() - new Date(a.endTime).getTime())
+        .slice(0, 3)
+        .map((s) => s.id);
     }
 
     // Load sessions

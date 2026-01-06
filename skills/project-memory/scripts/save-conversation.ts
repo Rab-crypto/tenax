@@ -146,8 +146,8 @@ async function main(): Promise<void> {
       };
     }
 
-    // Extract knowledge
-    const knowledge = extractAllKnowledge(transcript, sessionId);
+    // Extract knowledge (async for embedding-based scoring)
+    const knowledge = await extractAllKnowledge(transcript, sessionId);
 
     // Deduplicate against existing knowledge
     const existingDecisions = new Set(

@@ -4,10 +4,12 @@ description: |
   Manages persistent project knowledge across Claude Code sessions.
   Stores and retrieves decisions, patterns, tasks, and insights with semantic search.
 
+  ⚠️ CRITICAL: You MUST use markers when outputting knowledge:
+  [DECISION: topic] text  |  [PATTERN: name] text  |  [TASK: priority] text  |  [INSIGHT] text
+  Use [/] to end multi-line markers. WITHOUT MARKERS, KNOWLEDGE IS LOST.
+
   MANDATORY: Before debugging issues, proposing solutions, or investigating errors,
   ALWAYS search project memory first. Past solutions may already exist.
-
-  ALSO search before: architecture decisions, library choices, patterns, API designs.
 
   Use when: debugging, troubleshooting, making decisions, establishing patterns,
   or when encountering ANY technical problem.
@@ -154,12 +156,108 @@ When loading multiple items, show cumulative usage:
 Loaded 3 sessions: 12,450 tokens (15.6% of budget)
 ```
 
+## ⚠️ CRITICAL: Knowledge Output Format - YOU MUST USE MARKERS
+
+**THIS IS MANDATORY.** When making ANY decision, establishing ANY pattern, noting ANY task, or discovering ANY insight during a conversation, you **MUST** output structured markers. Without markers, knowledge will NOT be captured to project memory.
+
+**FAILURE TO USE MARKERS = LOST KNOWLEDGE**
+
+### Decision Markers
+
+**Single-line format:**
+```
+[DECISION: topic] The decision text describing what was chosen and why
+```
+
+**Multi-line format (use `[/]` to end):**
+```
+[DECISION: topic]
+The decision with more detail:
+- Reason one
+- Reason two
+- Trade-offs considered
+[/]
+```
+
+Example:
+```
+[DECISION: database] Using SQLite for storage because it's embedded and requires no separate server process
+
+[DECISION: authentication]
+Implementing JWT tokens for stateless session management:
+- Access tokens expire in 15 minutes
+- Refresh tokens stored in HttpOnly cookies
+- Token rotation on each refresh
+[/]
+```
+
+### Pattern Markers
+
+When establishing a coding pattern or convention:
+
+```
+[PATTERN: name] Description of the pattern and when to use it
+```
+
+Example:
+```
+[PATTERN: error-boundary] Wrap async route handlers in try-catch with standardized error response
+[PATTERN: barrel-exports] Use index.ts files to re-export from feature directories
+```
+
+### Task Markers
+
+When noting work that needs to be done:
+
+```
+[TASK: priority] Description of what needs to be done
+```
+
+Priority can be: `high`, `medium`, or `low`
+
+Example:
+```
+[TASK: high] Add unit tests for the authentication module
+[TASK: medium] Update documentation with new configuration options
+```
+
+### Insight Markers
+
+When noting a discovery or important observation:
+
+```
+[INSIGHT] The observation or discovery
+```
+
+Example:
+```
+[INSIGHT] The API rate limits are per-user not per-app which affects our caching strategy
+[INSIGHT] Safari handles date parsing differently than Chrome causing timezone issues
+```
+
+### When to Use Markers
+
+**ALWAYS use markers when:**
+- Making or confirming a technology choice
+- Establishing a coding pattern or convention
+- Noting remaining work items
+- Discovering important technical details
+
+**Markers can appear:**
+- In numbered lists
+- In bullet points
+- In prose paragraphs
+- In summaries
+
+The extraction system will automatically parse these markers and store them in project memory for future reference.
+
 ## Session End Behavior
 
 At the end of each session, the plugin automatically:
 1. Captures the full transcript
-2. Extracts decisions, patterns, tasks, insights
-3. Generates embeddings for semantic search
-4. Updates the project index
+2. Extracts decisions, patterns, tasks, insights from markers
+3. Falls back to heuristic extraction for unmarked content
+4. Generates embeddings for semantic search
+5. Updates the project index
 
 No manual action required from user or Claude.

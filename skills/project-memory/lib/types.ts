@@ -292,3 +292,26 @@ export interface ConflictInfo {
   newContent: Partial<Decision | Pattern>;
   similarity: number;
 }
+
+// ============================================
+// EXTRACTION QUALITY TYPES
+// ============================================
+
+export interface QualityScore {
+  score: number; // 0-1 similarity score
+  passed: boolean;
+  reasons?: string[];
+}
+
+export interface TextSegment {
+  type: "prose" | "header" | "bullet" | "code" | "blockquote";
+  content: string;
+  level?: number; // For headers/bullets
+}
+
+export interface ExtractionCandidate {
+  text: string;
+  matchIndex: number;
+  fullSentence: string;
+  rationale?: string;
+}

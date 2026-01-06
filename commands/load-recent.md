@@ -2,23 +2,26 @@
 
 Load the N most recent sessions.
 
+> **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
+
 ## Usage
 
 ```
+/project-memory:load-recent
 /project-memory:load-recent 3
 /project-memory:load-recent 5 --budget 50000
 ```
 
 ## Arguments
 
-- `$ARGUMENTS` - Number of recent sessions to load
+- `$ARGUMENTS` - Number of recent sessions to load (default: 5)
 - `-b, --budget` - Token budget limit
 
 ## Instructions for Claude
 
 1. Run the get sessions script with --recent flag:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-sessions.ts" --recent $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-sessions.ts" --recent ${ARGUMENTS:-5}
    ```
 
 2. Display loaded sessions (most recent first):

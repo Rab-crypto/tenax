@@ -104,8 +104,8 @@ async function main(): Promise<void> {
       process.exit(0);
     }
 
-    // Extract knowledge
-    const knowledge = extractAllKnowledge(transcript, sessionId);
+    // Extract knowledge (async for embedding-based scoring)
+    const knowledge = await extractAllKnowledge(transcript, sessionId);
 
     // Get file changes from temp file (captured by track-file hook)
     const tempFileChanges = await loadTempFileChanges(projectRoot);

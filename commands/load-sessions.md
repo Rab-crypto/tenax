@@ -1,18 +1,21 @@
 # /project-memory:load-sessions
 
-Load multiple sessions by IDs.
+Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
+
+> **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
 
 ## Usage
 
 ```
+/project-memory:load-sessions
 /project-memory:load-sessions 1,3,5
 /project-memory:load-sessions 001 003 005
-/project-memory:load-sessions 1,3,5 --budget 40000
+/project-memory:load-sessions --budget 40000
 ```
 
 ## Arguments
 
-- `$ARGUMENTS` - Session IDs (comma or space separated)
+- `$ARGUMENTS` - Session IDs (comma or space separated). If omitted, loads last 3 sessions.
 - `-b, --budget` - Token budget limit (default: config tokenBudget)
 
 ## Instructions for Claude
@@ -22,9 +25,10 @@ Load multiple sessions by IDs.
    bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-sessions.ts" $ARGUMENTS
    ```
 
-2. If budget is exceeded, the script will load as many sessions as fit:
-   - Sessions are loaded in order provided
-   - Once budget is reached, remaining sessions are skipped
+2. Budget-aware loading:
+   - If no IDs provided, loads last 3 sessions (most recent first)
+   - Sessions are loaded in order provided (or by recency if no IDs)
+   - Loading stops when budget would be exceeded
    - Output includes which sessions were loaded vs skipped
 
 3. Display loaded sessions:

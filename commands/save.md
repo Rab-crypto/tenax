@@ -6,6 +6,8 @@ description: Save current conversation knowledge to project memory
 
 Manually save the current session to project memory.
 
+> **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
+
 ## Usage
 
 When the user runs `/project-memory:save`, automatically:
@@ -39,7 +41,17 @@ When the user runs `/project-memory:save`, automatically:
    }
    ```
 
-3. **Report summary** of what was saved
+3. **Report summary** using markers for visibility:
+   ```
+   Saved to project memory:
+
+   [DECISION: storage] Using SQLite for local data because no separate server is needed
+   [DECISION: api] Going with REST over GraphQL for simpler implementation
+
+   [PATTERN: error-handler] Wrap async routes in try-catch with standardized error response
+
+   [INSIGHT] Rate limiting should be per-user not global for better resource distribution
+   ```
 
 ## Example
 

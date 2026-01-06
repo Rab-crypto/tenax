@@ -2,6 +2,8 @@
 
 Restore project memory from a backup.
 
+> **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
+
 ## Usage
 
 ```

@@ -101,31 +101,30 @@ export function parseTranscriptText(text: string): ParsedTranscript {
  * Extract text content from various entry formats
  */
 function extractContent(entry: Record<string, unknown>): string {
-  // Direct content field
+  // Direct content field (string)
   if (typeof entry.content === "string") {
     return entry.content;
   }
 
-  // Content array (common in Claude API responses)
+  // Direct content array (common in Claude API responses)
   if (Array.isArray(entry.content)) {
-    const textParts = entry.content
-      .filter((c: unknown) => {
-        if (typeof c === "object" && c !== null) {
-          const obj = c as Record<string, unknown>;
-          return obj.type === "text";
-        }
-        return false;
-      })
-      .map((c: unknown) => {
-        const obj = c as Record<string, unknown>;
-        return obj.text as string;
-      });
-    return textParts.join("\n");
+    return extractTextFromContentArray(entry.content);
   }
 
-  // Message field
-  if (typeof entry.message === "string") {
-    return entry.message;
+  // Nested message object (Claude Code transcript format)
+  // Structure: { message: { content: [...] } }
+  if (entry.message && typeof entry.message === "object") {
+    const message = entry.message as Record<string, unknown>;
+
+    // Check message.content (string)
+    if (typeof message.content === "string") {
+      return message.content;
+    }
+
+    // Check message.content (array)
+    if (Array.isArray(message.content)) {
+      return extractTextFromContentArray(message.content);
+    }
   }
 
   // Text field
@@ -134,6 +133,43 @@ function extractContent(entry: Record<string, unknown>): string {
   }
 
   return "";
+}
+
+/**
+ * Extract text from a content array (handles text, tool_use, tool_result blocks)
+ */
+function extractTextFromContentArray(content: unknown[]): string {
+  const textParts: string[] = [];
+
+  for (const item of content) {
+    if (typeof item === "object" && item !== null) {
+      const obj = item as Record<string, unknown>;
+
+      // Text blocks
+      if (obj.type === "text" && typeof obj.text === "string") {
+        textParts.push(obj.text);
+      }
+
+      // Tool result blocks (extract the content)
+      if (obj.type === "tool_result") {
+        if (typeof obj.content === "string") {
+          textParts.push(obj.content);
+        } else if (Array.isArray(obj.content)) {
+          // Nested content array in tool result
+          for (const nested of obj.content) {
+            if (typeof nested === "object" && nested !== null) {
+              const nestedObj = nested as Record<string, unknown>;
+              if (nestedObj.type === "text" && typeof nestedObj.text === "string") {
+                textParts.push(nestedObj.text);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return textParts.join("\n");
 }
 
 /**

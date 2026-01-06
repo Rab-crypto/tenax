@@ -2,6 +2,8 @@
 
 List all stored sessions with metadata.
 
+> **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
+
 ## Usage
 
 ```

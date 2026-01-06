@@ -102,7 +102,7 @@ async function main(): Promise<void> {
     }
 
     // Extract knowledge (async for embedding-based scoring)
-    let knowledge = await extractAllKnowledge(transcript, sessionId);
+    const knowledge = await extractAllKnowledge(transcript, sessionId);
 
     // Get file changes from temp file
     const tempFileChanges = await loadTempFileChanges(projectRoot);
@@ -112,7 +112,77 @@ async function main(): Promise<void> {
       timestamp: c.timestamp,
     }));
 
-    // Create processed session
+    // If updating, merge with existing session data (keep latest for same-topic decisions)
+    let mergedDecisions = knowledge.decisions;
+    let mergedPatterns = knowledge.patterns;
+    let mergedTasks = knowledge.tasks;
+    let mergedInsights = knowledge.insights;
+    let mergedFileChanges = fileChanges;
+    let mergedKeyTopics = knowledge.keyTopics;
+
+    if (isUpdate) {
+      const { loadSession } = await import("../lib/storage");
+      const existingSessionData = await loadSession(sessionId, projectRoot);
+
+      if (existingSessionData) {
+        // Merge decisions: new decisions override existing ones with same topic
+        const decisionsByTopic = new Map<string, typeof knowledge.decisions[0]>();
+        for (const d of existingSessionData.decisions) {
+          decisionsByTopic.set(d.topic, d);
+        }
+        for (const d of knowledge.decisions) {
+          decisionsByTopic.set(d.topic, d);
+        }
+        mergedDecisions = Array.from(decisionsByTopic.values());
+
+        // Merge patterns: new patterns override existing ones with same name
+        const patternsByName = new Map<string, typeof knowledge.patterns[0]>();
+        for (const p of existingSessionData.patterns) {
+          patternsByName.set(p.name, p);
+        }
+        for (const p of knowledge.patterns) {
+          patternsByName.set(p.name, p);
+        }
+        mergedPatterns = Array.from(patternsByName.values());
+
+        // Merge tasks: dedupe by title, keep newer status
+        const tasksByTitle = new Map<string, typeof knowledge.tasks[0]>();
+        for (const t of existingSessionData.tasks) {
+          tasksByTitle.set(t.title, t);
+        }
+        for (const t of knowledge.tasks) {
+          tasksByTitle.set(t.title, t);
+        }
+        mergedTasks = Array.from(tasksByTitle.values());
+
+        // Merge insights: dedupe by content
+        const insightsByContent = new Map<string, typeof knowledge.insights[0]>();
+        for (const i of existingSessionData.insights) {
+          insightsByContent.set(i.content.toLowerCase().trim(), i);
+        }
+        for (const i of knowledge.insights) {
+          insightsByContent.set(i.content.toLowerCase().trim(), i);
+        }
+        mergedInsights = Array.from(insightsByContent.values());
+
+        // Merge file changes
+        const changesByPath = new Map<string, FileChange>();
+        for (const c of existingSessionData.fileChanges) {
+          changesByPath.set(c.path, c);
+        }
+        for (const c of fileChanges) {
+          changesByPath.set(c.path, c);
+        }
+        mergedFileChanges = Array.from(changesByPath.values());
+
+        // Merge key topics
+        mergedKeyTopics = [...new Set([...existingSessionData.keyTopics, ...knowledge.keyTopics])];
+
+        console.error(`  Merged with existing: ${mergedDecisions.length} decisions, ${mergedPatterns.length} patterns`);
+      }
+    }
+
+    // Create processed session with merged data
     const session: ProcessedSession = {
       metadata: {
         id: sessionId,
@@ -121,18 +191,18 @@ async function main(): Promise<void> {
         endTime: new Date().toISOString(),
         tokenCount: countTranscriptTokens(transcript),
         summary: knowledge.summary,
-        decisionsCount: knowledge.decisions.length,
-        tasksCount: knowledge.tasks.length,
-        patternsCount: knowledge.patterns.length,
-        insightsCount: knowledge.insights.length,
-        filesModified: fileChanges.length,
+        decisionsCount: mergedDecisions.length,
+        tasksCount: mergedTasks.length,
+        patternsCount: mergedPatterns.length,
+        insightsCount: mergedInsights.length,
+        filesModified: mergedFileChanges.length,
       },
-      decisions: knowledge.decisions,
-      patterns: knowledge.patterns,
-      tasks: knowledge.tasks,
-      insights: knowledge.insights,
-      fileChanges,
-      keyTopics: knowledge.keyTopics,
+      decisions: mergedDecisions,
+      patterns: mergedPatterns,
+      tasks: mergedTasks,
+      insights: mergedInsights,
+      fileChanges: mergedFileChanges,
+      keyTopics: mergedKeyTopics,
     };
 
     // Save processed session
@@ -141,39 +211,28 @@ async function main(): Promise<void> {
     // Generate embeddings and store in vector database
     const vectorStore = createVectorStore(getEmbeddingsDbPath(projectRoot));
 
-    // If updating, deduplicate
+    // If updating, clear old entries first
     if (isUpdate) {
-      const existingDecisions = new Set(
-        index.decisions.filter((d) => d.sessionId === sessionId).map((d) => `${d.topic}:${d.decision}`)
-      );
-      const existingPatterns = new Set(
-        index.patterns.filter((p) => p.sessionId === sessionId).map((p) => `${p.name}:${p.description}`)
-      );
-      const existingTasks = new Set(
-        index.tasks.filter((t) => t.sessionCreated === sessionId).map((t) => t.title)
-      );
-      const existingInsights = new Set(
-        index.insights.filter((i) => i.sessionId === sessionId).map((i) => i.content)
-      );
+      const oldDecisionIds = index.decisions.filter((d) => d.sessionId === sessionId).map((d) => d.id);
+      const oldPatternIds = index.patterns.filter((p) => p.sessionId === sessionId).map((p) => p.id);
+      const oldTaskIds = index.tasks.filter((t) => t.sessionCreated === sessionId).map((t) => t.id);
+      const oldInsightIds = index.insights.filter((i) => i.sessionId === sessionId).map((i) => i.id);
 
-      knowledge.decisions = knowledge.decisions.filter(
-        (d) => !existingDecisions.has(`${d.topic}:${d.decision}`)
-      );
-      knowledge.patterns = knowledge.patterns.filter(
-        (p) => !existingPatterns.has(`${p.name}:${p.description}`)
-      );
-      knowledge.tasks = knowledge.tasks.filter(
-        (t) => !existingTasks.has(t.title)
-      );
-      knowledge.insights = knowledge.insights.filter(
-        (i) => !existingInsights.has(i.content)
-      );
+      index.decisions = index.decisions.filter((d) => d.sessionId !== sessionId);
+      index.patterns = index.patterns.filter((p) => p.sessionId !== sessionId);
+      index.tasks = index.tasks.filter((t) => t.sessionCreated !== sessionId);
+      index.insights = index.insights.filter((i) => i.sessionId !== sessionId);
+
+      const allOldIds = [...oldDecisionIds, ...oldPatternIds, ...oldTaskIds, ...oldInsightIds, `session-${sessionId}`];
+      for (const id of allOldIds) {
+        vectorStore.delete(id);
+      }
     }
 
     const embeddingEntries: Array<{ entry: EmbeddingEntry; text: string }> = [];
 
-    // Add decisions
-    for (const decision of knowledge.decisions) {
+    // Add decisions (from merged data)
+    for (const decision of mergedDecisions) {
       embeddingEntries.push({
         entry: {
           id: decision.id,
@@ -185,8 +244,8 @@ async function main(): Promise<void> {
       });
     }
 
-    // Add patterns
-    for (const pattern of knowledge.patterns) {
+    // Add patterns (from merged data)
+    for (const pattern of mergedPatterns) {
       embeddingEntries.push({
         entry: {
           id: pattern.id,
@@ -198,8 +257,8 @@ async function main(): Promise<void> {
       });
     }
 
-    // Add tasks
-    for (const task of knowledge.tasks) {
+    // Add tasks (from merged data)
+    for (const task of mergedTasks) {
       embeddingEntries.push({
         entry: {
           id: task.id,
@@ -211,8 +270,8 @@ async function main(): Promise<void> {
       });
     }
 
-    // Add insights
-    for (const insight of knowledge.insights) {
+    // Add insights (from merged data)
+    for (const insight of mergedInsights) {
       embeddingEntries.push({
         entry: {
           id: insight.id,
@@ -232,7 +291,7 @@ async function main(): Promise<void> {
         text: createSessionText(session.metadata),
         sessionId,
       },
-      text: createSessionText({ summary: session.metadata.summary, keyTopics: knowledge.keyTopics }),
+      text: createSessionText({ summary: session.metadata.summary, keyTopics: mergedKeyTopics }),
     });
 
     // Generate embeddings in batch
@@ -252,15 +311,10 @@ async function main(): Promise<void> {
 
     vectorStore.close();
 
-    // Update index
+    // Update index with merged data
     if (isUpdate) {
       const sessionIdx = index.sessions.findIndex((s) => s.id === sessionId);
       if (sessionIdx !== -1) {
-        const existing = index.sessions[sessionIdx]!;
-        session.metadata.decisionsCount = existing.decisionsCount + knowledge.decisions.length;
-        session.metadata.patternsCount = existing.patternsCount + knowledge.patterns.length;
-        session.metadata.tasksCount = existing.tasksCount + knowledge.tasks.length;
-        session.metadata.insightsCount = existing.insightsCount + knowledge.insights.length;
         index.sessions[sessionIdx] = session.metadata;
       }
     } else {
@@ -268,37 +322,39 @@ async function main(): Promise<void> {
       index.sessions.push(session.metadata);
     }
 
-    // Add new knowledge
-    index.totalDecisions += knowledge.decisions.length;
-    index.totalPatterns += knowledge.patterns.length;
-    index.totalInsights += knowledge.insights.length;
+    // Add all merged knowledge to index
+    index.decisions.push(...mergedDecisions);
+    index.patterns.push(...mergedPatterns);
+    index.tasks.push(...mergedTasks);
+    index.insights.push(...mergedInsights);
 
-    const pendingTasks = knowledge.tasks.filter((t) => t.status === "pending");
-    index.totalTasks.pending += pendingTasks.length;
-
-    index.decisions.push(...knowledge.decisions);
-    index.patterns.push(...knowledge.patterns);
-    index.tasks.push(...knowledge.tasks);
-    index.insights.push(...knowledge.insights);
+    // Recalculate totals
+    index.totalDecisions = index.decisions.length;
+    index.totalPatterns = index.patterns.length;
+    index.totalInsights = index.insights.length;
+    index.totalTasks.pending = index.tasks.filter((t) => t.status === "pending").length;
+    index.totalTasks.completed = index.tasks.filter((t) => t.status === "completed").length;
 
     // Update topics index
-    for (const decision of knowledge.decisions) {
+    for (const decision of mergedDecisions) {
       if (!index.topics[decision.topic]) {
         index.topics[decision.topic] = [];
       }
-      index.topics[decision.topic]!.push(decision.id);
+      if (!index.topics[decision.topic]!.includes(decision.id)) {
+        index.topics[decision.topic]!.push(decision.id);
+      }
     }
 
     await saveIndex(index, projectRoot);
 
     output.success = true;
-    output.message = `Session ${sessionId} ${isUpdate ? "updated" : "saved"}: ${knowledge.decisions.length} decisions, ${knowledge.patterns.length} patterns`;
+    output.message = `Session ${sessionId} ${isUpdate ? "updated" : "saved"}: ${mergedDecisions.length} decisions, ${mergedPatterns.length} patterns`;
     output.data = {
       sessionId,
-      decisions: knowledge.decisions.length,
-      patterns: knowledge.patterns.length,
-      tasks: knowledge.tasks.length,
-      insights: knowledge.insights.length,
+      decisions: mergedDecisions.length,
+      patterns: mergedPatterns.length,
+      tasks: mergedTasks.length,
+      insights: mergedInsights.length,
       isUpdate,
     };
 

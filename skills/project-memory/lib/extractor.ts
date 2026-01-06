@@ -851,42 +851,87 @@ export async function extractInsights(
  * Generate a summary from transcript content
  */
 export function generateSummary(transcript: ParsedTranscript): string {
-  // Use first user message as base (but clean it)
-  let firstMessage = transcript.userMessages[0] || "";
+  const summaryParts: string[] = [];
 
-  // Remove command markup
-  firstMessage = firstMessage
-    .replace(/<command-message>.*?<\/command-message>/gi, "")
-    .replace(/<command-name>.*?<\/command-name>/gi, "")
-    .trim();
+  // Find a meaningful user request (skip command messages)
+  let userRequest = "";
+  for (const msg of transcript.userMessages) {
+    // Skip command-only messages
+    if (msg.match(/^<command-/)) continue;
+    // Skip very short messages
+    const cleaned = msg
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (cleaned.length < 10) continue;
+    // Skip messages that are just file content or code
+    if (cleaned.startsWith("```") || cleaned.match(/^\s*[\[{]/)) continue;
+    userRequest = cleaned.substring(0, 150);
+    break;
+  }
+
+  if (userRequest) {
+    summaryParts.push(userRequest);
+  }
 
   // Get key actions from tool calls
-  const actions: string[] = [];
+  const fileActions: string[] = [];
   for (const call of transcript.toolCalls) {
     if (call.name === "Write") {
       const path = call.input.file_path as string;
       if (path) {
         const filename = path.split(/[/\\]/).pop();
-        actions.push(`Created ${filename}`);
+        fileActions.push(`Created ${filename}`);
       }
     } else if (call.name === "Edit") {
       const path = call.input.file_path as string;
       if (path) {
         const filename = path.split(/[/\\]/).pop();
-        actions.push(`Modified ${filename}`);
+        fileActions.push(`Modified ${filename}`);
       }
     }
   }
 
-  // Build summary
-  let summary = firstMessage.substring(0, 200);
-
-  if (actions.length > 0) {
-    const uniqueActions = [...new Set(actions)].slice(0, 5);
-    summary += `. Actions: ${uniqueActions.join(", ")}`;
+  if (fileActions.length > 0) {
+    const uniqueActions = [...new Set(fileActions)].slice(0, 5);
+    summaryParts.push(`Files: ${uniqueActions.join(", ")}`);
   }
 
+  // Look for summary-like content in assistant messages
+  const assistantSummary = findAssistantSummary(transcript.assistantMessages);
+  if (assistantSummary && !summaryParts.some((p) => p.includes(assistantSummary.substring(0, 30)))) {
+    summaryParts.unshift(assistantSummary);
+  }
+
+  // Build final summary
+  const summary = summaryParts.join(". ").substring(0, 400);
   return summary || "Session with no captured summary";
+}
+
+/**
+ * Find a summary-like statement in assistant messages
+ */
+function findAssistantSummary(messages: string[]): string {
+  // Look for explicit summary markers or conclusion-like statements
+  const summaryPatterns = [
+    /(?:in summary|to summarize|overall)[,:]\s*(.{20,200})/i,
+    /(?:i(?:'ve)?|we(?:'ve)?)\s+(?:implemented|created|built|fixed|added|updated)\s+(.{20,150})/i,
+    /(?:the main|key)\s+(?:change|update|fix|feature)s?\s+(?:is|are|was|were)[:\s]+(.{20,150})/i,
+  ];
+
+  for (const msg of messages.slice().reverse()) {
+    // Skip system content
+    if (isSystemContent(msg)) continue;
+
+    for (const pattern of summaryPatterns) {
+      const match = msg.match(pattern);
+      if (match?.[1]) {
+        return match[1].replace(/\s+/g, " ").trim();
+      }
+    }
+  }
+
+  return "";
 }
 
 // ============================================

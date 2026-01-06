@@ -29,6 +29,7 @@ const SCRIPTS_DIR = path.join(PLUGIN_ROOT, "skills", "project-memory", "scripts"
 async function readStdin() {
   return new Promise((resolve) => {
     const chunks = [];
+    let resolved = false;
 
     // Check if stdin is a TTY (interactive) - no data to read
     if (process.stdin.isTTY) {
@@ -38,15 +39,27 @@ async function readStdin() {
 
     process.stdin.setEncoding("utf8");
     process.stdin.on("data", (chunk) => chunks.push(chunk));
-    process.stdin.on("end", () => resolve(chunks.join("")));
-    process.stdin.on("error", () => resolve(""));
-
-    // Timeout after 100ms if no data (stdin might be empty)
-    setTimeout(() => {
-      if (chunks.length === 0) {
+    process.stdin.on("end", () => {
+      if (!resolved) {
+        resolved = true;
+        resolve(chunks.join(""));
+      }
+    });
+    process.stdin.on("error", () => {
+      if (!resolved) {
+        resolved = true;
         resolve("");
       }
-    }, 100);
+    });
+
+    // Longer timeout - hook data can take time to arrive
+    // Only timeout if no data has been received at all
+    setTimeout(() => {
+      if (!resolved && chunks.length === 0) {
+        resolved = true;
+        resolve("");
+      }
+    }, 1000);
   });
 }
 

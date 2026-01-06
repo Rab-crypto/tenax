@@ -396,5 +396,8 @@ async function main(): Promise<void> {
   }
 }
 
-// Run main - errors are handled internally, but catch any uncaught promise rejections
-main();
+// Run main - MUST await to prevent process exit before async operations complete
+main().catch((error) => {
+  console.error("Fatal error in capture-session:", error);
+  process.exit(1);
+});

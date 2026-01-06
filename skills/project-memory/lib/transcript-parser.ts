@@ -62,8 +62,11 @@ export function parseTranscriptText(text: string): ParsedTranscript {
       if (entry.type === "user" || entry.role === "user") {
         const content = extractContent(entry);
         if (content) {
-          userMessages.push(content);
-          fullTextParts.push(`User: ${content}`);
+          // Skip command markdown that's just the expanded skill content
+          if (!content.startsWith("# /") && !content.match(/^>\s*\*\*CRITICAL\*\*/)) {
+            userMessages.push(content);
+            fullTextParts.push(`User: ${content}`);
+          }
         }
       } else if (entry.type === "assistant" || entry.role === "assistant") {
         const content = extractContent(entry);
@@ -71,6 +74,8 @@ export function parseTranscriptText(text: string): ParsedTranscript {
           assistantMessages.push(content);
           fullTextParts.push(`Assistant: ${content}`);
         }
+        // Extract tool calls from nested message.content array
+        extractToolCalls(entry, toolCalls);
       } else if (entry.type === "tool_use") {
         toolCalls.push({
           name: entry.tool_name || entry.name,
@@ -95,6 +100,32 @@ export function parseTranscriptText(text: string): ParsedTranscript {
     toolCalls,
     fullText: fullTextParts.join("\n\n"),
   };
+}
+
+/**
+ * Extract tool calls from nested message.content arrays
+ */
+function extractToolCalls(
+  entry: Record<string, unknown>,
+  toolCalls: Array<{ name: string; input: Record<string, unknown>; result?: string }>
+): void {
+  const message = entry.message as Record<string, unknown> | undefined;
+  if (!message) return;
+
+  const content = message.content;
+  if (!Array.isArray(content)) return;
+
+  for (const item of content) {
+    if (typeof item !== "object" || item === null) continue;
+    const obj = item as Record<string, unknown>;
+
+    if (obj.type === "tool_use") {
+      toolCalls.push({
+        name: (obj.name || obj.tool_name) as string,
+        input: (obj.input || obj.tool_input || {}) as Record<string, unknown>,
+      });
+    }
+  }
 }
 
 /**

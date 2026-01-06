@@ -853,25 +853,37 @@ export async function extractInsights(
 export function generateSummary(transcript: ParsedTranscript): string {
   const summaryParts: string[] = [];
 
-  // Find a meaningful user request (skip command messages)
-  let userRequest = "";
+  // Find meaningful user requests (skip command messages, system content)
+  const meaningfulUserMessages: string[] = [];
   for (const msg of transcript.userMessages) {
     // Skip command-only messages
     if (msg.match(/^<command-/)) continue;
-    // Skip very short messages
+    // Skip skill/command markdown
+    if (msg.startsWith("# /")) continue;
+    // Skip system content
+    if (isSystemContent(msg)) continue;
+
+    // Clean the message
     const cleaned = msg
-      .replace(/<[^>]+>/g, "")
+      .replace(/<[^>]+>/g, "") // Remove XML tags
+      .replace(/```[\s\S]*?```/g, "") // Remove code blocks
       .replace(/\s+/g, " ")
       .trim();
-    if (cleaned.length < 10) continue;
-    // Skip messages that are just file content or code
-    if (cleaned.startsWith("```") || cleaned.match(/^\s*[\[{]/)) continue;
-    userRequest = cleaned.substring(0, 150);
-    break;
+
+    // Skip if too short or looks like file content
+    if (cleaned.length < 15) continue;
+    if (cleaned.match(/^\s*[\[{]/) || cleaned.match(/^[0-9]+→/)) continue;
+    // Skip if it's mostly numbers/paths
+    if (cleaned.match(/^[A-Z]:\\|^\/[a-z]/i)) continue;
+    // Skip git status/diff output
+    if (cleaned.match(/^[MADRCU?!]\s+/)) continue;
+
+    meaningfulUserMessages.push(cleaned);
   }
 
-  if (userRequest) {
-    summaryParts.push(userRequest);
+  // Use the first meaningful user request as primary summary
+  if (meaningfulUserMessages.length > 0) {
+    summaryParts.push(meaningfulUserMessages[0].substring(0, 150));
   }
 
   // Get key actions from tool calls
@@ -881,13 +893,17 @@ export function generateSummary(transcript: ParsedTranscript): string {
       const path = call.input.file_path as string;
       if (path) {
         const filename = path.split(/[/\\]/).pop();
-        fileActions.push(`Created ${filename}`);
+        if (filename && !filename.startsWith(".")) {
+          fileActions.push(`Created ${filename}`);
+        }
       }
     } else if (call.name === "Edit") {
       const path = call.input.file_path as string;
       if (path) {
         const filename = path.split(/[/\\]/).pop();
-        fileActions.push(`Modified ${filename}`);
+        if (filename && !filename.startsWith(".")) {
+          fileActions.push(`Modified ${filename}`);
+        }
       }
     }
   }
@@ -897,10 +913,12 @@ export function generateSummary(transcript: ParsedTranscript): string {
     summaryParts.push(`Files: ${uniqueActions.join(", ")}`);
   }
 
-  // Look for summary-like content in assistant messages
-  const assistantSummary = findAssistantSummary(transcript.assistantMessages);
-  if (assistantSummary && !summaryParts.some((p) => p.includes(assistantSummary.substring(0, 30)))) {
-    summaryParts.unshift(assistantSummary);
+  // Look for concluding summary from assistant (only if we don't have good user content)
+  if (summaryParts.length === 0 || (summaryParts[0]?.length || 0) < 30) {
+    const assistantSummary = findAssistantSummary(transcript.assistantMessages);
+    if (assistantSummary) {
+      summaryParts.unshift(assistantSummary);
+    }
   }
 
   // Build final summary
@@ -912,21 +930,33 @@ export function generateSummary(transcript: ParsedTranscript): string {
  * Find a summary-like statement in assistant messages
  */
 function findAssistantSummary(messages: string[]): string {
-  // Look for explicit summary markers or conclusion-like statements
+  // Look for explicit summary markers or conclusion-like statements at end of session
   const summaryPatterns = [
-    /(?:in summary|to summarize|overall)[,:]\s*(.{20,200})/i,
-    /(?:i(?:'ve)?|we(?:'ve)?)\s+(?:implemented|created|built|fixed|added|updated)\s+(.{20,150})/i,
-    /(?:the main|key)\s+(?:change|update|fix|feature)s?\s+(?:is|are|was|were)[:\s]+(.{20,150})/i,
+    // Explicit summaries
+    /(?:in summary|to summarize)[,:]\s*([^.!?]{20,150}[.!?])/i,
+    // Completion statements (must be complete sentence)
+    /(?:i(?:'ve)?|we(?:'ve)?)\s+(?:successfully\s+)?(?:implemented|created|built|fixed|added|updated|completed)\s+([^.!?]{15,120}[.!?])/i,
+    // "The fix" statements
+    /the (?:fix|change|update|issue)\s+(?:is|was|has been)[:\s]+([^.!?]{15,120}[.!?])/i,
   ];
 
-  for (const msg of messages.slice().reverse()) {
-    // Skip system content
+  // Only check last few messages (where conclusions typically are)
+  const lastMessages = messages.slice(-10).reverse();
+
+  for (const msg of lastMessages) {
+    // Skip system content, short messages, and code-heavy content
     if (isSystemContent(msg)) continue;
+    if (msg.length < 50) continue;
+    if (msg.match(/^```|^\s*{|^\s*\[/)) continue;
 
     for (const pattern of summaryPatterns) {
       const match = msg.match(pattern);
       if (match?.[1]) {
-        return match[1].replace(/\s+/g, " ").trim();
+        const summary = match[1].replace(/\s+/g, " ").trim();
+        // Validate it's not just code or technical junk
+        if (summary.length >= 20 && !summary.match(/^[{[\s]/) && !summary.includes("```")) {
+          return summary;
+        }
       }
     }
   }

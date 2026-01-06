@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Bun
+.bun-path
+*.bunx
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project memory data (per-project, not plugin source)
+.claude/project-memory/
+
+# Test artifacts
+*.log
+coverage/
+
+# Windows reserved file names
+nul

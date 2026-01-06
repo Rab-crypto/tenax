@@ -1,0 +1,12 @@
+{
+  "name": "local-plugins",
+  "owner": {
+    "name": "Anthony"
+  },
+  "plugins": [
+    {
+      "name": "project-memory",
+      "source": "./"
+    }
+  ]
+}

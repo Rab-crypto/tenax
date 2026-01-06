@@ -171,32 +171,35 @@ Loaded 3 sessions: 12,450 tokens (15.6% of budget)
 
 **DO BOTH:** Write helpful, user-friendly responses AND include markers. These are not mutually exclusive.
 
-**CORRECT - Do Both:**
+**CORRECT - Use Multi-Line Markers to Label Your Summary:**
 ```
-I've redesigned the homepage with a "Precision Engineering" aesthetic direction.
+I've completed the homepage redesign. Here's what changed:
 
-**Changes Made:**
-1. **Typography**: Added JetBrains Mono and Outfit fonts
-2. **Features Section**: Bento grid layout with asymmetric cards
-3. **How It Works**: Timeline with alternating content cards
-4. **Terminal**: Redesigned with syntax highlighting
+[D] Frontend redesign with "Precision Engineering" aesthetic:
+  - JetBrains Mono + Outfit typography
+  - Bento grid layout with asymmetric cards (12-column, span 4/8)
+  - Timeline-style "How It Works" with glowing nodes
+  - Redesigned terminal with syntax highlighting
+  - Hero section preserved as requested
 
-The hero section was preserved as requested.
+[P] Terminal syntax highlighting:
+  - .prompt for $ prefix
+  - .command for the command text
+  - .string, .flag, .comment for arguments
+  - .output for command results
 
-[D] frontend-design: Chose "Precision Engineering" aesthetic - technical feel with JetBrains Mono + Outfit fonts
-[D] layout-pattern: Bento grid with 12-column system and span modifiers for asymmetric cards
-[P] terminal-syntax: Color-code terminal output with prompt, command, string, flag, comment classes
-[I] Inline page-specific styles in <style> tag keeps CSS co-located with HTML
+[I] Page-specific styles kept inline in <style> tag to avoid bloating main stylesheet
 
 Would you like me to commit these changes?
 ```
 
-**WRONG - Markers Only (Poor UX):**
+The markers **label** the summary content - no duplication, zero extra tokens.
+
+**WRONG - Summary Then Duplicate Markers (Wasteful):**
 ```
-[D] frontend-design: Chose "Precision Engineering" aesthetic
-[D] layout-pattern: Bento grid layout
-[P] terminal-syntax: Color-code terminal output
-[I] Inline styles for page-specific CSS
+I redesigned the homepage with new typography and layout.
+
+[D] frontend: Redesigned homepage with typography and layout
 ```
 
 **WRONG - Summary Only (Lost Knowledge):**
@@ -207,7 +210,7 @@ timeline process section, and redesigned terminal.
 Would you like me to commit these changes?
 ```
 
-**THE RULE:** Every response that contains decisions, patterns, tasks, or insights must include BOTH a clear user-friendly explanation AND the corresponding markers. The markers can appear inline within your explanation or grouped at the end - either works as long as they're present.
+**THE RULE:** Use markers to **label** your explanations. The marker + your natural content = searchable knowledge with zero token overhead.
 
 **WHY THIS MATTERS:**
 - The PreCompact hook may trigger ANYTIME during the session
@@ -237,56 +240,78 @@ Claude: Based on your needs, I recommend SQLite. Let me explain...
 
 **FAILURE TO USE MARKERS = LOST KNOWLEDGE**
 
-### Compact Marker Format
+### Marker Formats
 
-The marker format is designed to minimize token usage while remaining human-readable:
+Two formats are supported: **single-line** for quick notes, and **multi-line** for detailed content.
 
-| Type | Format | Example |
-|------|--------|---------|
-| Decision | `[D] topic: text` | `[D] database: Using SQLite for embedded storage` |
-| Pattern | `[P] name: text` | `[P] error-handling: Wrap async in try-catch` |
-| Task | `[T] text` | `[T] Add unit tests for auth module` |
-| Insight | `[I] text` | `[I] API rate limits are per-user not per-app` |
+#### Single-Line Format (Quick Notes)
 
-### Decision Markers `[D]`
-
-Use for technology choices, architectural decisions, and confirmed approaches:
+For brief decisions, use the compact `[D] topic: text` format:
 
 ```
-[D] runtime: Using Bun for fast TypeScript execution
-[D] auth: JWT tokens with 15-minute expiry and refresh rotation
-[D] styling: Tailwind CSS with custom design tokens
+[D] database: Using SQLite for embedded storage
+[P] error-handling: Wrap async in try-catch with logging
+[T] Add unit tests for auth module
+[I] API rate limits are per-user not per-app
 ```
 
-### Pattern Markers `[P]`
+#### Multi-Line Format (Detailed Content) - RECOMMENDED
 
-Use when establishing coding patterns or conventions:
-
-```
-[P] error-boundary: Wrap async route handlers in try-catch with logging
-[P] barrel-exports: Use index.ts to re-export from feature directories
-[P] naming: Use kebab-case for files, PascalCase for components
-```
-
-### Task Markers `[T]`
-
-Use for noting work that needs to be done:
+For detailed decisions with bullet points, use the multi-line format. The marker labels your existing explanation - **zero extra tokens**:
 
 ```
-[T] Add unit tests for the authentication module
-[T] Update documentation with new configuration options
-[T] Fix timezone handling in date picker component
-```
-
-### Insight Markers `[I]`
-
-Use for discoveries, observations, or important technical details:
+[D] Frontend redesign includes:
+  - JetBrains Mono + Outfit typography
+  - Bento grid features section with asymmetric cards
+  - Timeline-style "How It Works" with glowing nodes
+  - Redesigned terminal with syntax highlighting
 
 ```
-[I] Safari handles date parsing differently than Chrome causing timezone issues
-[I] The ORM auto-commits transactions so manual rollback is needed
-[I] Bun.stdin.text() hangs in subprocesses - use file argument workaround
+
+**The block ends at a blank line.** Everything between the marker and the blank line is captured.
+
+More examples:
+
 ```
+[P] Bento grid implementation:
+  - Use 12-column CSS grid
+  - Cards span 4 or 8 columns via .bento-card--wide/--medium
+  - Tall cards span 2 rows with .bento-card--tall
+  - Gap of var(--space-lg) between cards
+
+[I] Bun subprocess stdin behavior:
+  - Bun.stdin.text() hangs when called in subprocess context
+  - Workaround: pass data via temp file argument
+  - Node.js wrapper reads stdin, writes temp file, Bun reads file
+
+[T] Remaining frontend work:
+  - Add mobile responsive breakpoints
+  - Test in Safari and Firefox
+  - Add loading states for animations
+
+```
+
+### Best Practice: Label Your Summaries
+
+Instead of writing a summary AND separate markers, just add a marker to your summary:
+
+**Before (wasteful):**
+```
+I redesigned the homepage with new typography and layout.
+
+[D] frontend: Redesigned homepage with new typography and layout
+```
+
+**After (efficient):**
+```
+[D] I redesigned the homepage with:
+  - JetBrains Mono + Outfit typography
+  - Bento grid layout with asymmetric cards
+  - Timeline process visualization
+
+```
+
+The marker **labels** your natural content rather than duplicating it.
 
 ### When to Use Markers
 
@@ -297,12 +322,12 @@ Use for discoveries, observations, or important technical details:
 - Discovering important technical details
 
 **Markers can appear:**
-- In numbered lists
-- In bullet points
+- Labeling summaries (recommended)
+- In bullet point sections
 - In prose paragraphs
-- In summaries
+- Grouped at end of response
 
-Each marker must be on its own line. The extraction system will automatically parse these markers and store them in project memory for future reference.
+The extraction system captures both single-line and multi-line blocks automatically.
 
 ## Referencing Session Data
 

@@ -287,15 +287,107 @@ const DECISION_TOPICS = [
 // MARKER-BASED EXTRACTION
 // ============================================
 
-// COMPACT FORMAT - token efficient, readable:
+// SINGLE-LINE FORMAT (backward compatible):
 // [D] topic: decision text
 // [P] name: pattern description
 // [I] insight text
 // [T] task description
-const DECISION_MARKER = /^\[D\]\s*([^:]+):\s*(.+)$/gim;
-const PATTERN_MARKER = /^\[P\]\s*([^:]+):\s*(.+)$/gim;
-const TASK_MARKER = /^\[T\]\s*(.+)$/gim;
-const INSIGHT_MARKER = /^\[I\]\s*(.+)$/gim;
+const DECISION_MARKER_SINGLE = /^\[D\]\s*([^:\n]+):\s*(.+)$/gim;
+const PATTERN_MARKER_SINGLE = /^\[P\]\s*([^:\n]+):\s*(.+)$/gim;
+const TASK_MARKER_SINGLE = /^\[T\]\s*(.+)$/gim;
+const INSIGHT_MARKER_SINGLE = /^\[I\]\s*(.+)$/gim;
+
+// MULTI-LINE FORMAT (new):
+// [D] First line of content
+//   - bullet point
+//   - more detail
+// (ends at blank line)
+
+interface MultiLineBlock {
+  type: "D" | "P" | "T" | "I";
+  content: string;
+  startIndex: number;
+}
+
+/**
+ * Extract multi-line blocks that start with [D], [P], [T], or [I]
+ * and continue until a blank line or next marker
+ */
+function extractMultiLineBlocks(text: string): MultiLineBlock[] {
+  const blocks: MultiLineBlock[] = [];
+  const lines = text.split("\n");
+
+  let currentBlock: MultiLineBlock | null = null;
+  let blockLines: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Check for marker start: [D], [P], [T], [I] at line beginning
+    const markerMatch = trimmed.match(/^\[(D|P|T|I)\]\s*(.*)$/i);
+
+    if (markerMatch) {
+      // Save previous block if exists
+      if (currentBlock && blockLines.length > 0) {
+        currentBlock.content = blockLines.join("\n").trim();
+        if (currentBlock.content.length >= 10) {
+          blocks.push(currentBlock);
+        }
+      }
+
+      const markerType = markerMatch[1]!.toUpperCase() as "D" | "P" | "T" | "I";
+      const restOfLine = markerMatch[2] || "";
+
+      // Check if this is single-line format: [D] topic: text
+      // Single-line has format "topic: text" where topic has no spaces before colon
+      const singleLineMatch = restOfLine.match(/^([^:\s][^:]*?):\s+(.+)$/);
+
+      if (singleLineMatch && !restOfLine.includes("\n")) {
+        // This is single-line format, skip it (handled by single-line regex)
+        currentBlock = null;
+        blockLines = [];
+        continue;
+      }
+
+      // Start new multi-line block
+      currentBlock = {
+        type: markerType,
+        content: "",
+        startIndex: i,
+      };
+      blockLines = restOfLine ? [restOfLine] : [];
+      continue;
+    }
+
+    // If we're in a block
+    if (currentBlock) {
+      // Blank line ends the block
+      if (trimmed === "") {
+        currentBlock.content = blockLines.join("\n").trim();
+        if (currentBlock.content.length >= 10) {
+          blocks.push(currentBlock);
+        }
+        currentBlock = null;
+        blockLines = [];
+        continue;
+      }
+
+      // Add line to current block
+      blockLines.push(line);
+    }
+  }
+
+  // Don't forget the last block
+  if (currentBlock && blockLines.length > 0) {
+    currentBlock.content = blockLines.join("\n").trim();
+    if (currentBlock.content.length >= 10) {
+      blocks.push(currentBlock);
+    }
+  }
+
+  return blocks;
+}
 
 // ============================================
 // FALLBACK PATTERNS (LOWER PRIORITY)
@@ -335,8 +427,34 @@ export async function extractDecisions(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // Extract from compact markers: [D] topic: text
-  const markerRegex = new RegExp(DECISION_MARKER.source, "gim");
+  // PHASE 1a: Extract multi-line blocks first
+  const multiLineBlocks = extractMultiLineBlocks(fullText);
+  for (const block of multiLineBlocks) {
+    if (block.type !== "D") continue;
+
+    const decisionText = block.content;
+
+    // Skip documentation/example content
+    if (isDocumentationContent(decisionText)) continue;
+
+    if (decisionText.length >= 10 && decisionText.length <= 2000) {
+      const normalized = decisionText.toLowerCase().replace(/\s+/g, " ").trim();
+      if (!seenContent.has(normalized)) {
+        seenContent.add(normalized);
+        decisions.push({
+          id: generateId(),
+          topic: detectTopic(decisionText),
+          decision: decisionText,
+          rationale: "",
+          sessionId,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  // PHASE 1b: Extract from single-line markers: [D] topic: text
+  const markerRegex = new RegExp(DECISION_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const topic = (match[1] || "general").trim().toLowerCase();
@@ -524,8 +642,34 @@ export async function extractPatterns(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // Extract from compact markers: [P] name: description
-  const markerRegex = new RegExp(PATTERN_MARKER.source, "gim");
+  // PHASE 1a: Extract multi-line blocks first
+  const multiLineBlocks = extractMultiLineBlocks(fullText);
+  for (const block of multiLineBlocks) {
+    if (block.type !== "P") continue;
+
+    const description = block.content;
+
+    // Skip documentation/example content
+    if (isDocumentationContent(description)) continue;
+
+    if (description.length >= 10 && description.length <= 2000) {
+      const normalized = description.toLowerCase().replace(/\s+/g, " ").trim();
+      if (!seenContent.has(normalized)) {
+        seenContent.add(normalized);
+        patterns.push({
+          id: generateId(),
+          name: generatePatternName(description),
+          description,
+          usage: "",
+          sessionId,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  // PHASE 1b: Extract from single-line markers: [P] name: description
+  const markerRegex = new RegExp(PATTERN_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const name = (match[1] || "pattern").trim().toLowerCase();
@@ -649,8 +793,34 @@ export async function extractTasks(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // Extract from compact markers: [T] task description
-  const markerRegex = new RegExp(TASK_MARKER.source, "gim");
+  // PHASE 1a: Extract multi-line blocks first
+  const multiLineBlocks = extractMultiLineBlocks(fullText);
+  for (const block of multiLineBlocks) {
+    if (block.type !== "T") continue;
+
+    const taskText = block.content;
+
+    // Skip documentation/example content
+    if (isDocumentationContent(taskText)) continue;
+
+    if (taskText.length >= 10 && taskText.length <= 2000) {
+      const normalized = taskText.toLowerCase().replace(/\s+/g, " ").trim();
+      if (!seenContent.has(normalized)) {
+        seenContent.add(normalized);
+        tasks.push({
+          id: generateId(),
+          title: taskText.split("\n")[0]?.substring(0, 100) || taskText.substring(0, 100),
+          description: taskText,
+          status: "pending",
+          sessionCreated: sessionId,
+          timestampCreated: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  // PHASE 1b: Extract from single-line markers: [T] task description
+  const markerRegex = new RegExp(TASK_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const taskText = (match[1] || "").trim();
@@ -741,8 +911,32 @@ export async function extractInsights(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // Extract from compact markers: [I] insight text
-  const markerRegex = new RegExp(INSIGHT_MARKER.source, "gim");
+  // PHASE 1a: Extract multi-line blocks first
+  const multiLineBlocks = extractMultiLineBlocks(fullText);
+  for (const block of multiLineBlocks) {
+    if (block.type !== "I") continue;
+
+    const insightText = block.content;
+
+    // Skip documentation/example content
+    if (isDocumentationContent(insightText)) continue;
+
+    if (insightText.length >= 10 && insightText.length <= 2000) {
+      const normalized = insightText.toLowerCase().replace(/\s+/g, " ").trim();
+      if (!seenContent.has(normalized)) {
+        seenContent.add(normalized);
+        insights.push({
+          id: generateId(),
+          content: insightText,
+          sessionId,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  // PHASE 1b: Extract from single-line markers: [I] insight text
+  const markerRegex = new RegExp(INSIGHT_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const insightText = (match[1] || "").trim();

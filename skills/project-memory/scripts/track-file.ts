@@ -15,8 +15,23 @@ import {
 
 async function main(): Promise<void> {
   try {
-    // Read hook input from stdin
-    const stdin = await Bun.stdin.text();
+    // Read hook input from stdin or file argument
+    let stdin: string;
+
+    // Check if input file is provided as argument (from run.cjs)
+    const inputArg = Bun.argv[2];
+    if (inputArg && inputArg.endsWith(".json")) {
+      const file = Bun.file(inputArg);
+      if (await file.exists()) {
+        stdin = await file.text();
+      } else {
+        process.exit(0);
+      }
+    } else {
+      // Read from stdin (fallback)
+      stdin = await Bun.stdin.text();
+    }
+
     if (!stdin.trim()) {
       process.exit(0);
     }
@@ -73,4 +88,7 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+main().catch((error) => {
+  console.error("Error in track-file:", error);
+  process.exit(0);
+});

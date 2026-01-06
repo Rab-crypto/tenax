@@ -4,29 +4,31 @@ description: |
   Manages persistent project knowledge across Claude Code sessions.
   Stores and retrieves decisions, patterns, tasks, and insights with semantic search.
 
-  CRITICAL: Before proposing architecture, libraries, frameworks, patterns,
-  API designs, or technical solutions, ALWAYS search existing decisions first.
+  MANDATORY: Before debugging issues, proposing solutions, or investigating errors,
+  ALWAYS search project memory first. Past solutions may already exist.
 
-  Use when: discussing architecture, making technical decisions, establishing
-  patterns, tracking tasks, or when the user asks about past decisions.
+  ALSO search before: architecture decisions, library choices, patterns, API designs.
+
+  Use when: debugging, troubleshooting, making decisions, establishing patterns,
+  or when encountering ANY technical problem.
 ---
 
 # Project Memory Skill
 
-## CRITICAL: Check Before Proposing
+## MANDATORY: Search Before Acting
 
-Before suggesting or implementing ANY of the following, you MUST first search project memory:
+Before debugging, investigating, or proposing solutions, you MUST first search project memory.
+This applies to:
 
+- **Debugging/Troubleshooting** - Search for similar errors, issues, or workarounds
+- **Technical problems** - Past solutions may already be documented
 - Architecture decisions
 - Library or framework choices
 - Design patterns
 - API structures or endpoint designs
 - Database schemas or data models
-- File/folder organization
-- Naming conventions
 - Testing strategies
-- Build or deployment configurations
-- Security approaches
+- Platform-specific issues (Windows, macOS, Linux)
 
 ### How to Check
 

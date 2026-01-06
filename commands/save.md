@@ -16,15 +16,36 @@ When the user runs `/project-memory:save`, automatically:
    - Tasks mentioned (TODOs, future work)
    - Insights discovered (learnings, gotchas)
 
-2. **Save everything in parallel** using the record scripts:
+2. **Save everything in ONE batch call** using the CLI:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/add-task.ts" -p "<priority>" "<title>" "<description>"
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/add-insight.ts" "<insight>"
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '<batch-data>'
+   ```
+
+   The batch JSON format:
+   ```json
+   {
+     "decisions": [
+       {"topic": "api", "decision": "Use REST over GraphQL", "rationale": "Simpler for our use case"}
+     ],
+     "patterns": [
+       {"name": "error-handler", "description": "Wrap async routes in try-catch", "usage": "All API endpoints"}
+     ],
+     "tasks": [
+       {"title": "Add unit tests", "description": "Cover auth module", "priority": "high"}
+     ],
+     "insights": [
+       {"content": "Rate limiting should be per-user not global", "context": "Performance discussion"}
+     ]
+   }
    ```
 
 3. **Report summary** of what was saved
+
+## Example
+
+```bash
+bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}'
+```
 
 ## Example output
 
@@ -40,4 +61,5 @@ Saved to project memory:
 
 - Run this anytime to checkpoint important knowledge
 - Deduplicates automatically - won't save duplicates
-- All saves happen in the background
+- Single command = single permission prompt
+- Batch processing is faster than individual calls

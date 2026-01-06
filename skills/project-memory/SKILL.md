@@ -53,15 +53,26 @@ Example queries:
 
 ## Automatic Recording
 
-When a technical decision is confirmed by the user, record it:
+When multiple items need to be saved, use the batch CLI (single permission prompt):
+
+```bash
+bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '<batch-data>'
+```
+
+Batch JSON format:
+```json
+{
+  "decisions": [{"topic": "api", "decision": "Use REST", "rationale": "Simpler"}],
+  "patterns": [{"name": "error-handler", "description": "Try-catch wrapper", "usage": "API routes"}],
+  "tasks": [{"title": "Add tests", "priority": "high"}],
+  "insights": [{"content": "Insight text"}]
+}
+```
+
+For single items, use individual scripts:
 
 ```bash
 bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
-```
-
-When establishing a new pattern, record it:
-
-```bash
 bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
 ```
 

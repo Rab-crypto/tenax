@@ -6,10 +6,12 @@ description: |
 
   ⚠️ CRITICAL REQUIREMENTS:
 
-  1. USE MARKERS THROUGHOUT THE SESSION - Not just at the end!
+  1. USE MARKERS IN EVERY RESPONSE that contains decisions/patterns/insights:
      [D] topic: text  |  [P] name: text  |  [T] text  |  [I] text
-     Add markers IMMEDIATELY when making decisions, not in a summary.
-     PreCompact and SessionEnd hooks extract only marked content.
+
+     DO BOTH: Write helpful user-friendly responses AND include markers.
+     Markers supplement communication, they don't replace it.
+     Add markers IMMEDIATELY when making decisions, not at session end.
 
   2. SEARCH MEMORY FIRST - Before ANY debugging, architecture, or problem-solving.
      Past sessions contain solutions you need. Use search.ts before investigating.
@@ -164,6 +166,48 @@ Loaded 3 sessions: 12,450 tokens (15.6% of budget)
 ## ⚠️ CRITICAL: Use Markers THROUGHOUT The Session
 
 **THIS IS MANDATORY.** When making ANY decision, establishing ANY pattern, noting ANY task, or discovering ANY insight during a conversation, you **MUST** output compact markers **IMMEDIATELY** - not in a summary at the end.
+
+### Markers SUPPLEMENT Communication, They Don't Replace It
+
+**DO BOTH:** Write helpful, user-friendly responses AND include markers. These are not mutually exclusive.
+
+**CORRECT - Do Both:**
+```
+I've redesigned the homepage with a "Precision Engineering" aesthetic direction.
+
+**Changes Made:**
+1. **Typography**: Added JetBrains Mono and Outfit fonts
+2. **Features Section**: Bento grid layout with asymmetric cards
+3. **How It Works**: Timeline with alternating content cards
+4. **Terminal**: Redesigned with syntax highlighting
+
+The hero section was preserved as requested.
+
+[D] frontend-design: Chose "Precision Engineering" aesthetic - technical feel with JetBrains Mono + Outfit fonts
+[D] layout-pattern: Bento grid with 12-column system and span modifiers for asymmetric cards
+[P] terminal-syntax: Color-code terminal output with prompt, command, string, flag, comment classes
+[I] Inline page-specific styles in <style> tag keeps CSS co-located with HTML
+
+Would you like me to commit these changes?
+```
+
+**WRONG - Markers Only (Poor UX):**
+```
+[D] frontend-design: Chose "Precision Engineering" aesthetic
+[D] layout-pattern: Bento grid layout
+[P] terminal-syntax: Color-code terminal output
+[I] Inline styles for page-specific CSS
+```
+
+**WRONG - Summary Only (Lost Knowledge):**
+```
+I've redesigned the homepage with new typography, bento grid features,
+timeline process section, and redesigned terminal.
+
+Would you like me to commit these changes?
+```
+
+**THE RULE:** Every response that contains decisions, patterns, tasks, or insights must include BOTH a clear user-friendly explanation AND the corresponding markers. The markers can appear inline within your explanation or grouped at the end - either works as long as they're present.
 
 **WHY THIS MATTERS:**
 - The PreCompact hook may trigger ANYTIME during the session

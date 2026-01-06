@@ -1,6 +1,6 @@
 {
   "name": "project-memory",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Persistent project knowledge that survives across Claude Code sessions. Stores decisions, patterns, tasks, insights, and full session transcripts with semantic search.",
   "author": {
     "name": "Anthony"

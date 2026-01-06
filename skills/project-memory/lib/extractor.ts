@@ -55,13 +55,55 @@ function filterExtractableMessages(messages: string[]): string[] {
   return messages
     .filter((msg) => !isSystemContent(msg))
     .map((msg) => {
-      // Also remove system reminder blocks from within messages
-      return msg
+      // Remove system reminder blocks
+      let cleaned = msg
         .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/gi, "")
-        .replace(/<function_results>[\s\S]*?<\/function_results>/gi, "")
-        .trim();
+        .replace(/<function_results>[\s\S]*?<\/function_results>/gi, "");
+
+      // Remove code blocks (```...```) - these often contain marker examples
+      cleaned = cleaned.replace(/```[\s\S]*?```/g, "");
+
+      // Remove inline code (`...`) - prevents matching markers in explanations
+      cleaned = cleaned.replace(/`[^`]+`/g, "");
+
+      return cleaned.trim();
     })
     .filter((msg) => msg.length > 0);
+}
+
+/**
+ * Check if extracted content looks like documentation/example rather than real content
+ */
+function isDocumentationContent(text: string): boolean {
+  const docPatterns = [
+    // Discussing markers rather than using them
+    /marker\s+(about|was|for|is|are|isn't|weren't|that)/i,
+    /the\s+\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
+    /earlier\s+\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
+    /`\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
+    /no\s+(new\s+)?\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
+
+    // Partial/truncated content
+    /^\s*`/,  // Starts with backtick
+    /`\s*$/,  // Ends with backtick
+    /^\s*\.\.\./,  // Starts with ellipsis
+    /\.\.\.\s*$/,  // Ends with ellipsis
+
+    // Example/template patterns
+    /\[\/?(DECISION|PATTERN|TASK|INSIGHT)[:\s]*\]/i,  // Just the marker with no content
+    /example:/i,
+    /template:/i,
+    /e\.g\.,?\s*\[/i,
+    /for instance.*\[/i,
+
+    // Meta-discussion about extraction
+    /extractor?\s+(captured|grabbed|found|matched|picked)/i,
+    /extraction\s+(captured|grabbed|found|matched|picked)/i,
+    /was(n't)?\s+(captured|extracted|marked)/i,
+    /get(s)?\s+lost\s+in/i,
+  ];
+
+  return docPatterns.some((pattern) => pattern.test(text));
 }
 
 // ============================================
@@ -302,6 +344,9 @@ export async function extractDecisions(
     const topic = (multiMatch[1] || "general").trim().toLowerCase();
     const decisionText = (multiMatch[2] || "").trim();
 
+    // Skip documentation/example content
+    if (isDocumentationContent(decisionText)) continue;
+
     if (decisionText.length >= 10 && decisionText.length <= 2000) {
       const normalized = decisionText.toLowerCase().replace(/\s+/g, " ").trim();
       if (!seenContent.has(normalized)) {
@@ -324,6 +369,9 @@ export async function extractDecisions(
   while ((singleMatch = singleRegex.exec(fullText)) !== null) {
     const topic = (singleMatch[1] || "general").trim().toLowerCase();
     const decisionText = (singleMatch[2] || "").trim();
+
+    // Skip documentation/example content
+    if (isDocumentationContent(decisionText)) continue;
 
     if (decisionText.length >= 10 && decisionText.length <= 500) {
       const normalized = decisionText.toLowerCase().replace(/\s+/g, " ").trim();
@@ -511,6 +559,9 @@ export async function extractPatterns(
     const name = (multiMatch[1] || "pattern").trim().toLowerCase();
     const description = (multiMatch[2] || "").trim();
 
+    // Skip documentation/example content
+    if (isDocumentationContent(description) || isDocumentationContent(name)) continue;
+
     if (description.length >= 10 && description.length <= 2000) {
       const normalized = description.toLowerCase().replace(/\s+/g, " ").trim();
       if (!seenContent.has(normalized)) {
@@ -533,6 +584,9 @@ export async function extractPatterns(
   while ((singleMatch = singleRegex.exec(fullText)) !== null) {
     const name = (singleMatch[1] || "pattern").trim().toLowerCase();
     const description = (singleMatch[2] || "").trim();
+
+    // Skip documentation/example content
+    if (isDocumentationContent(description) || isDocumentationContent(name)) continue;
 
     if (description.length >= 10 && description.length <= 500) {
       const normalized = description.toLowerCase().replace(/\s+/g, " ").trim();
@@ -657,6 +711,9 @@ export async function extractTasks(
     const taskText = (multiMatch[2] || "").trim();
     const priority = priorityStr === "high" ? "high" : priorityStr === "low" ? "low" : "medium";
 
+    // Skip documentation/example content
+    if (isDocumentationContent(taskText)) continue;
+
     if (taskText.length >= 10 && taskText.length <= 2000) {
       const normalized = taskText.toLowerCase().replace(/\s+/g, " ").trim();
       if (!seenContent.has(normalized)) {
@@ -680,6 +737,9 @@ export async function extractTasks(
   while ((singleMatch = singleRegex.exec(fullText)) !== null) {
     const priorityStr = (singleMatch[1] || "medium").trim().toLowerCase();
     const taskText = (singleMatch[2] || "").trim();
+
+    // Skip documentation/example content
+    if (isDocumentationContent(taskText)) continue;
     const priority = priorityStr === "high" ? "high" : priorityStr === "low" ? "low" : "medium";
 
     if (taskText.length >= 10 && taskText.length <= 500) {
@@ -772,6 +832,9 @@ export async function extractInsights(
   while ((multiMatch = multiRegex.exec(fullText)) !== null) {
     const insightText = (multiMatch[1] || "").trim();
 
+    // Skip documentation/example content
+    if (isDocumentationContent(insightText)) continue;
+
     if (insightText.length >= 10 && insightText.length <= 2000) {
       const normalized = insightText.toLowerCase().replace(/\s+/g, " ").trim();
       if (!seenContent.has(normalized)) {
@@ -791,6 +854,9 @@ export async function extractInsights(
   let singleMatch;
   while ((singleMatch = singleRegex.exec(fullText)) !== null) {
     const insightText = (singleMatch[1] || "").trim();
+
+    // Skip documentation/example content
+    if (isDocumentationContent(insightText)) continue;
 
     if (insightText.length >= 10 && insightText.length <= 500) {
       const normalized = insightText.toLowerCase().replace(/\s+/g, " ").trim();

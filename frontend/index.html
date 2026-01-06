@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Project Memory - Persistent project knowledge for Claude Code. Store decisions, patterns, and insights that survive across sessions.">
+  <meta name="theme-color" content="#09090B">
+
+  <title>Project Memory | Persistent Knowledge for Claude Code</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Preload critical assets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <!-- Favicon (memory rings icon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'><circle cx='16' cy='16' r='14' stroke='%230D9488' stroke-width='1.5' opacity='0.3'/><circle cx='16' cy='16' r='10' stroke='%230D9488' stroke-width='1.5' opacity='0.5'/><circle cx='16' cy='16' r='6' stroke='%230D9488' stroke-width='1.5' opacity='0.7'/><circle cx='16' cy='16' r='2.5' fill='%230D9488'/><line x1='16' y1='2' x2='16' y2='6' stroke='%230D9488' stroke-width='1.5' stroke-linecap='round'/><line x1='16' y1='26' x2='16' y2='30' stroke='%230D9488' stroke-width='1.5' stroke-linecap='round'/><line x1='2' y1='16' x2='6' y2='16' stroke='%230D9488' stroke-width='1.5' stroke-linecap='round'/><line x1='26' y1='16' x2='30' y2='16' stroke='%230D9488' stroke-width='1.5' stroke-linecap='round'/></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="/" class="nav__logo">
+          <!-- Logo: Stylized memory layers / neural pathway -->
+          <svg class="nav__logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Outer ring -->
+            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            <!-- Middle ring -->
+            <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+            <!-- Inner ring -->
+            <circle cx="16" cy="16" r="6" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+            <!-- Core dot -->
+            <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+            <!-- Connection lines radiating out -->
+            <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="16" y1="26" x2="16" y2="30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="2" y1="16" x2="6" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="26" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="nav__logo-text">
+            <span class="nav__logo-title">Project Memory</span>
+          </span>
+        </a>
+
+        <div class="nav__links">
+          <a href="docs/" class="nav__link">Docs</a>
+          <a href="docs/commands.html" class="nav__link">Commands</a>
+          <a href="docs/concepts.html" class="nav__link">Concepts</a>
+          <a href="https://github.com" class="nav__link nav__link--github">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="nav__actions">
+          <button class="theme-toggle" aria-label="Toggle theme">
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section - Modern Split Layout -->
+  <section class="hero hero--modern">
+    <!-- Ambient background -->
+    <div class="hero__ambient">
+      <div class="hero__glow hero__glow--1"></div>
+      <div class="hero__glow hero__glow--2"></div>
+      <div class="hero__noise"></div>
+    </div>
+
+    <div class="container">
+      <div class="hero__split">
+        <!-- Left: Content -->
+        <div class="hero__content">
+          <h1 class="hero__headline">
+            <span class="hero__headline-line">Your AI finally</span>
+            <span class="hero__headline-line">
+              <span class="hero__morph-container">
+                <span class="hero__morph-word" data-word="remembers">remembers</span>
+                <span class="hero__morph-word" data-word="learns">learns</span>
+                <span class="hero__morph-word" data-word="evolves">evolves</span>
+              </span>
+            </span>
+          </h1>
+
+          <p class="hero__description">
+            Decisions, patterns, and insights that persist across sessions.
+            <span class="hero__description-highlight">No more repeating yourself.</span>
+          </p>
+
+          <div class="hero__cta-group">
+            <a href="docs/" class="hero__cta hero__cta--primary">
+              <span>Get Started</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+            <a href="https://github.com" class="hero__cta hero__cta--ghost">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              <span>View Source</span>
+            </a>
+          </div>
+
+          <!-- Stats row -->
+          <div class="hero__stats">
+            <div class="hero__stat">
+              <span class="hero__stat-value">100%</span>
+              <span class="hero__stat-label">Local & Private</span>
+            </div>
+            <div class="hero__stat-divider"></div>
+            <div class="hero__stat">
+              <span class="hero__stat-value">0ms</span>
+              <span class="hero__stat-label">API Latency</span>
+            </div>
+            <div class="hero__stat-divider"></div>
+            <div class="hero__stat">
+              <span class="hero__stat-value">∞</span>
+              <span class="hero__stat-label">Sessions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Visualization -->
+        <div class="hero__visual">
+          <div class="hero__visual-container">
+            <!-- Animated knowledge flow SVG -->
+            <svg class="hero__flow" viewBox="0 0 400 400" fill="none">
+              <defs>
+                <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="var(--accent-light)" stop-opacity="0.4"/>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Central hub -->
+              <g class="hero__flow-hub">
+                <circle cx="200" cy="200" r="50" fill="var(--bg-secondary)" stroke="var(--accent)" stroke-width="2"/>
+                <circle cx="200" cy="200" r="35" fill="var(--accent-subtle)" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+                <text x="200" y="195" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="12" font-weight="600">MEMORY</text>
+                <text x="200" y="212" text-anchor="middle" fill="var(--text-tertiary)" font-family="ui-monospace, monospace" font-size="10">core</text>
+              </g>
+
+              <!-- Session nodes -->
+              <g class="hero__flow-node hero__flow-node--1">
+                <circle cx="80" cy="100" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
+                <text x="80" y="96" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
+                <text x="80" y="108" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">001</text>
+              </g>
+
+              <g class="hero__flow-node hero__flow-node--2">
+                <circle cx="320" cy="80" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
+                <text x="320" y="76" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
+                <text x="320" y="88" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">002</text>
+              </g>
+
+              <g class="hero__flow-node hero__flow-node--3">
+                <circle cx="340" cy="280" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
+                <text x="340" y="276" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
+                <text x="340" y="288" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">003</text>
+              </g>
+
+              <g class="hero__flow-node hero__flow-node--4">
+                <circle cx="60" cy="300" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
+                <text x="60" y="296" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
+                <text x="60" y="308" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">004</text>
+              </g>
+
+              <!-- Connection paths -->
+              <path class="hero__flow-path" d="M110 100 Q 150 150 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M290 80 Q 250 130 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M310 280 Q 260 250 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M90 300 Q 140 260 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+
+              <!-- Animated particles on paths -->
+              <circle class="hero__flow-particle hero__flow-particle--1" r="4" fill="var(--accent-light)">
+                <animateMotion dur="3s" repeatCount="indefinite">
+                  <mpath href="#path1"/>
+                </animateMotion>
+              </circle>
+              <circle class="hero__flow-particle hero__flow-particle--2" r="4" fill="var(--accent-light)">
+                <animateMotion dur="2.5s" repeatCount="indefinite">
+                  <mpath href="#path2"/>
+                </animateMotion>
+              </circle>
+              <circle class="hero__flow-particle hero__flow-particle--3" r="4" fill="var(--accent-light)">
+                <animateMotion dur="3.2s" repeatCount="indefinite">
+                  <mpath href="#path3"/>
+                </animateMotion>
+              </circle>
+              <circle class="hero__flow-particle hero__flow-particle--4" r="4" fill="var(--accent-light)">
+                <animateMotion dur="2.8s" repeatCount="indefinite">
+                  <mpath href="#path4"/>
+                </animateMotion>
+              </circle>
+
+              <!-- Hidden paths for particle animation -->
+              <path id="path1" d="M110 100 Q 150 150 150 200" fill="none"/>
+              <path id="path2" d="M290 80 Q 250 130 250 200" fill="none"/>
+              <path id="path3" d="M310 280 Q 260 250 250 200" fill="none"/>
+              <path id="path4" d="M90 300 Q 140 260 150 200" fill="none"/>
+            </svg>
+
+            <!-- Floating cards -->
+            <div class="hero__card hero__card--decision">
+              <div class="hero__card-icon">💡</div>
+              <div class="hero__card-content">
+                <span class="hero__card-type">Decision</span>
+                <span class="hero__card-text">Use PostgreSQL</span>
+              </div>
+            </div>
+
+            <div class="hero__card hero__card--pattern">
+              <div class="hero__card-icon">🔄</div>
+              <div class="hero__card-content">
+                <span class="hero__card-type">Pattern</span>
+                <span class="hero__card-text">Error handling</span>
+              </div>
+            </div>
+
+            <div class="hero__card hero__card--insight">
+              <div class="hero__card-icon">✨</div>
+              <div class="hero__card-content">
+                <span class="hero__card-type">Insight</span>
+                <span class="hero__card-text">Cache invalidation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <header class="section__header fade-in">
+        <span class="section__label">Features</span>
+        <h2 class="section__title">Everything you need to preserve context</h2>
+        <p class="section__subtitle">
+          Built for developers who need their AI assistant to remember what matters.
+        </p>
+      </header>
+
+      <div class="features__grid">
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Automatic Capture</h3>
+          <p class="feature-card__description">
+            Sessions are saved via hooks with zero friction. Every decision, pattern, and insight is captured automatically.
+          </p>
+        </article>
+
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Semantic Search</h3>
+          <p class="feature-card__description">
+            Find anything with natural language. Search across all your project knowledge using AI-powered similarity matching.
+          </p>
+        </article>
+
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Token Transparent</h3>
+          <p class="feature-card__description">
+            Know exactly what you're spending. Every operation shows precise token costs so you stay in control of your context budget.
+          </p>
+        </article>
+
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Local & Private</h3>
+          <p class="feature-card__description">
+            Embeddings run entirely on your device using local models. No API calls, no data leaving your machine.
+          </p>
+        </article>
+
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Export Anywhere</h3>
+          <p class="feature-card__description">
+            Export to Markdown, JSON, Obsidian, or Notion. Your knowledge is portable and integrates with your existing tools.
+          </p>
+        </article>
+
+        <article class="feature-card fade-in">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Proactive Checking</h3>
+          <p class="feature-card__description">
+            Claude automatically checks your history before proposing solutions. No more re-deciding the same things twice.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <div class="container">
+      <header class="section__header fade-in">
+        <span class="section__label">How It Works</span>
+        <h2 class="section__title">Three steps to persistent context</h2>
+        <p class="section__subtitle">
+          Knowledge flows naturally from conversation to searchable memory.
+        </p>
+      </header>
+
+      <div class="steps">
+        <div class="step fade-in">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Work with Claude</h3>
+          <p class="step__description">
+            Discuss architecture, patterns, and solutions. Claude marks important decisions in its responses using special markers.
+          </p>
+        </div>
+
+        <div class="step fade-in">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Auto-Capture</h3>
+          <p class="step__description">
+            When your session ends, hooks automatically extract marked knowledge and store it with embeddings for semantic search.
+          </p>
+        </div>
+
+        <div class="step fade-in">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Search & Load</h3>
+          <p class="step__description">
+            Use commands like <code>/project-memory:search</code> to find past decisions. Claude checks history before proposing changes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Section -->
+  <section class="quickstart">
+    <div class="container">
+      <div class="quickstart__content">
+        <div class="quickstart__text fade-in">
+          <span class="section__label">Quick Start</span>
+          <h2>Up and running in seconds</h2>
+          <p>
+            Install the plugin, have a conversation with decisions, and watch your knowledge persist automatically.
+          </p>
+          <a href="docs/" class="btn btn--primary">
+            Full Documentation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+
+        <div class="code-block fade-in">
+          <div class="code-block__header">
+            <div class="code-block__dots">
+              <span class="code-block__dot code-block__dot--red"></span>
+              <span class="code-block__dot code-block__dot--yellow"></span>
+              <span class="code-block__dot code-block__dot--green"></span>
+            </div>
+            <span class="code-block__title">Terminal</span>
+            <button class="code-block__copy">Copy</button>
+          </div>
+          <div class="code-block__content">
+            <pre><code><span class="code-comment"># Check your project memory status</span>
+<span class="code-keyword">/project-memory:status</span>
+
+<span class="code-comment"># Search across all sessions</span>
+<span class="code-keyword">/project-memory:search</span> <span class="code-string">"authentication approach"</span>
+
+<span class="code-comment"># Load recent context</span>
+<span class="code-keyword">/project-memory:load-recent</span> <span class="code-string">3</span>
+
+<span class="code-comment"># Manually record a decision</span>
+<span class="code-keyword">/project-memory:record</span> decision -t database \
+  <span class="code-string">"Using PostgreSQL for relational data"</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <div class="footer__brand">
+          <a href="/" class="footer__logo">
+            <span class="footer__logo-icon"></span>
+            Project Memory
+          </a>
+          <p class="footer__tagline">
+            Persistent project knowledge for Claude Code.
+          </p>
+          <span class="footer__version">v1.2.0</span>
+        </div>
+
+        <div class="footer__column">
+          <h4>Documentation</h4>
+          <ul class="footer__links">
+            <li><a href="docs/">Getting Started</a></li>
+            <li><a href="docs/concepts.html">Core Concepts</a></li>
+            <li><a href="docs/commands.html">Commands</a></li>
+            <li><a href="docs/markers.html">Markers</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h4>Reference</h4>
+          <ul class="footer__links">
+            <li><a href="docs/settings.html">Settings</a></li>
+            <li><a href="docs/workflows.html">Workflows</a></li>
+            <li><a href="docs/commands.html#export">Export Formats</a></li>
+            <li><a href="docs/commands.html#backup">Backup & Restore</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h4>Resources</h4>
+          <ul class="footer__links">
+            <li><a href="https://github.com">GitHub</a></li>
+            <li><a href="#">Changelog</a></li>
+            <li><a href="#">License</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>Built for Claude Code</p>
+        <div class="footer__social">
+          <a href="https://github.com" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

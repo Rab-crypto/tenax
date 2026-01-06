@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Complete command reference for Project Memory - all 17 commands with examples.">
+  <title>Commands | Project Memory</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
+  <style>
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      z-index: 1000;
+      transition: width 0.1s;
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress"></div>
+
+  <!-- Navigation -->
+  <nav class="nav scrolled">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="../" class="nav__logo">
+          <span class="nav__logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+              <line x1="12" y1="22" x2="12" y2="15.5"></line>
+              <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+            </svg>
+          </span>
+          Project Memory
+        </a>
+
+        <div class="nav__links">
+          <a href="./" class="nav__link">Documentation</a>
+          <a href="commands.html" class="nav__link">Commands</a>
+          <a href="concepts.html" class="nav__link">Concepts</a>
+        </div>
+
+        <div class="nav__actions">
+          <button class="theme-toggle" aria-label="Switch to light theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <!-- Sidebar -->
+    <aside class="docs-sidebar">
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">On This Page</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="#status-info">Status & Info</a></li>
+          <li><a href="#loading">Loading Sessions</a></li>
+          <li><a href="#recording">Recording Knowledge</a></li>
+          <li><a href="#searching">Searching</a></li>
+          <li><a href="#management">Management</a></li>
+          <li><a href="#export">Export & Backup</a></li>
+        </ul>
+      </div>
+
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">Documentation</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="./">Overview</a></li>
+          <li><a href="concepts.html">Concepts</a></li>
+          <li><a href="commands.html" class="active">Commands</a></li>
+          <li><a href="markers.html">Markers</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="workflows.html">Workflows</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="docs-content">
+      <h1>Command Reference</h1>
+      <p>
+        Complete reference for all Project Memory commands. All commands use the <code>/project-memory:</code> namespace.
+      </p>
+
+      <!-- Search -->
+      <div class="search-wrapper" style="margin: var(--space-2xl) 0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="search-input" placeholder="Filter commands..." aria-label="Filter commands">
+      </div>
+
+      <!-- Status & Info -->
+      <h2 id="status-info">Status & Info</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:status</span>
+          <button class="code-block__copy" data-copy="/project-memory:status">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Show project memory status and quick summary. Displays total sessions, decisions, patterns, tasks, insights, recent activity, and storage size.
+          </p>
+          <p><strong>Use when:</strong> You want a quick overview of accumulated project knowledge.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:stats</span>
+          <button class="code-block__copy" data-copy="/project-memory:stats">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Show detailed statistics about project memory including timeline, sessions per month, top topics, and storage breakdown.
+          </p>
+          <p><strong>Use when:</strong> You want analytics on your project history and memory usage patterns.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:list</span>
+          <button class="code-block__copy" data-copy="/project-memory:list">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            List all stored sessions with metadata including session ID, date, summary, token count, and decision count.
+          </p>
+          <p><strong>Use when:</strong> You want to browse all past sessions and their contents.</p>
+        </div>
+      </div>
+
+      <!-- Loading Sessions -->
+      <h2 id="loading">Loading Sessions</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:load-session</span>
+          <button class="code-block__copy" data-copy="/project-memory:load-session">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Load a specific session by ID into context. Shows full session details including decisions, patterns, files modified, and topics.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:load-session &lt;session-id&gt;
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>session-id</code></td><td>Session ID (e.g., "5" or "005")</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Example:</strong> <code>/project-memory:load-session 003</code></p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:load-sessions</span>
+          <button class="code-block__copy" data-copy="/project-memory:load-sessions">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Load multiple sessions by IDs. If no IDs specified, loads the last 3 sessions. Respects token budget.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:load-sessions [IDs] [-b, --budget &lt;tokens&gt;]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>IDs</code></td><td>Session IDs (comma or space separated)</td></tr>
+                <tr><td><code>-b, --budget</code></td><td>Token budget limit</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Example:</strong> <code>/project-memory:load-sessions 001,002,003</code></p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:load-recent</span>
+          <button class="code-block__copy" data-copy="/project-memory:load-recent">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Load the N most recent sessions (default: 5). Most recent first. Respects token budget.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:load-recent [N] [-b, --budget &lt;tokens&gt;]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>N</code></td><td>Number of sessions (default: 5)</td></tr>
+                <tr><td><code>-b, --budget</code></td><td>Token budget limit</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Example:</strong> <code>/project-memory:load-recent 3</code></p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:load-all</span>
+          <button class="code-block__copy" data-copy="/project-memory:load-all">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Smart-load all sessions within token budget. Shows preview, loads in reverse chronological order, skips sessions that would exceed budget.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:load-all [-b, --budget &lt;tokens&gt;]
+          </div>
+          <p><strong>Use when:</strong> You want comprehensive project history within your token allowance.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:fresh</span>
+          <button class="code-block__copy" data-copy="/project-memory:fresh">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Start a fresh session without loading any history. Memory still records new decisions; you can still search or load on demand.
+          </p>
+          <p><strong>Use when:</strong> You want a clean slate without historical context influencing the conversation.</p>
+        </div>
+      </div>
+
+      <!-- Recording Knowledge -->
+      <h2 id="recording">Recording Knowledge</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:save</span>
+          <button class="code-block__copy" data-copy="/project-memory:save">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Manually save the current session to project memory. Reviews conversation for decisions, patterns, tasks, and insights.
+          </p>
+          <p><strong>Use when:</strong> You want to checkpoint important knowledge mid-session.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:record</span>
+          <button class="code-block__copy" data-copy="/project-memory:record">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Manually record a decision, pattern, task, or insight.
+          </p>
+
+          <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Decision</h4>
+          <div class="command-card__usage">
+            /project-memory:record decision -t &lt;topic&gt; "&lt;text&gt;" -r "&lt;rationale&gt;"
+          </div>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record decision -t database "Using PostgreSQL" -r "Team expertise"</code></p>
+
+          <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Pattern</h4>
+          <div class="command-card__usage">
+            /project-memory:record pattern -n &lt;name&gt; "&lt;description&gt;" -u "&lt;usage&gt;"
+          </div>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record pattern -n error-handler "Wrap async routes in try-catch"</code></p>
+
+          <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Task</h4>
+          <div class="command-card__usage">
+            /project-memory:record task "&lt;title&gt;" -d "&lt;description&gt;" -p &lt;priority&gt;
+          </div>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record task "Add unit tests" -p high</code></p>
+
+          <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record an Insight</h4>
+          <div class="command-card__usage">
+            /project-memory:record insight "&lt;text&gt;" -c "&lt;context&gt;"
+          </div>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record insight "Rate limits are per-user not per-app"</code></p>
+        </div>
+      </div>
+
+      <!-- Searching -->
+      <h2 id="searching">Searching</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:search</span>
+          <button class="code-block__copy" data-copy="/project-memory:search">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Search across all project memory using semantic similarity. Returns ranked results with similarity scores and snippets.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:search &lt;query&gt; [-t, --type &lt;type&gt;] [-l, --limit &lt;n&gt;]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>query</code></td><td>Natural language search query (required)</td></tr>
+                <tr><td><code>-t, --type</code></td><td>Filter by type: decision, pattern, task, insight, session</td></tr>
+                <tr><td><code>-l, --limit</code></td><td>Maximum results (default: 10)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Examples:</strong></p>
+          <ul>
+            <li><code>/project-memory:search "authentication approach"</code></li>
+            <li><code>/project-memory:search "database" -t decision</code></li>
+            <li><code>/project-memory:search "error handling" -l 5</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Management -->
+      <h2 id="management">Management</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:settings</span>
+          <button class="code-block__copy" data-copy="/project-memory:settings">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            View or modify project memory settings including token budget, auto-load behavior, and recording preferences.
+          </p>
+          <p>See <a href="settings.html">Settings Reference</a> for all available options.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:forget</span>
+          <button class="code-block__copy" data-copy="/project-memory:forget">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Remove entries from project memory. Confirmation required for bulk deletions.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:forget [id] [--type &lt;type&gt;] [--all]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>id</code></td><td>Delete specific entry by ID</td></tr>
+                <tr><td><code>--type</code></td><td>Delete all of type: decisions, patterns, tasks, insights</td></tr>
+                <tr><td><code>--all</code></td><td>Delete everything (requires confirmation)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Use when:</strong> You need to clean up obsolete or incorrect entries.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:tag</span>
+          <button class="code-block__copy" data-copy="/project-memory:tag">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Add or remove tags from sessions for organization.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:tag &lt;session-id&gt; &lt;tag1&gt; [tag2...] [--remove]
+          </div>
+          <p><strong>Examples:</strong></p>
+          <ul>
+            <li><code>/project-memory:tag 003 auth feature</code> - Add tags</li>
+            <li><code>/project-memory:tag 003 auth --remove</code> - Remove tag</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Export & Backup -->
+      <h2 id="export">Export & Backup</h2>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:export</span>
+          <button class="code-block__copy" data-copy="/project-memory:export">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Export project memory to various formats: Markdown, JSON, Obsidian, or Notion.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:export [-f, --format &lt;format&gt;] [-o, --output &lt;dir&gt;] [-s, --sessions]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>-f, --format</code></td><td>Export format: markdown (default), json, obsidian, notion</td></tr>
+                <tr><td><code>-o, --output</code></td><td>Output directory</td></tr>
+                <tr><td><code>-s, --sessions</code></td><td>Include full session data</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Examples:</strong></p>
+          <ul>
+            <li><code>/project-memory:export</code> - Export to Markdown</li>
+            <li><code>/project-memory:export -f obsidian -o ./vault</code> - Export to Obsidian vault</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:backup</span>
+          <button class="code-block__copy" data-copy="/project-memory:backup">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Create a backup of all project memory data as a JSON file with base64-encoded contents.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:backup [-o, --output &lt;path&gt;]
+          </div>
+          <p><strong>Use when:</strong> You want to safeguard project memory before major changes or share between machines.</p>
+        </div>
+      </div>
+
+      <div class="command-card" data-searchable>
+        <div class="command-card__header">
+          <span class="command-card__name">/project-memory:restore</span>
+          <button class="code-block__copy" data-copy="/project-memory:restore">Copy</button>
+        </div>
+        <div class="command-card__body">
+          <p class="command-card__description">
+            Restore project memory from a backup file. Asks for confirmation if memory already exists.
+          </p>
+          <div class="command-card__usage">
+            /project-memory:restore &lt;backup-file&gt; [-f, --force]
+          </div>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>backup-file</code></td><td>Path to backup file (required)</td></tr>
+                <tr><td><code>-f, --force</code></td><td>Overwrite without confirmation</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Use when:</strong> You need to recover from accidental deletions or transfer to a new machine.</p>
+        </div>
+      </div>
+
+      <p class="no-results" style="display: none; text-align: center; padding: var(--space-3xl); color: var(--text-tertiary);">
+        No commands match your filter.
+      </p>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

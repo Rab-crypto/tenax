@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Core concepts of Project Memory - understand decisions, patterns, tasks, insights, and sessions.">
+  <title>Concepts | Project Memory</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav scrolled">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="../" class="nav__logo">
+          <span class="nav__logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+              <line x1="12" y1="22" x2="12" y2="15.5"></line>
+              <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+            </svg>
+          </span>
+          Project Memory
+        </a>
+        <div class="nav__links">
+          <a href="./" class="nav__link">Documentation</a>
+          <a href="commands.html" class="nav__link">Commands</a>
+          <a href="concepts.html" class="nav__link">Concepts</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" aria-label="Switch to light theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">On This Page</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="#knowledge-types">Knowledge Types</a></li>
+          <li><a href="#how-it-flows">How Knowledge Flows</a></li>
+          <li><a href="#storage">Storage Structure</a></li>
+          <li><a href="#tokens">Token Economics</a></li>
+        </ul>
+      </div>
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">Documentation</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="./">Overview</a></li>
+          <li><a href="concepts.html" class="active">Concepts</a></li>
+          <li><a href="commands.html">Commands</a></li>
+          <li><a href="markers.html">Markers</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="workflows.html">Workflows</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="docs-content">
+      <h1>Core Concepts</h1>
+      <p>
+        Project Memory organizes knowledge into five distinct types, each serving a specific purpose in maintaining project continuity.
+      </p>
+
+      <h2 id="knowledge-types">Knowledge Types</h2>
+
+      <div style="display: grid; gap: var(--space-lg); margin: var(--space-2xl) 0;">
+        <!-- Decisions -->
+        <div class="feature-card">
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <span class="badge badge--amber">Decision</span>
+            <h3 style="margin: 0;">Architecture & Technology Choices</h3>
+          </div>
+          <p>
+            Decisions capture architecture choices, technology selections, and design approaches. They answer "what did we choose and why?"
+          </p>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>topic</code></td><td>Category (e.g., "database", "auth", "api")</td></tr>
+                <tr><td><code>decision</code></td><td>What was decided</td></tr>
+                <tr><td><code>rationale</code></td><td>Why this choice was made</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top: var(--space-md);"><strong>Example:</strong> "Using PostgreSQL for relational data" with rationale "Team has expertise, strong ACID compliance"</p>
+        </div>
+
+        <!-- Patterns -->
+        <div class="feature-card">
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <span class="badge badge--blue">Pattern</span>
+            <h3 style="margin: 0;">Coding Conventions & Best Practices</h3>
+          </div>
+          <p>
+            Patterns capture coding conventions, architectural patterns, and established best practices for the project.
+          </p>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>name</code></td><td>Pattern identifier (e.g., "error-handler")</td></tr>
+                <tr><td><code>description</code></td><td>What the pattern does</td></tr>
+                <tr><td><code>usage</code></td><td>When to apply this pattern</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top: var(--space-md);"><strong>Example:</strong> "error-boundary" - Wrap async route handlers in try-catch with standardized error response</p>
+        </div>
+
+        <!-- Tasks -->
+        <div class="feature-card">
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <span class="badge badge--green">Task</span>
+            <h3 style="margin: 0;">Work Items & TODOs</h3>
+          </div>
+          <p>
+            Tasks track work items, pending todos, and follow-up actions that emerge during development.
+          </p>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>title</code></td><td>Task description</td></tr>
+                <tr><td><code>status</code></td><td>pending, in-progress, completed, cancelled</td></tr>
+                <tr><td><code>priority</code></td><td>low, medium, high, critical</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top: var(--space-md);"><strong>Example:</strong> "Add unit tests for authentication module" - high priority, pending</p>
+        </div>
+
+        <!-- Insights -->
+        <div class="feature-card">
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <span class="badge badge--purple">Insight</span>
+            <h3 style="margin: 0;">Discoveries & Learnings</h3>
+          </div>
+          <p>
+            Insights capture discoveries, learnings, gotchas, and important observations that don't fit other categories.
+          </p>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>content</code></td><td>The insight or observation</td></tr>
+                <tr><td><code>context</code></td><td>Optional context about when this applies</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top: var(--space-md);"><strong>Example:</strong> "Rate limiting is per-user, not per-app, which affects our caching strategy"</p>
+        </div>
+
+        <!-- Sessions -->
+        <div class="feature-card">
+          <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-md);">
+            <span class="badge badge--gray">Session</span>
+            <h3 style="margin: 0;">Complete Conversation Snapshots</h3>
+          </div>
+          <p>
+            Sessions are complete conversation snapshots with metadata. They contain the raw transcript and extracted knowledge.
+          </p>
+          <div class="table-wrapper" style="margin-top: var(--space-md);">
+            <table>
+              <thead><tr><th>Field</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td><code>id</code></td><td>Session identifier (e.g., "001")</td></tr>
+                <tr><td><code>summary</code></td><td>Brief description of conversation</td></tr>
+                <tr><td><code>tokenCount</code></td><td>Tokens in session</td></tr>
+                <tr><td><code>filesModified</code></td><td>Files changed during session</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="how-it-flows">How Knowledge Flows</h2>
+      <p>
+        Knowledge flows through the system in three stages:
+      </p>
+
+      <div class="steps" style="margin: var(--space-3xl) 0;">
+        <div class="step">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Capture</h3>
+          <p class="step__description">
+            During your session, hooks track file changes. When the session ends (or auto-compacts), the full transcript is saved.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Extract</h3>
+          <p class="step__description">
+            The extractor scans for markers (<code>[DECISION:]</code>, etc.) and uses heuristics to identify knowledge. Quality scoring filters noise.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Index</h3>
+          <p class="step__description">
+            Extracted knowledge is embedded using a local ML model and stored in a vector database for semantic search.
+          </p>
+        </div>
+      </div>
+
+      <h3>Proactive History Checking</h3>
+      <p>
+        When you discuss architecture, libraries, or patterns, Claude automatically searches project memory first. This surfaces existing decisions with their rationale, preventing re-deciding the same topics.
+      </p>
+
+      <h2 id="storage">Storage Structure</h2>
+      <p>
+        All data is stored locally in your project's <code>.claude/project-memory/</code> directory:
+      </p>
+
+      <div class="code-block" style="margin: var(--space-xl) 0;">
+        <div class="code-block__header">
+          <div class="code-block__dots">
+            <span class="code-block__dot code-block__dot--red"></span>
+            <span class="code-block__dot code-block__dot--yellow"></span>
+            <span class="code-block__dot code-block__dot--green"></span>
+          </div>
+          <span class="code-block__title">Directory Structure</span>
+        </div>
+        <div class="code-block__content">
+          <pre><code>.claude/project-memory/
+├── config.json           <span class="code-comment"># User configuration</span>
+├── index.json            <span class="code-comment"># Accumulated knowledge index</span>
+├── embeddings.db         <span class="code-comment"># Vector store (sqlite-vec)</span>
+└── sessions/
+    ├── 001.json          <span class="code-comment"># Processed session data</span>
+    ├── 001.jsonl         <span class="code-comment"># Raw transcript</span>
+    ├── 002.json
+    ├── 002.jsonl
+    └── ...</code></pre>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>config.json</code></td><td>Your settings (token budget, auto-load, etc.)</td></tr>
+            <tr><td><code>index.json</code></td><td>All decisions, patterns, tasks, insights across sessions</td></tr>
+            <tr><td><code>embeddings.db</code></td><td>SQLite database with vector embeddings for semantic search</td></tr>
+            <tr><td><code>*.jsonl</code></td><td>Raw conversation transcript (full fidelity)</td></tr>
+            <tr><td><code>*.json</code></td><td>Processed session with extracted knowledge</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="tokens">Token Economics</h2>
+      <p>
+        Understanding token costs helps you manage your context budget effectively. Project Memory uses progressive disclosure to minimize overhead:
+      </p>
+
+      <div class="table-wrapper" style="margin: var(--space-xl) 0;">
+        <table>
+          <thead><tr><th>Component</th><th>Tokens</th><th>When Loaded</th></tr></thead>
+          <tbody>
+            <tr><td>Skill description</td><td>~50</td><td>Always (at startup)</td></tr>
+            <tr><td>SKILL.md (full)</td><td>~800</td><td>First trigger on architecture discussion</td></tr>
+            <tr><td>Search result (typical)</td><td>200-500</td><td>Each search query</td></tr>
+            <tr><td>Quick summary</td><td>~500</td><td>Auto-load or /status</td></tr>
+            <tr><td>Full session (typical)</td><td>5,000-20,000</td><td>Explicit load only</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Budget-Aware Loading</h3>
+      <p>
+        Commands like <code>/project-memory:load-recent</code> and <code>/project-memory:load-all</code> respect your configured token budget. They load sessions in order until the budget would be exceeded, then stop.
+      </p>
+      <p>
+        Every load operation reports exact token counts, so you always know what you're spending:
+      </p>
+
+      <div class="code-block" style="margin: var(--space-lg) 0;">
+        <div class="code-block__content">
+          <pre><code><span class="code-comment">Loaded 3 of 5 sessions (12,450 tokens - 15.6% of budget)</span></code></pre>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

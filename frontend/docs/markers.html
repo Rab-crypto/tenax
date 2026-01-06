@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Knowledge markers syntax for Project Memory - learn how to mark decisions, patterns, tasks, and insights.">
+  <title>Markers | Project Memory</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
+  <style>
+    .marker-example {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin: var(--space-xl) 0;
+    }
+    .marker-example__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border);
+    }
+    .marker-example__title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .marker-example__body {
+      padding: var(--space-lg);
+    }
+    .marker-example__preview {
+      background: var(--code-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, monospace;
+      font-size: var(--text-sm);
+      line-height: 1.8;
+      color: var(--code-text);
+      white-space: pre-wrap;
+      margin-bottom: var(--space-lg);
+    }
+    .marker-example__preview .marker {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .marker-example__preview .topic {
+      color: #10B981;
+    }
+    .marker-example__preview .content {
+      color: var(--code-text);
+    }
+    .marker-example__guidance {
+      padding: var(--space-md);
+      background: var(--accent-subtle);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+    }
+    .marker-example__guidance strong {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav scrolled">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="../" class="nav__logo">
+          <span class="nav__logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+              <line x1="12" y1="22" x2="12" y2="15.5"></line>
+              <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+            </svg>
+          </span>
+          Project Memory
+        </a>
+        <div class="nav__links">
+          <a href="./" class="nav__link">Documentation</a>
+          <a href="commands.html" class="nav__link">Commands</a>
+          <a href="concepts.html" class="nav__link">Concepts</a>
+        </div>
+        <div class="nav__actions">
+          <button class="theme-toggle" aria-label="Switch to light theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">On This Page</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="#why-markers">Why Use Markers</a></li>
+          <li><a href="#decision">Decision Markers</a></li>
+          <li><a href="#pattern">Pattern Markers</a></li>
+          <li><a href="#task">Task Markers</a></li>
+          <li><a href="#insight">Insight Markers</a></li>
+          <li><a href="#multiline">Multi-line Markers</a></li>
+        </ul>
+      </div>
+      <div class="docs-sidebar__section">
+        <h3 class="docs-sidebar__title">Documentation</h3>
+        <ul class="docs-sidebar__links">
+          <li><a href="./">Overview</a></li>
+          <li><a href="concepts.html">Concepts</a></li>
+          <li><a href="commands.html">Commands</a></li>
+          <li><a href="markers.html" class="active">Markers</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="workflows.html">Workflows</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="docs-content">
+      <h1>Knowledge Markers</h1>
+      <p>
+        Markers are special syntax that Claude uses in responses to explicitly flag knowledge for capture. When you see these markers in Claude's output, they indicate information being saved to project memory.
+      </p>
+
+      <h2 id="why-markers">How Markers Work</h2>
+      <p>
+        When Claude makes a decision or identifies a pattern, it includes markers in its response. The extraction system recognizes these and saves them with <strong>guaranteed capture</strong>. This is more reliable than heuristic extraction alone.
+      </p>
+      <ul>
+        <li>Claude adds markers automatically when making architecture decisions</li>
+        <li>You can ask Claude to "record this decision" to trigger explicit marking</li>
+        <li>Markers appear in Claude's response text, then get extracted at session end</li>
+        <li>You'll see these in session transcripts when reviewing history</li>
+      </ul>
+
+      <h2 id="decision">Decision Markers</h2>
+      <p>
+        Claude uses these when making architecture choices, technology selections, and design decisions.
+      </p>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--amber">Decision</span>
+            Single-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[DECISION: database] Using PostgreSQL for relational data because of team expertise and strong ACID compliance">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[DECISION:</span> <span class="topic">database</span><span class="marker">]</span> <span class="content">Using PostgreSQL for relational data because of team expertise and strong ACID compliance</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> After confirming a technology or architecture choice with you. The rationale is included inline.
+          </div>
+        </div>
+      </div>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--amber">Decision</span>
+            Multi-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[DECISION: authentication]
+Implementing JWT-based authentication with refresh tokens because:
+- Stateless sessions scale better
+- Team has existing JWT infrastructure
+- Aligns with microservices roadmap
+[/]">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[DECISION:</span> <span class="topic">authentication</span><span class="marker">]</span>
+<span class="content">Implementing JWT-based authentication with refresh tokens because:
+- Stateless sessions scale better
+- Team has existing JWT infrastructure
+- Aligns with microservices roadmap</span>
+<span class="marker">[/]</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When the decision has multiple points of rationale or needs detailed explanation.
+          </div>
+        </div>
+      </div>
+
+      <h2 id="pattern">Pattern Markers</h2>
+      <p>
+        Claude uses these when establishing coding conventions, architectural patterns, and best practices.
+      </p>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--blue">Pattern</span>
+            Single-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[PATTERN: error-handler] Wrap all async route handlers in try-catch with standardized error response format">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[PATTERN:</span> <span class="topic">error-handler</span><span class="marker">]</span> <span class="content">Wrap all async route handlers in try-catch with standardized error response format</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When establishing a convention that should be followed throughout the codebase.
+          </div>
+        </div>
+      </div>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--blue">Pattern</span>
+            Multi-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[PATTERN: repository]
+Abstract database access through repository classes:
+- One repository per domain entity
+- Repositories return domain objects, not DB rows
+- All queries go through repositories (no direct DB access)
+[/]">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[PATTERN:</span> <span class="topic">repository</span><span class="marker">]</span>
+<span class="content">Abstract database access through repository classes:
+- One repository per domain entity
+- Repositories return domain objects, not DB rows
+- All queries go through repositories (no direct DB access)</span>
+<span class="marker">[/]</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When the pattern has multiple rules or implementation details.
+          </div>
+        </div>
+      </div>
+
+      <h2 id="task">Task Markers</h2>
+      <p>
+        Claude uses these to track work items, TODOs, and follow-up actions identified during the conversation.
+      </p>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--green">Task</span>
+            Single-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[TASK: high] Add unit tests for the authentication module">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[TASK:</span> <span class="topic">high</span><span class="marker">]</span> <span class="content">Add unit tests for the authentication module</span></div>
+          <div class="marker-example__guidance">
+            <strong>Priority levels:</strong> low, medium, high, critical
+          </div>
+        </div>
+      </div>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--green">Task</span>
+            Multi-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[TASK: medium] Write API documentation:
+- OpenAPI/Swagger spec
+- Example requests for each endpoint
+- Authentication flow diagram
+[/]">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[TASK:</span> <span class="topic">medium</span><span class="marker">]</span> <span class="content">Write API documentation:
+- OpenAPI/Swagger spec
+- Example requests for each endpoint
+- Authentication flow diagram</span>
+<span class="marker">[/]</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When the task has sub-items or detailed requirements.
+          </div>
+        </div>
+      </div>
+
+      <h2 id="insight">Insight Markers</h2>
+      <p>
+        Claude uses these for discoveries, learnings, gotchas, and important observations made during the conversation.
+      </p>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--purple">Insight</span>
+            Single-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[INSIGHT] Rate limiting is per-user not per-app, which affects our caching strategy">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[INSIGHT]</span> <span class="content">Rate limiting is per-user not per-app, which affects our caching strategy</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When discovering something important that doesn't fit other categories.
+          </div>
+        </div>
+      </div>
+
+      <div class="marker-example">
+        <div class="marker-example__header">
+          <span class="marker-example__title">
+            <span class="badge badge--purple">Insight</span>
+            Multi-line Syntax
+          </span>
+          <button class="code-block__copy" data-copy="[INSIGHT]
+Connection pooling is critical for serverless:
+- Use PgBouncer or similar
+- Set max connections conservatively
+- Monitor connection exhaustion in production
+[/]">Copy</button>
+        </div>
+        <div class="marker-example__body">
+          <div class="marker-example__preview"><span class="marker">[INSIGHT]</span>
+<span class="content">Connection pooling is critical for serverless:
+- Use PgBouncer or similar
+- Set max connections conservatively
+- Monitor connection exhaustion in production</span>
+<span class="marker">[/]</span></div>
+          <div class="marker-example__guidance">
+            <strong>When Claude uses this:</strong> When the insight has multiple related points.
+          </div>
+        </div>
+      </div>
+
+      <h2 id="multiline">Multi-line Marker Rules</h2>
+      <p>
+        When Claude needs to capture complex information, it uses multi-line markers:
+      </p>
+      <ul>
+        <li>Start with the marker on its own line: <code>[DECISION: topic]</code></li>
+        <li>Content can span any number of lines</li>
+        <li>End with <code>[/]</code> on its own line</li>
+        <li>The closing <code>[/]</code> is required for multi-line content</li>
+      </ul>
+
+      <div class="code-block" style="margin: var(--space-xl) 0;">
+        <div class="code-block__header">
+          <div class="code-block__dots">
+            <span class="code-block__dot code-block__dot--red"></span>
+            <span class="code-block__dot code-block__dot--yellow"></span>
+            <span class="code-block__dot code-block__dot--green"></span>
+          </div>
+          <span class="code-block__title">Multi-line Template</span>
+        </div>
+        <div class="code-block__content">
+          <pre><code><span class="code-keyword">[MARKER_TYPE: identifier]</span>
+First line of content
+Second line of content
+- Bullet points work
+- As do numbered lists
+<span class="code-keyword">[/]</span></code></pre>
+        </div>
+      </div>
+
+      <h3>Quick Reference</h3>
+      <div class="table-wrapper" style="margin: var(--space-xl) 0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Syntax</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge--amber">Decision</span></td>
+              <td><code>[DECISION: topic] text</code></td>
+              <td><code>[DECISION: api] Using REST over GraphQL</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge--blue">Pattern</span></td>
+              <td><code>[PATTERN: name] description</code></td>
+              <td><code>[PATTERN: naming] Use camelCase for variables</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge--green">Task</span></td>
+              <td><code>[TASK: priority] title</code></td>
+              <td><code>[TASK: high] Add input validation</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge--purple">Insight</span></td>
+              <td><code>[INSIGHT] observation</code></td>
+              <td><code>[INSIGHT] API returns 200 even on errors</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

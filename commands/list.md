@@ -1,4 +1,4 @@
-# /project-memory:list
+# /tenax:list
 
 List all stored sessions with metadata.
 
@@ -7,14 +7,14 @@ List all stored sessions with metadata.
 ## Usage
 
 ```
-/project-memory:list
+/tenax:list
 ```
 
 ## Instructions for Claude
 
 1. Run the list sessions script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/list-sessions.ts"
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/list-sessions.ts"
    ```
 
 2. Parse the JSON output and display as a table:
@@ -28,10 +28,10 @@ List all stored sessions with metadata.
    | 011 | 2024-01-14 | Fixed database connection issues | 2,100  | 1         |
    | 010 | 2024-01-13 | Added API rate limiting          | 3,800  | 2         |
 
-   *Total: 12 sessions | Use `/project-memory:load-session <ID>` to load*
+   *Total: 12 sessions | Use `/tenax:load-session <ID>` to load*
    ```
 
 3. Include helpful commands at the bottom:
-   - `/project-memory:load-session <ID>` - Load a specific session
-   - `/project-memory:load-recent <N>` - Load N most recent sessions
-   - `/project-memory:search <query>` - Search across all sessions
+   - `/tenax:load-session <ID>` - Load a specific session
+   - `/tenax:load-recent <N>` - Load N most recent sessions
+   - `/tenax:search <query>` - Search across all sessions

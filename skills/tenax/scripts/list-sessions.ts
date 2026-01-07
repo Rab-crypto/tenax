@@ -28,7 +28,7 @@ async function main(): Promise<void> {
 
   if (!(await isMemoryInitialized(projectRoot))) {
     output.success = true;
-    output.message = "No sessions found (project memory not initialized)";
+    output.message = "No sessions found (Tenax not initialized)";
     output.data = {
       sessions: [],
       totalSessions: 0,

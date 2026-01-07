@@ -1,4 +1,4 @@
-# /project-memory:export
+# /tenax:export
 
 Export project memory to various formats.
 
@@ -7,16 +7,16 @@ Export project memory to various formats.
 ## Usage
 
 ```
-/project-memory:export
-/project-memory:export -f markdown
-/project-memory:export -f obsidian -s
-/project-memory:export -f json -o ./backup
+/tenax:export
+/tenax:export -f markdown
+/tenax:export -f obsidian -s
+/tenax:export -f json -o ./backup
 ```
 
 ## Arguments
 
 - `-f, --format` - Export format: markdown, json, obsidian, notion (default: markdown)
-- `-o, --output` - Output directory (default: project-memory-export-YYYY-MM-DD)
+- `-o, --output` - Output directory (default: tenax-export-YYYY-MM-DD)
 - `-s, --sessions` - Include full session data
 
 ## Formats
@@ -48,7 +48,7 @@ Markdown format optimized for Notion import.
 
 1. Run the export script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/export.ts" -f $FORMAT -o $OUTPUT $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/export.ts" -f $FORMAT -o $OUTPUT $ARGUMENTS
    ```
 
 2. Show export summary:
@@ -56,7 +56,7 @@ Markdown format optimized for Notion import.
    ## Export Complete
 
    Format: Obsidian
-   Location: ./project-memory-export-2024-01-15/
+   Location: ./tenax-export-2024-01-15/
 
    Exported:
    - 34 decisions

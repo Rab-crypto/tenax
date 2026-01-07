@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Common workflows and best practices for Project Memory.">
-  <title>Workflows | Project Memory</title>
+  <meta name="description" content="Common workflows and best practices for Tenax.">
+  <title>Workflows | Tenax</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
   <style>
@@ -89,7 +89,7 @@
               <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
             </svg>
           </span>
-          Project Memory
+          Tenax
         </a>
         <div class="nav__links">
           <a href="./" class="nav__link">Documentation</a>
@@ -135,7 +135,7 @@
     <main class="docs-content">
       <h1>Workflows</h1>
       <p>
-        Common scenarios and best practices for getting the most out of Project Memory.
+        Common scenarios and best practices for getting the most out of Tenax.
       </p>
 
       <div class="workflow-card" id="new-project">
@@ -147,14 +147,14 @@
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Memory initializes automatically on first use. Check status with <code>/project-memory:status</code></li>
+          <li>Memory initializes automatically on first use. Check status with <code>/tenax:status</code></li>
           <li>Discuss architecture with Claude - it will mark decisions in its responses automatically</li>
           <li>Ask Claude to "record this decision" if you want to ensure something specific is captured</li>
           <li>Session ends - knowledge is automatically extracted from Claude's markers</li>
-          <li>Next session, use <code>/project-memory:status</code> to verify decisions were captured</li>
+          <li>Next session, use <code>/tenax:status</code> to verify decisions were captured</li>
         </ol>
         <p style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--accent-subtle); border-radius: var(--radius-sm); font-size: var(--text-sm);">
-          <strong>Tip:</strong> You can also manually record with <code>/project-memory:record decision -t database "Using PostgreSQL"</code>
+          <strong>Tip:</strong> You can also manually record with <code>/tenax:record decision -t database "Using PostgreSQL"</code>
         </p>
       </div>
 
@@ -167,10 +167,10 @@
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Start with a quick summary: <code>/project-memory:status</code></li>
-          <li>Load recent context: <code>/project-memory:load-recent 3</code></li>
-          <li>Or load specific sessions if you remember: <code>/project-memory:load-sessions 005,007</code></li>
-          <li>Search for specific topics: <code>/project-memory:search "authentication"</code></li>
+          <li>Start with a quick summary: <code>/tenax:status</code></li>
+          <li>Load recent context: <code>/tenax:load-recent 3</code></li>
+          <li>Or load specific sessions if you remember: <code>/tenax:load-sessions 005,007</code></li>
+          <li>Search for specific topics: <code>/tenax:search "authentication"</code></li>
           <li>Review pending tasks to see where you left off</li>
         </ol>
         <p style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--accent-subtle); border-radius: var(--radius-sm); font-size: var(--text-sm);">
@@ -187,7 +187,7 @@
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Before proposing changes, search: <code>/project-memory:search "database" -t decision</code></li>
+          <li>Before proposing changes, search: <code>/tenax:search "database" -t decision</code></li>
           <li>Review existing decisions and their rationale</li>
           <li>If changing direction, explicitly record the new decision with updated rationale</li>
           <li>Reference the old decision: "Changing from X to Y because circumstances changed"</li>
@@ -206,10 +206,10 @@
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Search for related issues: <code>/project-memory:search "connection timeout"</code></li>
-          <li>Check insights: <code>/project-memory:search "timeout" -t insight</code></li>
+          <li>Search for related issues: <code>/tenax:search "connection timeout"</code></li>
+          <li>Check insights: <code>/tenax:search "timeout" -t insight</code></li>
           <li>Load sessions where similar work was done</li>
-          <li>After solving, ask Claude to record the insight or use <code>/project-memory:record insight "Connection timeouts were caused by..."</code></li>
+          <li>After solving, ask Claude to record the insight or use <code>/tenax:record insight "Connection timeouts were caused by..."</code></li>
         </ol>
         <p style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--accent-subtle); border-radius: var(--radius-sm); font-size: var(--text-sm);">
           <strong>Tip:</strong> Always record debugging insights. Future you (or teammates) will thank you.
@@ -225,10 +225,10 @@
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Export to Markdown: <code>/project-memory:export -f markdown -o ./docs</code></li>
-          <li>For Obsidian users: <code>/project-memory:export -f obsidian -o ./vault</code></li>
-          <li>For backup: <code>/project-memory:backup</code></li>
-          <li>Include full sessions if needed: <code>/project-memory:export -s</code></li>
+          <li>Export to Markdown: <code>/tenax:export -f markdown -o ./docs</code></li>
+          <li>For Obsidian users: <code>/tenax:export -f obsidian -o ./vault</code></li>
+          <li>For backup: <code>/tenax:backup</code></li>
+          <li>Include full sessions if needed: <code>/tenax:export -s</code></li>
         </ol>
 
         <h4 style="margin-top: var(--space-xl); margin-bottom: var(--space-md);">Export Formats</h4>
@@ -250,12 +250,12 @@
           <div class="workflow-card__number">6</div>
           <div>
             <h2 class="workflow-card__title">Team Collaboration</h2>
-            <p class="workflow-card__subtitle">Share project memory via version control</p>
+            <p class="workflow-card__subtitle">Share Tenax via version control</p>
           </div>
         </div>
         <ol class="workflow-card__steps">
-          <li>Add <code>.claude/project-memory/index.json</code> to version control</li>
-          <li>Optionally exclude raw sessions: add <code>.claude/project-memory/sessions/</code> to .gitignore</li>
+          <li>Add <code>.claude/tenax/index.json</code> to version control</li>
+          <li>Optionally exclude raw sessions: add <code>.claude/tenax/sessions/</code> to .gitignore</li>
           <li>Team members pull the latest index to share decisions and patterns</li>
           <li>Each person's sessions remain local, but extracted knowledge is shared</li>
         </ol>
@@ -264,8 +264,8 @@
         <div class="code-block">
           <div class="code-block__content">
             <pre><code><span class="code-comment"># Keep index and config, ignore raw sessions</span>
-.claude/project-memory/sessions/
-.claude/project-memory/embeddings.db</code></pre>
+.claude/tenax/sessions/
+.claude/tenax/embeddings.db</code></pre>
           </div>
         </div>
         <p style="margin-top: var(--space-lg); padding: var(--space-md); background: var(--accent-subtle); border-radius: var(--radius-sm); font-size: var(--text-sm);">
@@ -280,7 +280,7 @@
         <li><strong>Search before deciding.</strong> Check if a topic has been addressed before proposing changes.</li>
         <li><strong>Record debugging insights.</strong> The fix you found today is the insight that saves hours tomorrow.</li>
         <li><strong>Use consistent topic names.</strong> "auth" vs "authentication" matters for search.</li>
-        <li><strong>Review pending tasks.</strong> Check <code>/project-memory:status</code> to see what's still open.</li>
+        <li><strong>Review pending tasks.</strong> Check <code>/tenax:status</code> to see what's still open.</li>
         <li><strong>Export periodically.</strong> Keep a backup and share knowledge with your team.</li>
       </ul>
     </main>

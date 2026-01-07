@@ -9,9 +9,9 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
 const projectRoot = process.cwd();
-const captureScript = join(projectRoot, "skills", "project-memory", "scripts", "capture-session.ts");
-const sessionsPath = join(projectRoot, ".claude", "project-memory", "sessions");
-const indexPath = join(projectRoot, ".claude", "project-memory", "index.json");
+const captureScript = join(projectRoot, "skills", "tenax", "scripts", "capture-session.ts");
+const sessionsPath = join(projectRoot, ".claude", "tenax", "sessions");
+const indexPath = join(projectRoot, ".claude", "tenax", "index.json");
 
 // Create sessions directory if needed
 if (!existsSync(sessionsPath)) {

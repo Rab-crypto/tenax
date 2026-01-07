@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 /**
- * Initialize project memory directory structure
- * Creates .claude/project-memory/ with config.json and index.json
+ * Initialize Tenax directory structure
+ * Creates .claude/tenax/ with config.json and index.json
  */
 
 import {
@@ -57,7 +57,7 @@ async function main(): Promise<void> {
     console.log(JSON.stringify(output, null, 2));
   } catch (error) {
     output.success = false;
-    output.message = `Failed to initialize project memory: ${error instanceof Error ? error.message : String(error)}`;
+    output.message = `Failed to initialize Tenax: ${error instanceof Error ? error.message : String(error)}`;
     console.error(JSON.stringify(output, null, 2));
     process.exit(1);
   }

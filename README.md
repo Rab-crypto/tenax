@@ -1,4 +1,4 @@
-# Project Memory Plugin for Claude Code
+# Tenax Plugin for Claude Code
 
 Persistent, searchable project knowledge that survives across Claude Code sessions.
 
@@ -7,7 +7,7 @@ Persistent, searchable project knowledge that survives across Claude Code sessio
 Claude Code sessions lose accumulated project knowledge when sessions end or when auto-compact triggers. This plugin solves that by:
 
 - **Automatically capturing** decisions, patterns, tasks, insights, and full session transcripts
-- **Storing knowledge** in per-project files (`.claude/project-memory/`)
+- **Storing knowledge** in per-project files (`.claude/tenax/`)
 - **Proactively checking** history before Claude proposes architecture, libraries, or patterns
 - **Retrieving on-demand** (never pre-loaded, minimal token overhead)
 - **Semantic search** using local embeddings (no API calls required)
@@ -23,7 +23,7 @@ Claude Code sessions lose accumulated project knowledge when sessions end or whe
 
 ```bash
 # Clone or download this plugin
-cd project-memory
+cd tenax
 
 # Install dependencies
 bun install
@@ -39,7 +39,7 @@ Add to your Claude Code settings:
 ```json
 {
   "plugins": [
-    "/path/to/project-memory"
+    "/path/to/tenax"
   ]
 }
 ```
@@ -58,7 +58,7 @@ Every session automatically captures:
 
 ### Proactive History Checking
 
-Before proposing architecture, libraries, or patterns, Claude automatically searches project memory:
+Before proposing architecture, libraries, or patterns, Claude automatically searches Tenax:
 
 ```
 I found a previous decision on this topic:
@@ -74,7 +74,7 @@ Would you like to continue with this approach?
 Find related knowledge using natural language:
 
 ```
-/project-memory:search "authentication approach"
+/tenax:search "authentication approach"
 ```
 
 Returns ranked results across decisions, patterns, tasks, insights, and sessions.
@@ -91,29 +91,29 @@ Loading session 003: 5,420 tokens (6.8% of budget)
 
 | Command | Description |
 |---------|-------------|
-| `/project-memory:status` | Quick summary and stats |
-| `/project-memory:list` | List all sessions |
-| `/project-memory:search <query>` | Semantic search |
-| `/project-memory:load-session <ID>` | Load specific session |
-| `/project-memory:load-sessions <IDs>` | Load multiple sessions |
-| `/project-memory:load-recent <N>` | Load N recent sessions |
-| `/project-memory:load-all` | Smart-load within budget |
-| `/project-memory:fresh` | Start without history |
-| `/project-memory:record` | Manual recording |
-| `/project-memory:settings` | Configure behavior |
-| `/project-memory:forget` | Remove entries |
-| `/project-memory:export` | Export to markdown/json/obsidian |
-| `/project-memory:backup` | Create backup |
-| `/project-memory:restore` | Restore from backup |
-| `/project-memory:stats` | Detailed statistics |
-| `/project-memory:tag` | Tag sessions |
+| `/tenax:status` | Quick summary and stats |
+| `/tenax:list` | List all sessions |
+| `/tenax:search <query>` | Semantic search |
+| `/tenax:load-session <ID>` | Load specific session |
+| `/tenax:load-sessions <IDs>` | Load multiple sessions |
+| `/tenax:load-recent <N>` | Load N recent sessions |
+| `/tenax:load-all` | Smart-load within budget |
+| `/tenax:fresh` | Start without history |
+| `/tenax:record` | Manual recording |
+| `/tenax:settings` | Configure behavior |
+| `/tenax:forget` | Remove entries |
+| `/tenax:export` | Export to markdown/json/obsidian |
+| `/tenax:backup` | Create backup |
+| `/tenax:restore` | Restore from backup |
+| `/tenax:stats` | Detailed statistics |
+| `/tenax:tag` | Tag sessions |
 
 ## Data Storage
 
-Data is stored per-project in `.claude/project-memory/`:
+Data is stored per-project in `.claude/tenax/`:
 
 ```
-.claude/project-memory/
+.claude/tenax/
 ├── config.json           # User settings
 ├── index.json            # Accumulated knowledge index
 ├── embeddings.db         # Vector store (sqlite-vec)
@@ -125,7 +125,7 @@ Data is stored per-project in `.claude/project-memory/`:
 
 ## Configuration
 
-Edit settings via `/project-memory:settings` or directly in `config.json`:
+Edit settings via `/tenax:settings` or directly in `config.json`:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
@@ -175,7 +175,7 @@ Markdown optimized for Notion import.
 All scripts run outside the context window. Only their output enters context.
 
 ```
-skills/project-memory/scripts/
+skills/tenax/scripts/
 ├── search.ts           # Semantic search
 ├── get-summary.ts      # Quick summary
 ├── get-session.ts      # Load single session
@@ -201,7 +201,7 @@ Local embeddings using Transformers.js:
 ### "Project memory not initialized"
 Run any command to auto-initialize, or:
 ```bash
-bun skills/project-memory/scripts/init.ts
+bun skills/tenax/scripts/init.ts
 ```
 
 ### Embedding model download slow
@@ -215,7 +215,7 @@ Check that hooks are configured in your settings. The `SessionEnd` hook triggers
 
 ### Search returns no results
 - Try different keywords
-- Use `/project-memory:list` to see available sessions
+- Use `/tenax:list` to see available sessions
 - Check if sessions have been captured
 
 ## Development
@@ -223,9 +223,9 @@ Check that hooks are configured in your settings. The `SessionEnd` hook triggers
 ### Project Structure
 
 ```
-project-memory/
+tenax/
 ├── .claude-plugin/plugin.json    # Plugin manifest
-├── skills/project-memory/
+├── skills/tenax/
 │   ├── SKILL.md                  # Skill definition
 │   ├── scripts/                  # TypeScript scripts
 │   ├── context/                  # Context documents
@@ -250,8 +250,8 @@ claude --plugin-dir .
 
 # Have a conversation with decisions
 # End session and start new one
-# Verify /project-memory:status shows data
-# Test /project-memory:search
+# Verify /tenax:status shows data
+# Test /tenax:search
 ```
 
 ## License

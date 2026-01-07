@@ -1,5 +1,5 @@
 ---
-name: project-memory
+name: tenax
 description: |
   Manages persistent project knowledge across Claude Code sessions.
   Stores and retrieves decisions, patterns, tasks, and insights with semantic search.
@@ -22,11 +22,11 @@ description: |
   WITHOUT MARKERS, KNOWLEDGE IS LOST TO FUTURE SESSIONS.
 ---
 
-# Project Memory Skill
+# Tenax Skill
 
 ## MANDATORY: Search Before Acting
 
-Before debugging, investigating, or proposing solutions, you MUST first search project memory.
+Before debugging, investigating, or proposing solutions, you MUST first search Tenax.
 This applies to:
 
 - **Debugging/Troubleshooting** - Search for similar errors, issues, or workarounds
@@ -42,7 +42,7 @@ This applies to:
 ### How to Check
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/search.ts" "<relevant topic>"
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant topic>"
 ```
 
 Example queries:
@@ -67,7 +67,7 @@ Example queries:
 When multiple items need to be saved, use the batch CLI (single permission prompt):
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '<batch-data>'
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '<batch-data>'
 ```
 
 Batch JSON format:
@@ -83,8 +83,8 @@ Batch JSON format:
 For single items, use individual scripts:
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
 ```
 
 ### Recording Guidelines
@@ -106,7 +106,7 @@ bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/record-pattern.ts" -n "
 
 Get project summary (token-light):
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-summary.ts"
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
 ```
 
 ## Conflict Resolution
@@ -137,17 +137,17 @@ When a search returns a conflicting past decision:
 
 Inform users they can use these commands:
 
-- `/project-memory:status` - View memory status and summary
-- `/project-memory:search <query>` - Search all knowledge
-- `/project-memory:list` - List all sessions
-- `/project-memory:load-session <N>` - Load specific session
-- `/project-memory:load-recent <N>` - Load N recent sessions
-- `/project-memory:fresh` - Start without loading history
-- `/project-memory:record` - Manually record decision/pattern/task
-- `/project-memory:settings` - Configure behavior
-- `/project-memory:export` - Export to markdown/json/obsidian
-- `/project-memory:backup` - Create backup
-- `/project-memory:stats` - View detailed statistics
+- `/tenax:status` - View memory status and summary
+- `/tenax:search <query>` - Search all knowledge
+- `/tenax:list` - List all sessions
+- `/tenax:load-session <N>` - Load specific session
+- `/tenax:load-recent <N>` - Load N recent sessions
+- `/tenax:fresh` - Start without loading history
+- `/tenax:record` - Manually record decision/pattern/task
+- `/tenax:settings` - Configure behavior
+- `/tenax:export` - Export to markdown/json/obsidian
+- `/tenax:backup` - Create backup
+- `/tenax:stats` - View detailed statistics
 
 ## Token Awareness
 

@@ -7,13 +7,13 @@
 import { join } from "node:path";
 import { readdir, unlink, writeFile, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { DEFAULT_INDEX } from "../skills/project-memory/lib/types";
+import { DEFAULT_INDEX } from "../skills/tenax/lib/types";
 import {
   getMemoryPath,
   getSessionsPath,
   getIndexPath,
   getEmbeddingsDbPath,
-} from "../skills/project-memory/lib/storage";
+} from "../skills/tenax/lib/storage";
 
 const projectRoot = process.cwd();
 

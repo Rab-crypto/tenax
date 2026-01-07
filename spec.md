@@ -1,5 +1,5 @@
 ```markdown
-# Project Memory Plugin: Complete Specification
+# Tenax Plugin: Complete Specification
 
 ## 1. Overview
 
@@ -7,11 +7,11 @@
 Claude Code sessions lose accumulated project knowledge when sessions end or when auto-compact triggers. This forces users to repeatedly re-explain context, decisions, patterns, tasks, and insights. There is no built-in way to query past decisions ("why did we choose X?") or retrieve full session transcripts without manual copying.
 
 ### Solution
-A **skill-based Claude plugin** that provides persistent, searchable, on-demand project memory with minimal token overhead.
+A **skill-based Claude plugin** that provides persistent, searchable, on-demand Tenax with minimal token overhead.
 
 Key features:
 - Automatically captures decisions, patterns, tasks, insights, and full session transcripts
-- Stores knowledge in per-project files (`.claude/project-memory/`)
+- Stores knowledge in per-project files (`.claude/tenax/`)
 - Proactively checks history before Claude proposes architecture, libraries, or patterns
 - Retrieves knowledge on-demand (never pre-loaded)
 - Gives users full control: load all, load specific sessions, load recent N, start fresh
@@ -33,11 +33,11 @@ Key features:
 ## 3. Directory Structure
 
 ```
-project-memory/
+tenax/
 ├── .claude-plugin/
 │   └── plugin.json                    # Plugin manifest
 ├── skills/
-│   └── project-memory/
+│   └── tenax/
 │       ├── SKILL.md                   # Core skill instructions (auto-triggered)
 │       ├── scripts/                   # External execution (output only in context)
 │       │   ├── search.ts
@@ -84,7 +84,7 @@ project-memory/
 
 Data is stored per-project in:
 ```
-.claude/project-memory/
+.claude/tenax/
 ├── config.json
 ├── index.json
 └── sessions/
@@ -122,10 +122,10 @@ Full session data: transcript, extracted decisions/tasks/insights, file changes,
 
 ## 5. Skill Definition
 
-### 5.1 skills/project-memory/SKILL.md
+### 5.1 skills/tenax/SKILL.md
 ```markdown
 ---
-name: project-memory
+name: tenax
 description: |
   Manages accumulated project knowledge across all sessions.
   
@@ -137,19 +137,19 @@ description: |
   Use /pm commands for manual control.
 ---
 
-# Project Memory Skill
+# Tenax Skill
 
 ## CRITICAL: Check Before Deciding
 (before any architecture/library/pattern proposal, run search.ts)
 
 ## How to Check
-bun .claude/skills/project-memory/scripts/search.ts "query"
+bun .claude/skills/tenax/scripts/search.ts "query"
 
 ## How to Record
-bun .claude/skills/project-memory/scripts/record-decision.ts "topic" "decision" "rationale"
+bun .claude/skills/tenax/scripts/record-decision.ts "topic" "decision" "rationale"
 
 ## Quick Reference
-bun .claude/skills/project-memory/scripts/get-summary.ts
+bun .claude/skills/tenax/scripts/get-summary.ts
 
 ## Conflict Handling
 Surface previous decisions and ask user before overriding.

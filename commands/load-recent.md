@@ -1,4 +1,4 @@
-# /project-memory:load-recent
+# /tenax:load-recent
 
 Load the N most recent sessions.
 
@@ -7,9 +7,9 @@ Load the N most recent sessions.
 ## Usage
 
 ```
-/project-memory:load-recent
-/project-memory:load-recent 3
-/project-memory:load-recent 5 --budget 50000
+/tenax:load-recent
+/tenax:load-recent 3
+/tenax:load-recent 5 --budget 50000
 ```
 
 ## Arguments
@@ -21,7 +21,7 @@ Load the N most recent sessions.
 
 1. Run the get sessions script with --recent flag:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-sessions.ts" --recent ${ARGUMENTS:-5}
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-sessions.ts" --recent ${ARGUMENTS:-5}
    ```
 
 2. Display loaded sessions (most recent first):

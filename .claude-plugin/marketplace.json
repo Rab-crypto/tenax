@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "project-memory",
+      "name": "tenax",
       "source": "./"
     }
   ]

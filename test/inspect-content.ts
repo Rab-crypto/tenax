@@ -17,7 +17,7 @@ function extractText(content: unknown): string {
   return "";
 }
 
-const lines = readFileSync(".claude/project-memory/sessions/002.jsonl", "utf-8").split("\n");
+const lines = readFileSync(".claude/tenax/sessions/002.jsonl", "utf-8").split("\n");
 
 let count = 0;
 for (const line of lines) {

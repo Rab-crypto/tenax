@@ -1,4 +1,4 @@
-# /project-memory:tag
+# /tenax:tag
 
 Add or remove tags from sessions for better organization.
 
@@ -7,8 +7,8 @@ Add or remove tags from sessions for better organization.
 ## Usage
 
 ```
-/project-memory:tag 5 feature-auth security
-/project-memory:tag 12 bug-fix --remove
+/tenax:tag 5 feature-auth security
+/tenax:tag 12 bug-fix --remove
 ```
 
 ## Arguments
@@ -21,7 +21,7 @@ Add or remove tags from sessions for better organization.
 
 1. Run the tag script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/tag-session.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/tag-session.ts" $ARGUMENTS
    ```
 
 2. Show updated tags:

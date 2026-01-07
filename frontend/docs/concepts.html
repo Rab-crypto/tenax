@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Core concepts of Project Memory - understand decisions, patterns, tasks, insights, and sessions.">
-  <title>Concepts | Project Memory</title>
+  <meta name="description" content="Core concepts of Tenax - understand decisions, patterns, tasks, insights, and sessions.">
+  <title>Concepts | Tenax</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
 </head>
@@ -21,7 +21,7 @@
               <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
             </svg>
           </span>
-          Project Memory
+          Tenax
         </a>
         <div class="nav__links">
           <a href="./" class="nav__link">Documentation</a>
@@ -65,7 +65,7 @@
     <main class="docs-content">
       <h1>Core Concepts</h1>
       <p>
-        Project Memory organizes knowledge into five distinct types, each serving a specific purpose in maintaining project continuity.
+        Tenax organizes knowledge into five distinct types, each serving a specific purpose in maintaining project continuity.
       </p>
 
       <h2 id="knowledge-types">Knowledge Types</h2>
@@ -212,12 +212,12 @@
 
       <h3>Proactive History Checking</h3>
       <p>
-        When you discuss architecture, libraries, or patterns, Claude automatically searches project memory first. This surfaces existing decisions with their rationale, preventing re-deciding the same topics.
+        When you discuss architecture, libraries, or patterns, Claude automatically searches Tenax first. This surfaces existing decisions with their rationale, preventing re-deciding the same topics.
       </p>
 
       <h2 id="storage">Storage Structure</h2>
       <p>
-        All data is stored locally in your project's <code>.claude/project-memory/</code> directory:
+        All data is stored locally in your project's <code>.claude/tenax/</code> directory:
       </p>
 
       <div class="code-block" style="margin: var(--space-xl) 0;">
@@ -230,7 +230,7 @@
           <span class="code-block__title">Directory Structure</span>
         </div>
         <div class="code-block__content">
-          <pre><code>.claude/project-memory/
+          <pre><code>.claude/tenax/
 ├── config.json           <span class="code-comment"># User configuration</span>
 ├── index.json            <span class="code-comment"># Accumulated knowledge index</span>
 ├── embeddings.db         <span class="code-comment"># Vector store (sqlite-vec)</span>
@@ -258,7 +258,7 @@
 
       <h2 id="tokens">Token Economics</h2>
       <p>
-        Understanding token costs helps you manage your context budget effectively. Project Memory uses progressive disclosure to minimize overhead:
+        Understanding token costs helps you manage your context budget effectively. Tenax uses progressive disclosure to minimize overhead:
       </p>
 
       <div class="table-wrapper" style="margin: var(--space-xl) 0;">
@@ -276,7 +276,7 @@
 
       <h3>Budget-Aware Loading</h3>
       <p>
-        Commands like <code>/project-memory:load-recent</code> and <code>/project-memory:load-all</code> respect your configured token budget. They load sessions in order until the budget would be exceeded, then stop.
+        Commands like <code>/tenax:load-recent</code> and <code>/tenax:load-all</code> respect your configured token budget. They load sessions in order until the budget would be exceeded, then stop.
       </p>
       <p>
         Every load operation reports exact token counts, so you always know what you're spending:

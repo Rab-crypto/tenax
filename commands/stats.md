@@ -1,4 +1,4 @@
-# /project-memory:stats
+# /tenax:stats
 
 Show detailed statistics about project memory.
 
@@ -7,20 +7,20 @@ Show detailed statistics about project memory.
 ## Usage
 
 ```
-/project-memory:stats
+/tenax:stats
 ```
 
 ## Instructions for Claude
 
 1. Run the stats script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/stats.ts"
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/stats.ts"
    ```
 
 2. Display comprehensive statistics:
 
    ```
-   ## Project Memory Statistics
+   ## Tenax Statistics
 
    ### Overview
    | Metric | Count |

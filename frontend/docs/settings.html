@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Project Memory settings and configuration reference.">
-  <title>Settings | Project Memory</title>
+  <meta name="description" content="Tenax settings and configuration reference.">
+  <title>Settings | Tenax</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
 </head>
@@ -20,7 +20,7 @@
               <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
             </svg>
           </span>
-          Project Memory
+          Tenax
         </a>
         <div class="nav__links">
           <a href="./" class="nav__link">Documentation</a>
@@ -63,7 +63,7 @@
     <main class="docs-content">
       <h1>Configuration</h1>
       <p>
-        Customize Project Memory behavior using settings. View or modify settings with <code>/project-memory:settings</code>.
+        Customize Tenax behavior using settings. View or modify settings with <code>/tenax:settings</code>.
       </p>
 
       <h2 id="all-settings">All Settings</h2>
@@ -256,7 +256,7 @@
         </div>
       </div>
       <p style="font-size: var(--text-sm); color: var(--text-tertiary);">
-        Tip: Add <code>.claude/project-memory/</code> to your repo, but consider gitignoring <code>sessions/</code> to keep repo size manageable.
+        Tip: Add <code>.claude/tenax/</code> to your repo, but consider gitignoring <code>sessions/</code> to keep repo size manageable.
       </p>
 
       <h2 id="config-file">Config File Location</h2>
@@ -265,11 +265,11 @@
       </p>
       <div class="code-block" style="margin: var(--space-lg) 0;">
         <div class="code-block__content">
-          <pre><code>.claude/project-memory/config.json</code></pre>
+          <pre><code>.claude/tenax/config.json</code></pre>
         </div>
       </div>
       <p>
-        You can edit this file directly, or use the <code>/project-memory:settings</code> command to view and modify settings interactively.
+        You can edit this file directly, or use the <code>/tenax:settings</code> command to view and modify settings interactively.
       </p>
 
       <h3>Modifying Settings via Command</h3>
@@ -284,16 +284,16 @@
         </div>
         <div class="code-block__content">
           <pre><code><span class="code-comment"># View all settings</span>
-<span class="code-keyword">/project-memory:settings</span>
+<span class="code-keyword">/tenax:settings</span>
 
 <span class="code-comment"># Change token budget</span>
-<span class="code-keyword">/project-memory:settings</span> tokenBudget <span class="code-string">100000</span>
+<span class="code-keyword">/tenax:settings</span> tokenBudget <span class="code-string">100000</span>
 
 <span class="code-comment"># Change auto-load behavior</span>
-<span class="code-keyword">/project-memory:settings</span> autoLoad <span class="code-string">recent-3</span>
+<span class="code-keyword">/tenax:settings</span> autoLoad <span class="code-string">recent-3</span>
 
 <span class="code-comment"># Disable proactive checking</span>
-<span class="code-keyword">/project-memory:settings</span> autoCheckBeforeDecisions <span class="code-string">false</span></code></pre>
+<span class="code-keyword">/tenax:settings</span> autoCheckBeforeDecisions <span class="code-string">false</span></code></pre>
         </div>
       </div>
     </main>

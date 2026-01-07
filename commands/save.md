@@ -2,7 +2,7 @@
 description: Save current conversation knowledge to project memory
 ---
 
-# /project-memory:save
+# /tenax:save
 
 Manually save the current session to project memory.
 
@@ -10,7 +10,7 @@ Manually save the current session to project memory.
 
 ## Usage
 
-When the user runs `/project-memory:save`, automatically:
+When the user runs `/tenax:save`, automatically:
 
 1. **Review the conversation** and identify:
    - Decisions made (technology choices, architecture, approaches)
@@ -20,7 +20,7 @@ When the user runs `/project-memory:save`, automatically:
 
 2. **Save everything in ONE batch call** using the CLI:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '<batch-data>'
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '<batch-data>'
    ```
 
    The batch JSON format:
@@ -56,7 +56,7 @@ When the user runs `/project-memory:save`, automatically:
 ## Example
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/cli.ts" batch --json '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}'
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}'
 ```
 
 ## Example output

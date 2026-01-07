@@ -2,7 +2,7 @@
 description: Show project memory status and recent knowledge
 ---
 
-# /project-memory:status
+# /tenax:status
 
 Show project memory status and quick summary.
 
@@ -11,14 +11,14 @@ Show project memory status and quick summary.
 ## Usage
 
 ```
-/project-memory:status
+/tenax:status
 ```
 
 ## Instructions for Claude
 
 1. Run the summary script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-summary.ts"
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
    ```
 
 2. Parse the JSON output and display in a readable format:
@@ -31,7 +31,7 @@ Show project memory status and quick summary.
 
 3. Format example:
    ```
-   ## Project Memory Status
+   ## Tenax Status
 
    **Sessions:** 12 | **Decisions:** 34 | **Patterns:** 8 | **Tasks:** 5 pending
 
@@ -49,4 +49,4 @@ Show project memory status and quick summary.
    *Storage: 2.4 MB | Token count: 1,234*
    ```
 
-4. If not initialized, offer to initialize with `/project-memory:init`.
+4. If not initialized, offer to initialize with `/tenax:init`.

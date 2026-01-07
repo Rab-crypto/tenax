@@ -1,4 +1,4 @@
-# /project-memory:settings
+# /tenax:settings
 
 View or modify project memory settings.
 
@@ -7,9 +7,9 @@ View or modify project memory settings.
 ## Usage
 
 ```
-/project-memory:settings
-/project-memory:settings tokenBudget 100000
-/project-memory:settings autoLoad summary
+/tenax:settings
+/tenax:settings tokenBudget 100000
+/tenax:settings autoLoad summary
 ```
 
 ## Arguments
@@ -32,12 +32,12 @@ View or modify project memory settings.
 
 1. To view settings, read the config:
    ```bash
-   cat $PROJECT_ROOT/.claude/project-memory/config.json
+   cat $PROJECT_ROOT/.claude/tenax/config.json
    ```
 
 2. Display settings in a table format:
    ```
-   ## Project Memory Settings
+   ## Tenax Settings
 
    | Setting | Value |
    |---------|-------|
@@ -48,7 +48,7 @@ View or modify project memory settings.
    | showCostEstimates | false |
    | maxSessionsStored | 100 |
 
-   *Edit: `/project-memory:settings <key> <value>`*
+   *Edit: `/tenax:settings <key> <value>`*
    ```
 
 3. To update a setting, modify config.json:

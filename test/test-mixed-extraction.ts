@@ -4,8 +4,8 @@
  * Test that extraction works with both single-line and multi-line marker formats
  */
 
-import { extractAllKnowledge } from "../skills/project-memory/lib/extractor";
-import type { ParsedTranscript } from "../skills/project-memory/lib/transcript-parser";
+import { extractAllKnowledge } from "../skills/tenax/lib/extractor";
+import type { ParsedTranscript } from "../skills/tenax/lib/transcript-parser";
 
 // Test 1: Single-line format (backward compatible)
 const SINGLE_LINE_FORMAT = `
@@ -97,10 +97,11 @@ async function runTest() {
     console.log(`\n--- Test: ${testCase.name} ---`);
 
     const transcript: ParsedTranscript = {
+      entries: [],
       userMessages: ["Help me with the implementation"],
       assistantMessages: [testCase.content],
       toolCalls: [],
-      timestamps: { start: new Date().toISOString() },
+      fullText: testCase.content,
     };
 
     const result = await extractAllKnowledge(transcript, "test-001");
@@ -160,10 +161,11 @@ async function runTest() {
   // Test 4: Verify multi-line content is preserved
   console.log("\n\n--- Test: Multi-line content preservation ---");
   const transcript: ParsedTranscript = {
+    entries: [],
     userMessages: ["Test"],
     assistantMessages: [MULTI_LINE_FORMAT],
     toolCalls: [],
-    timestamps: { start: new Date().toISOString() },
+    fullText: MULTI_LINE_FORMAT,
   };
 
   const result = await extractAllKnowledge(transcript, "test-002");

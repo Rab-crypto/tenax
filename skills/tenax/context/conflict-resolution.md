@@ -192,5 +192,5 @@ To minimize future conflicts:
 
 1. **Use specific topics** - "api-public" vs "api-internal"
 2. **Include context in rationale** - When this applies
-3. **Review periodically** - `/project-memory:stats` to see old decisions
+3. **Review periodically** - `/tenax:stats` to see old decisions
 4. **Update, don't duplicate** - Supersede rather than add parallel decisions

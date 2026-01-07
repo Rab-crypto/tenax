@@ -1,10 +1,10 @@
-# Project Memory Plugin
+# Tenax Plugin
 
-A Claude Code plugin that provides persistent, searchable project memory across sessions.
+A Claude Code plugin that provides persistent, searchable Tenax across sessions.
 
 ## Project Overview
 
-This plugin stores decisions, patterns, tasks, insights, and full session transcripts in per-project files (`.claude/project-memory/`). It uses local embeddings for semantic search and proactively checks history before Claude proposes architecture or patterns.
+This plugin stores decisions, patterns, tasks, insights, and full session transcripts in per-project files (`.claude/tenax/`). It uses local embeddings for semantic search and proactively checks history before Claude proposes architecture or patterns.
 
 ## Tech Stack
 
@@ -16,11 +16,11 @@ This plugin stores decisions, patterns, tasks, insights, and full session transc
 ## Directory Structure
 
 ```
-project-memory/
+tenax/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
 ├── skills/
-│   └── project-memory/
+│   └── tenax/
 │       ├── SKILL.md             # Core skill (auto-triggers on architecture discussions)
 │       ├── scripts/             # TypeScript scripts (run outside context)
 │       ├── context/             # Additional context files (loaded on demand)
@@ -51,19 +51,19 @@ The skill's description triggers Claude to check history before proposing:
 
 ## Commands (Namespaced)
 
-All commands use the `project-memory:` namespace:
-- `/project-memory:status` - Quick summary
-- `/project-memory:search <query>` - Semantic search
-- `/project-memory:list` - List all sessions
-- `/project-memory:load-session <N>` - Load specific session
-- `/project-memory:load-recent <N>` - Load N recent sessions
-- `/project-memory:fresh` - Start without history
+All commands use the `tenax:` namespace:
+- `/tenax:status` - Quick summary
+- `/tenax:search <query>` - Semantic search
+- `/tenax:list` - List all sessions
+- `/tenax:load-session <N>` - Load specific session
+- `/tenax:load-recent <N>` - Load N recent sessions
+- `/tenax:fresh` - Start without history
 
 ## Data Storage (Per-Project)
 
-Data is stored in the user's project at `.claude/project-memory/`:
+Data is stored in the user's project at `.claude/tenax/`:
 ```
-.claude/project-memory/
+.claude/tenax/
 ├── config.json           # User settings
 ├── index.json            # Accumulated knowledge index
 ├── embeddings.db         # Vector store (sqlite-vec)
@@ -86,7 +86,7 @@ irm bun.sh/install.ps1 | iex
 
 ### Install Dependencies
 ```bash
-cd project-memory
+cd tenax
 bun install
 ```
 
@@ -102,7 +102,7 @@ claude --plugin-dir .
 bun run typecheck
 
 # Run a script directly
-bun skills/project-memory/scripts/init.ts
+bun skills/tenax/scripts/init.ts
 ```
 
 ## Key Implementation Notes
@@ -118,5 +118,5 @@ Test the plugin by:
 1. Running `claude --plugin-dir .` in the plugin directory
 2. Having a conversation with decisions
 3. Ending the session and starting a new one
-4. Verifying `/project-memory:status` shows captured data
-5. Testing `/project-memory:search` returns relevant results
+4. Verifying `/tenax:status` shows captured data
+5. Testing `/tenax:search` returns relevant results

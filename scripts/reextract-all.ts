@@ -6,9 +6,9 @@
 
 import { join } from "node:path";
 import { readdir, unlink, writeFile } from "node:fs/promises";
-import { DEFAULT_INDEX } from "../skills/project-memory/lib/types";
-import { parseTranscript } from "../skills/project-memory/lib/transcript-parser";
-import { extractAllKnowledge } from "../skills/project-memory/lib/extractor";
+import { DEFAULT_INDEX } from "../skills/tenax/lib/types";
+import { parseTranscript } from "../skills/tenax/lib/transcript-parser";
+import { extractAllKnowledge } from "../skills/tenax/lib/extractor";
 import {
   saveSession,
   saveIndex,
@@ -17,8 +17,8 @@ import {
   getIndexPath,
   getEmbeddingsDbPath,
   generateSessionId,
-} from "../skills/project-memory/lib/storage";
-import { createVectorStore } from "../skills/project-memory/lib/vector-store";
+} from "../skills/tenax/lib/storage";
+import { createVectorStore } from "../skills/tenax/lib/vector-store";
 import {
   getEmbedding,
   createDecisionText,
@@ -26,8 +26,8 @@ import {
   createTaskText,
   createInsightText,
   createSessionText,
-} from "../skills/project-memory/lib/embeddings";
-import type { ProcessedSession, EmbeddingEntry, ProjectIndex } from "../skills/project-memory/lib/types";
+} from "../skills/tenax/lib/embeddings";
+import type { ProcessedSession, EmbeddingEntry, ProjectIndex } from "../skills/tenax/lib/types";
 
 const projectRoot = process.cwd();
 

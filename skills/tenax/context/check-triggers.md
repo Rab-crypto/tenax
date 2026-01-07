@@ -1,6 +1,6 @@
-# When to Auto-Check Project Memory
+# When to Auto-Check Tenax
 
-This document details when Claude should automatically search project memory before proceeding.
+This document details when Claude should automatically search Tenax before proceeding.
 
 ## Always Check Before
 

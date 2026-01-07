@@ -1,4 +1,4 @@
-# /project-memory:fresh
+# /tenax:fresh
 
 Start a fresh session without loading any history.
 
@@ -7,7 +7,7 @@ Start a fresh session without loading any history.
 ## Usage
 
 ```
-/project-memory:fresh
+/tenax:fresh
 ```
 
 ## Instructions for Claude
@@ -26,8 +26,8 @@ Start a fresh session without loading any history.
    - 8 patterns
    - 12 sessions
 
-   Use `/project-memory:search <query>` to find specific past decisions.
-   Use `/project-memory:load-session <ID>` to load specific sessions.
+   Use `/tenax:search <query>` to find specific past decisions.
+   Use `/tenax:load-session <ID>` to load specific sessions.
    ```
 
 2. Do NOT load any previous sessions or summaries.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Restore project memory from a backup
+ * Restore Tenax from a backup
  * Supports JSON backup format created by backup.ts
  */
 

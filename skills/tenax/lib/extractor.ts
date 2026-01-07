@@ -141,7 +141,7 @@ function extractMultiLineBlocks(text: string): MultiLineBlock[] {
   let blockLines: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i]!;
     const trimmed = line.trim();
 
     // Check for marker start: [D], [P], [T], [I] at line beginning

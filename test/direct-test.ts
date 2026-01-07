@@ -5,7 +5,7 @@ import { mkdir, rm } from "fs/promises";
 
 const BUN_PATH = process.execPath;
 const TEST_DIR = join(import.meta.dir, "direct-project");
-const SCRIPTS_PATH = join(import.meta.dir, "..", "skills", "project-memory", "scripts");
+const SCRIPTS_PATH = join(import.meta.dir, "..", "skills", "tenax", "scripts");
 
 async function main() {
   // Setup

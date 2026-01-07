@@ -7,11 +7,11 @@
 
 import { writeFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import { join } from "path";
-import { parseTranscript } from "../skills/project-memory/lib/transcript-parser";
-import { extractAllKnowledge } from "../skills/project-memory/lib/extractor";
+import { parseTranscript } from "../skills/tenax/lib/transcript-parser";
+import { extractAllKnowledge } from "../skills/tenax/lib/extractor";
 
 const projectRoot = process.cwd();
-const testSessionsPath = join(projectRoot, ".claude", "project-memory", "sessions");
+const testSessionsPath = join(projectRoot, ".claude", "tenax", "sessions");
 
 // Create test directory if needed
 if (!existsSync(testSessionsPath)) {

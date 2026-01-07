@@ -1,4 +1,4 @@
-# /project-memory:load-session
+# /tenax:load-session
 
 Load a specific session by ID into context.
 
@@ -7,9 +7,9 @@ Load a specific session by ID into context.
 ## Usage
 
 ```
-/project-memory:load-session <session-id>
-/project-memory:load-session 5
-/project-memory:load-session 012
+/tenax:load-session <session-id>
+/tenax:load-session 5
+/tenax:load-session 012
 ```
 
 ## Arguments
@@ -20,7 +20,7 @@ Load a specific session by ID into context.
 
 1. Run the get session script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-session.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-session.ts" $ARGUMENTS
    ```
 
 2. Parse the JSON output and display the session:

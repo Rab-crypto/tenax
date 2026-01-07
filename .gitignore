@@ -18,8 +18,8 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Project memory data (per-project, not plugin source)
-.claude/project-memory/
+# Tenax data (per-project, not plugin source)
+.claude/tenax/
 
 # Test artifacts
 *.log

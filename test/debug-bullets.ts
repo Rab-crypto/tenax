@@ -4,8 +4,8 @@
  * Debug bullet extraction to see why we're only getting 2 decisions
  */
 
-import { parseTranscript } from "../skills/project-memory/lib/transcript-parser";
-import { scoreCandidate } from "../skills/project-memory/lib/extraction-scorer";
+import { parseTranscript } from "../skills/tenax/lib/transcript-parser";
+import { scoreCandidate } from "../skills/tenax/lib/extraction-scorer";
 
 const SYSTEM_BLOCKLIST = [
   /system-reminder/i,
@@ -76,7 +76,7 @@ const ACTION_TRIGGERS = [
 const STRUCTURED_PATTERN = /^\*\*\[([^\]]+)\]\*\*\s+(.+)$/;
 
 async function main() {
-  const transcript = await parseTranscript(".claude/project-memory/sessions/002.jsonl");
+  const transcript = await parseTranscript(".claude/tenax/sessions/002.jsonl");
   const messages = filterExtractableMessages(transcript.assistantMessages);
 
   console.log(`=== Debugging Bullet Extraction ===\n`);

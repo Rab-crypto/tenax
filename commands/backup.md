@@ -1,4 +1,4 @@
-# /project-memory:backup
+# /tenax:backup
 
 Create a backup of all project memory data.
 
@@ -7,26 +7,26 @@ Create a backup of all project memory data.
 ## Usage
 
 ```
-/project-memory:backup
-/project-memory:backup -o ./my-backup.tar.gz
+/tenax:backup
+/tenax:backup -o ./my-backup.tar.gz
 ```
 
 ## Arguments
 
-- `-o, --output` - Output file path (default: project-memory-backup-TIMESTAMP.tar.gz)
+- `-o, --output` - Output file path (default: tenax-backup-TIMESTAMP.tar.gz)
 
 ## Instructions for Claude
 
 1. Run the backup script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/backup.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/backup.ts" $ARGUMENTS
    ```
 
 2. Show backup summary:
    ```
    ## Backup Created
 
-   File: project-memory-backup-2024-01-15T10-30-00.tar.gz
+   File: tenax-backup-2024-01-15T10-30-00.tar.gz
    Size: 4.2 MB
    Location: /path/to/project/
 
@@ -36,7 +36,7 @@ Create a backup of all project memory data.
    - embeddings.db
    - 12 session files
 
-   *Restore with `/project-memory:restore <file>`*
+   *Restore with `/tenax:restore <file>`*
    ```
 
 3. Recommend regular backups before major changes.

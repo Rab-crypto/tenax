@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Get a quick summary of project memory
+ * Get a quick summary of Tenax
  * Returns stats and recent activity
  */
 

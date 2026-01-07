@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
-import { parseTranscript } from "../skills/project-memory/lib/transcript-parser";
-import { generateSummary } from "../skills/project-memory/lib/extractor";
+import { parseTranscript } from "../skills/tenax/lib/transcript-parser";
+import { generateSummary } from "../skills/tenax/lib/extractor";
 import { readdirSync } from "fs";
 import { join } from "path";
 
-const sessionsDir = ".claude/project-memory/sessions";
+const sessionsDir = ".claude/tenax/sessions";
 const files = readdirSync(sessionsDir).filter(f => f.endsWith('.jsonl'));
 
 for (const file of files.slice(-3)) {

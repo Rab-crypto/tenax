@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Complete command reference for Project Memory - all 17 commands with examples.">
-  <title>Commands | Project Memory</title>
+  <meta name="description" content="Complete command reference for Tenax - all 17 commands with examples.">
+  <title>Commands | Tenax</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
   <style>
@@ -34,7 +34,7 @@
               <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
             </svg>
           </span>
-          Project Memory
+          Tenax
         </a>
 
         <div class="nav__links">
@@ -85,7 +85,7 @@
     <main class="docs-content">
       <h1>Command Reference</h1>
       <p>
-        Complete reference for all Project Memory commands. All commands use the <code>/project-memory:</code> namespace.
+        Complete reference for all Tenax commands. All commands use the <code>/tenax:</code> namespace.
       </p>
 
       <!-- Search -->
@@ -102,12 +102,12 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:status</span>
-          <button class="code-block__copy" data-copy="/project-memory:status">Copy</button>
+          <span class="command-card__name">/tenax:status</span>
+          <button class="code-block__copy" data-copy="/tenax:status">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Show project memory status and quick summary. Displays total sessions, decisions, patterns, tasks, insights, recent activity, and storage size.
+            Show Tenax status and quick summary. Displays total sessions, decisions, patterns, tasks, insights, recent activity, and storage size.
           </p>
           <p><strong>Use when:</strong> You want a quick overview of accumulated project knowledge.</p>
         </div>
@@ -115,12 +115,12 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:stats</span>
-          <button class="code-block__copy" data-copy="/project-memory:stats">Copy</button>
+          <span class="command-card__name">/tenax:stats</span>
+          <button class="code-block__copy" data-copy="/tenax:stats">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Show detailed statistics about project memory including timeline, sessions per month, top topics, and storage breakdown.
+            Show detailed statistics about Tenax including timeline, sessions per month, top topics, and storage breakdown.
           </p>
           <p><strong>Use when:</strong> You want analytics on your project history and memory usage patterns.</p>
         </div>
@@ -128,8 +128,8 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:list</span>
-          <button class="code-block__copy" data-copy="/project-memory:list">Copy</button>
+          <span class="command-card__name">/tenax:list</span>
+          <button class="code-block__copy" data-copy="/tenax:list">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
@@ -144,15 +144,15 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:load-session</span>
-          <button class="code-block__copy" data-copy="/project-memory:load-session">Copy</button>
+          <span class="command-card__name">/tenax:load-session</span>
+          <button class="code-block__copy" data-copy="/tenax:load-session">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
             Load a specific session by ID into context. Shows full session details including decisions, patterns, files modified, and topics.
           </p>
           <div class="command-card__usage">
-            /project-memory:load-session &lt;session-id&gt;
+            /tenax:load-session &lt;session-id&gt;
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -162,21 +162,21 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Example:</strong> <code>/project-memory:load-session 003</code></p>
+          <p><strong>Example:</strong> <code>/tenax:load-session 003</code></p>
         </div>
       </div>
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:load-sessions</span>
-          <button class="code-block__copy" data-copy="/project-memory:load-sessions">Copy</button>
+          <span class="command-card__name">/tenax:load-sessions</span>
+          <button class="code-block__copy" data-copy="/tenax:load-sessions">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
             Load multiple sessions by IDs. If no IDs specified, loads the last 3 sessions. Respects token budget.
           </p>
           <div class="command-card__usage">
-            /project-memory:load-sessions [IDs] [-b, --budget &lt;tokens&gt;]
+            /tenax:load-sessions [IDs] [-b, --budget &lt;tokens&gt;]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -187,21 +187,21 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Example:</strong> <code>/project-memory:load-sessions 001,002,003</code></p>
+          <p><strong>Example:</strong> <code>/tenax:load-sessions 001,002,003</code></p>
         </div>
       </div>
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:load-recent</span>
-          <button class="code-block__copy" data-copy="/project-memory:load-recent">Copy</button>
+          <span class="command-card__name">/tenax:load-recent</span>
+          <button class="code-block__copy" data-copy="/tenax:load-recent">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
             Load the N most recent sessions (default: 5). Most recent first. Respects token budget.
           </p>
           <div class="command-card__usage">
-            /project-memory:load-recent [N] [-b, --budget &lt;tokens&gt;]
+            /tenax:load-recent [N] [-b, --budget &lt;tokens&gt;]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -212,21 +212,21 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Example:</strong> <code>/project-memory:load-recent 3</code></p>
+          <p><strong>Example:</strong> <code>/tenax:load-recent 3</code></p>
         </div>
       </div>
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:load-all</span>
-          <button class="code-block__copy" data-copy="/project-memory:load-all">Copy</button>
+          <span class="command-card__name">/tenax:load-all</span>
+          <button class="code-block__copy" data-copy="/tenax:load-all">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
             Smart-load all sessions within token budget. Shows preview, loads in reverse chronological order, skips sessions that would exceed budget.
           </p>
           <div class="command-card__usage">
-            /project-memory:load-all [-b, --budget &lt;tokens&gt;]
+            /tenax:load-all [-b, --budget &lt;tokens&gt;]
           </div>
           <p><strong>Use when:</strong> You want comprehensive project history within your token allowance.</p>
         </div>
@@ -234,8 +234,8 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:fresh</span>
-          <button class="code-block__copy" data-copy="/project-memory:fresh">Copy</button>
+          <span class="command-card__name">/tenax:fresh</span>
+          <button class="code-block__copy" data-copy="/tenax:fresh">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
@@ -250,12 +250,12 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:save</span>
-          <button class="code-block__copy" data-copy="/project-memory:save">Copy</button>
+          <span class="command-card__name">/tenax:save</span>
+          <button class="code-block__copy" data-copy="/tenax:save">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Manually save the current session to project memory. Reviews conversation for decisions, patterns, tasks, and insights.
+            Manually save the current session to Tenax. Reviews conversation for decisions, patterns, tasks, and insights.
           </p>
           <p><strong>Use when:</strong> You want to checkpoint important knowledge mid-session.</p>
         </div>
@@ -263,8 +263,8 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:record</span>
-          <button class="code-block__copy" data-copy="/project-memory:record">Copy</button>
+          <span class="command-card__name">/tenax:record</span>
+          <button class="code-block__copy" data-copy="/tenax:record">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
@@ -273,27 +273,27 @@
 
           <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Decision</h4>
           <div class="command-card__usage">
-            /project-memory:record decision -t &lt;topic&gt; "&lt;text&gt;" -r "&lt;rationale&gt;"
+            /tenax:record decision -t &lt;topic&gt; "&lt;text&gt;" -r "&lt;rationale&gt;"
           </div>
-          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record decision -t database "Using PostgreSQL" -r "Team expertise"</code></p>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/tenax:record decision -t database "Using PostgreSQL" -r "Team expertise"</code></p>
 
           <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Pattern</h4>
           <div class="command-card__usage">
-            /project-memory:record pattern -n &lt;name&gt; "&lt;description&gt;" -u "&lt;usage&gt;"
+            /tenax:record pattern -n &lt;name&gt; "&lt;description&gt;" -u "&lt;usage&gt;"
           </div>
-          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record pattern -n error-handler "Wrap async routes in try-catch"</code></p>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/tenax:record pattern -n error-handler "Wrap async routes in try-catch"</code></p>
 
           <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record a Task</h4>
           <div class="command-card__usage">
-            /project-memory:record task "&lt;title&gt;" -d "&lt;description&gt;" -p &lt;priority&gt;
+            /tenax:record task "&lt;title&gt;" -d "&lt;description&gt;" -p &lt;priority&gt;
           </div>
-          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record task "Add unit tests" -p high</code></p>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/tenax:record task "Add unit tests" -p high</code></p>
 
           <h4 style="margin-top: var(--space-lg); margin-bottom: var(--space-sm);">Record an Insight</h4>
           <div class="command-card__usage">
-            /project-memory:record insight "&lt;text&gt;" -c "&lt;context&gt;"
+            /tenax:record insight "&lt;text&gt;" -c "&lt;context&gt;"
           </div>
-          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/project-memory:record insight "Rate limits are per-user not per-app"</code></p>
+          <p style="margin-top: var(--space-sm);"><strong>Example:</strong> <code>/tenax:record insight "Rate limits are per-user not per-app"</code></p>
         </div>
       </div>
 
@@ -302,15 +302,15 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:search</span>
-          <button class="code-block__copy" data-copy="/project-memory:search">Copy</button>
+          <span class="command-card__name">/tenax:search</span>
+          <button class="code-block__copy" data-copy="/tenax:search">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Search across all project memory using semantic similarity. Returns ranked results with similarity scores and snippets.
+            Search across all Tenax using semantic similarity. Returns ranked results with similarity scores and snippets.
           </p>
           <div class="command-card__usage">
-            /project-memory:search &lt;query&gt; [-t, --type &lt;type&gt;] [-l, --limit &lt;n&gt;]
+            /tenax:search &lt;query&gt; [-t, --type &lt;type&gt;] [-l, --limit &lt;n&gt;]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -324,9 +324,9 @@
           </div>
           <p><strong>Examples:</strong></p>
           <ul>
-            <li><code>/project-memory:search "authentication approach"</code></li>
-            <li><code>/project-memory:search "database" -t decision</code></li>
-            <li><code>/project-memory:search "error handling" -l 5</code></li>
+            <li><code>/tenax:search "authentication approach"</code></li>
+            <li><code>/tenax:search "database" -t decision</code></li>
+            <li><code>/tenax:search "error handling" -l 5</code></li>
           </ul>
         </div>
       </div>
@@ -336,12 +336,12 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:settings</span>
-          <button class="code-block__copy" data-copy="/project-memory:settings">Copy</button>
+          <span class="command-card__name">/tenax:settings</span>
+          <button class="code-block__copy" data-copy="/tenax:settings">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            View or modify project memory settings including token budget, auto-load behavior, and recording preferences.
+            View or modify Tenax settings including token budget, auto-load behavior, and recording preferences.
           </p>
           <p>See <a href="settings.html">Settings Reference</a> for all available options.</p>
         </div>
@@ -349,15 +349,15 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:forget</span>
-          <button class="code-block__copy" data-copy="/project-memory:forget">Copy</button>
+          <span class="command-card__name">/tenax:forget</span>
+          <button class="code-block__copy" data-copy="/tenax:forget">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Remove entries from project memory. Confirmation required for bulk deletions.
+            Remove entries from Tenax. Confirmation required for bulk deletions.
           </p>
           <div class="command-card__usage">
-            /project-memory:forget [id] [--type &lt;type&gt;] [--all]
+            /tenax:forget [id] [--type &lt;type&gt;] [--all]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -375,20 +375,20 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:tag</span>
-          <button class="code-block__copy" data-copy="/project-memory:tag">Copy</button>
+          <span class="command-card__name">/tenax:tag</span>
+          <button class="code-block__copy" data-copy="/tenax:tag">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
             Add or remove tags from sessions for organization.
           </p>
           <div class="command-card__usage">
-            /project-memory:tag &lt;session-id&gt; &lt;tag1&gt; [tag2...] [--remove]
+            /tenax:tag &lt;session-id&gt; &lt;tag1&gt; [tag2...] [--remove]
           </div>
           <p><strong>Examples:</strong></p>
           <ul>
-            <li><code>/project-memory:tag 003 auth feature</code> - Add tags</li>
-            <li><code>/project-memory:tag 003 auth --remove</code> - Remove tag</li>
+            <li><code>/tenax:tag 003 auth feature</code> - Add tags</li>
+            <li><code>/tenax:tag 003 auth --remove</code> - Remove tag</li>
           </ul>
         </div>
       </div>
@@ -398,15 +398,15 @@
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:export</span>
-          <button class="code-block__copy" data-copy="/project-memory:export">Copy</button>
+          <span class="command-card__name">/tenax:export</span>
+          <button class="code-block__copy" data-copy="/tenax:export">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Export project memory to various formats: Markdown, JSON, Obsidian, or Notion.
+            Export Tenax to various formats: Markdown, JSON, Obsidian, or Notion.
           </p>
           <div class="command-card__usage">
-            /project-memory:export [-f, --format &lt;format&gt;] [-o, --output &lt;dir&gt;] [-s, --sessions]
+            /tenax:export [-f, --format &lt;format&gt;] [-o, --output &lt;dir&gt;] [-s, --sessions]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
@@ -420,39 +420,39 @@
           </div>
           <p><strong>Examples:</strong></p>
           <ul>
-            <li><code>/project-memory:export</code> - Export to Markdown</li>
-            <li><code>/project-memory:export -f obsidian -o ./vault</code> - Export to Obsidian vault</li>
+            <li><code>/tenax:export</code> - Export to Markdown</li>
+            <li><code>/tenax:export -f obsidian -o ./vault</code> - Export to Obsidian vault</li>
           </ul>
         </div>
       </div>
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:backup</span>
-          <button class="code-block__copy" data-copy="/project-memory:backup">Copy</button>
+          <span class="command-card__name">/tenax:backup</span>
+          <button class="code-block__copy" data-copy="/tenax:backup">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Create a backup of all project memory data as a JSON file with base64-encoded contents.
+            Create a backup of all Tenax data as a JSON file with base64-encoded contents.
           </p>
           <div class="command-card__usage">
-            /project-memory:backup [-o, --output &lt;path&gt;]
+            /tenax:backup [-o, --output &lt;path&gt;]
           </div>
-          <p><strong>Use when:</strong> You want to safeguard project memory before major changes or share between machines.</p>
+          <p><strong>Use when:</strong> You want to safeguard Tenax before major changes or share between machines.</p>
         </div>
       </div>
 
       <div class="command-card" data-searchable>
         <div class="command-card__header">
-          <span class="command-card__name">/project-memory:restore</span>
-          <button class="code-block__copy" data-copy="/project-memory:restore">Copy</button>
+          <span class="command-card__name">/tenax:restore</span>
+          <button class="code-block__copy" data-copy="/tenax:restore">Copy</button>
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Restore project memory from a backup file. Asks for confirmation if memory already exists.
+            Restore Tenax from a backup file. Asks for confirmation if memory already exists.
           </p>
           <div class="command-card__usage">
-            /project-memory:restore &lt;backup-file&gt; [-f, --force]
+            /tenax:restore &lt;backup-file&gt; [-f, --force]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>

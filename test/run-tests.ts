@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Integration tests for project-memory plugin
+ * Integration tests for tenax plugin
  * Simulates multiple sessions with PreCompact and SessionEnd hooks
  */
 
@@ -9,8 +9,8 @@ import { join } from "path";
 import { rm, mkdir } from "fs/promises";
 
 const TEST_PROJECT = join(import.meta.dir, "test-project");
-const MEMORY_PATH = join(TEST_PROJECT, ".claude", "project-memory");
-const SCRIPTS_PATH = join(import.meta.dir, "..", "skills", "project-memory", "scripts");
+const MEMORY_PATH = join(TEST_PROJECT, ".claude", "tenax");
+const SCRIPTS_PATH = join(import.meta.dir, "..", "skills", "tenax", "scripts");
 const BUN_PATH = process.execPath; // Use the same bun that's running this script
 
 // Test transcript content
@@ -282,7 +282,7 @@ async function testRecordDecision(): Promise<boolean> {
 
 async function main(): Promise<void> {
   console.log("╔════════════════════════════════════════╗");
-  console.log("║  Project Memory Integration Tests      ║");
+  console.log("║  Tenax Integration Tests      ║");
   console.log("╚════════════════════════════════════════╝");
 
   await setup();

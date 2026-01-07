@@ -32,7 +32,7 @@ export function setProjectRoot(path: string): void {
 
 export function getMemoryPath(projectRoot?: string): string {
   const root = projectRoot || getProjectRoot();
-  return join(root, ".claude", "project-memory");
+  return join(root, ".claude", "tenax");
 }
 
 export function getConfigPath(projectRoot?: string): string {

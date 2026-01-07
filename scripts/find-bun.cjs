@@ -114,16 +114,16 @@ async function installBun() {
 }
 
 async function main() {
-  console.log("project-memory: Locating Bun installation...");
+  console.log("tenax: Locating Bun installation...");
 
   let bunPath = findBun();
 
   if (bunPath) {
     const version = verifyBun(bunPath);
     if (version) {
-      console.log(`project-memory: Found Bun ${version} at ${bunPath}`);
+      console.log(`tenax: Found Bun ${version} at ${bunPath}`);
       fs.writeFileSync(CONFIG_FILE, bunPath, "utf8");
-      console.log(`project-memory: Bun path cached successfully`);
+      console.log(`tenax: Bun path cached successfully`);
       return;
     }
   }
@@ -158,22 +158,22 @@ async function main() {
 
       if (bunPath) {
         const version = verifyBun(bunPath);
-        console.log(`\nproject-memory: Bun ${version || "(version unknown)"} installed at ${bunPath}`);
+        console.log(`\ntenax: Bun ${version || "(version unknown)"} installed at ${bunPath}`);
         fs.writeFileSync(CONFIG_FILE, bunPath, "utf8");
-        console.log("project-memory: Bun path cached successfully");
+        console.log("tenax: Bun path cached successfully");
         console.log("\nNote: You may need to restart your terminal for 'bun' to be in PATH.");
       } else {
-        console.error("\nproject-memory: Could not locate Bun after installation.");
+        console.error("\ntenax: Could not locate Bun after installation.");
         console.error("Please restart your terminal and run 'bun install' again.");
         process.exit(1);
       }
     } catch (err) {
-      console.error("\nproject-memory: Failed to install Bun:", err.message);
+      console.error("\ntenax: Failed to install Bun:", err.message);
       console.error("Please install Bun manually: https://bun.sh");
       process.exit(1);
     }
   } else {
-    console.log("\nproject-memory: Bun is required for this plugin to function.");
+    console.log("\ntenax: Bun is required for this plugin to function.");
     console.log("Please install Bun manually and run 'bun install' again:");
     console.log("  curl -fsSL https://bun.sh/install | bash   # macOS/Linux");
     console.log("  irm bun.sh/install.ps1 | iex               # Windows PowerShell");
@@ -182,6 +182,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("project-memory: Unexpected error:", err);
+  console.error("tenax: Unexpected error:", err);
   process.exit(1);
 });

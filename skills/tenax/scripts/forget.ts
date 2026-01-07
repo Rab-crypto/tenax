@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Remove entries from project memory
+ * Remove entries from Tenax
  * Can delete by ID or type
  */
 

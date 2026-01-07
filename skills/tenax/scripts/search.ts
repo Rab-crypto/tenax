@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Semantic search across all project memory
+ * Semantic search across all Tenax
  * Returns ranked results with token counts
  */
 

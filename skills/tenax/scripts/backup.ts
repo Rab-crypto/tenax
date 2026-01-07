@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Create a backup of all project memory data
+ * Create a backup of all Tenax data
  * Creates a cross-platform JSON backup with base64-encoded file contents
  */
 
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
   try {
     const memoryPath = getMemoryPath(projectRoot);
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const defaultBackupName = `project-memory-backup-${timestamp}.json`;
+    const defaultBackupName = `tenax-backup-${timestamp}.json`;
     const backupPath = (values.output as string) || join(projectRoot, defaultBackupName);
 
     // Collect all files from memory directory

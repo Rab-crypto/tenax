@@ -1,4 +1,4 @@
-# /project-memory:restore
+# /tenax:restore
 
 Restore project memory from a backup.
 
@@ -7,8 +7,8 @@ Restore project memory from a backup.
 ## Usage
 
 ```
-/project-memory:restore ./project-memory-backup.tar.gz
-/project-memory:restore ./backup.tar.gz --force
+/tenax:restore ./tenax-backup.tar.gz
+/tenax:restore ./backup.tar.gz --force
 ```
 
 ## Arguments
@@ -33,14 +33,14 @@ Restore project memory from a backup.
 
 2. If confirmed (or --force), run restore:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/restore.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/restore.ts" $ARGUMENTS
    ```
 
 3. Show restore summary:
    ```
    ## Restored
 
-   Backup: project-memory-backup-2024-01-10.tar.gz
+   Backup: tenax-backup-2024-01-10.tar.gz
 
    Restored:
    - config.json

@@ -3,7 +3,7 @@ description: Search project memory semantically
 argument-hint: <query>
 ---
 
-# /project-memory:search
+# /tenax:search
 
 Search across all project memory using semantic similarity.
 
@@ -12,9 +12,9 @@ Search across all project memory using semantic similarity.
 ## Usage
 
 ```
-/project-memory:search <query>
-/project-memory:search -t decision "api design"
-/project-memory:search -l 20 "authentication"
+/tenax:search <query>
+/tenax:search -t decision "api design"
+/tenax:search -l 20 "authentication"
 ```
 
 ## Arguments
@@ -27,7 +27,7 @@ Search across all project memory using semantic similarity.
 
 1. Run the search script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/search.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" $ARGUMENTS
    ```
 
 2. Parse the JSON output and display results:

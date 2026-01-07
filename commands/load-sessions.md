@@ -1,4 +1,4 @@
-# /project-memory:load-sessions
+# /tenax:load-sessions
 
 Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
 
@@ -7,10 +7,10 @@ Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
 ## Usage
 
 ```
-/project-memory:load-sessions
-/project-memory:load-sessions 1,3,5
-/project-memory:load-sessions 001 003 005
-/project-memory:load-sessions --budget 40000
+/tenax:load-sessions
+/tenax:load-sessions 1,3,5
+/tenax:load-sessions 001 003 005
+/tenax:load-sessions --budget 40000
 ```
 
 ## Arguments
@@ -22,7 +22,7 @@ Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
 
 1. Run the get sessions script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/get-sessions.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-sessions.ts" $ARGUMENTS
    ```
 
 2. Budget-aware loading:

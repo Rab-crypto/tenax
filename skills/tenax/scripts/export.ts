@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Export project memory to various formats
+ * Export Tenax to various formats
  * Supports: markdown, json, obsidian
  */
 
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
   try {
     const index = await loadIndex(projectRoot);
     const timestamp = new Date().toISOString().split("T")[0];
-    const outputDir = (values.output as string) || join(projectRoot, `project-memory-export-${timestamp}`);
+    const outputDir = (values.output as string) || join(projectRoot, `tenax-export-${timestamp}`);
 
     await mkdir(outputDir, { recursive: true });
 

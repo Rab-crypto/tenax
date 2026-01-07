@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Generate detailed statistics about project memory
+ * Generate detailed statistics about Tenax
  */
 
 import type { ScriptOutput, MemoryStats } from "../lib/types";

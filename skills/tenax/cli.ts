@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Unified CLI for project-memory plugin
+ * Unified CLI for tenax plugin
  * Single entry point for all commands - reduces permission prompts to one pattern
  *
  * Usage:

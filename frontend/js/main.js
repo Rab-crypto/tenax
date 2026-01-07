@@ -1,5 +1,5 @@
 /**
- * Project Memory - Main JavaScript
+ * Tenax - Main JavaScript
  * Handles theme toggle, copy buttons, smooth scroll, search filter, animations
  */
 
@@ -9,7 +9,7 @@
   // ============================================
   // Theme Toggle
   // ============================================
-  const THEME_KEY = 'project-memory-theme';
+  const THEME_KEY = 'tenax-theme';
 
   function getPreferredTheme() {
     const stored = localStorage.getItem(THEME_KEY);
@@ -379,15 +379,15 @@
 
     // Terminal sequence - demonstrating the plugin
     const sequence = [
-      { type: 'command', text: '/project-memory:search "auth"', delay: 0 },
-      { type: 'output', text: 'Searching project memory...', delay: 800 },
+      { type: 'command', text: '/tenax:search "auth"', delay: 0 },
+      { type: 'output', text: 'Searching Tenax...', delay: 800 },
       { type: 'result', html: `<span class="terminal__badge terminal__badge--decision">DECISION</span> Using JWT for authentication`, delay: 1200 },
       { type: 'result', html: `<span class="terminal__badge terminal__badge--pattern">PATTERN</span> Auth middleware on all /api routes`, delay: 1600 },
       { type: 'result', html: `<span class="terminal__badge terminal__badge--insight">INSIGHT</span> Token refresh needed for mobile`, delay: 2000 },
       { type: 'success', text: 'Found 3 results (12ms)', delay: 2400 },
       { type: 'empty', delay: 3000 },
-      { type: 'command', text: '/project-memory:status', delay: 3200 },
-      { type: 'output', text: 'Project Memory Status', delay: 3800 },
+      { type: 'command', text: '/tenax:status', delay: 3200 },
+      { type: 'output', text: 'Tenax Status', delay: 3800 },
       { type: 'status', html: `Sessions: <span style="color: #A78BFA;">12</span> | Decisions: <span style="color: #FBBF24;">8</span> | Patterns: <span style="color: #60A5FA;">5</span>`, delay: 4200 },
     ];
 

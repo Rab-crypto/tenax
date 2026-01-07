@@ -6,7 +6,7 @@
  *
  * Usage: node run.js <script-name> [args...]
  *
- * Script names map to files in skills/project-memory/scripts/:
+ * Script names map to files in skills/tenax/scripts/:
  *   - capture-session -> capture-session.ts
  *   - track-file -> track-file.ts
  *   - search -> search.ts
@@ -20,7 +20,7 @@ const os = require("os");
 
 const PLUGIN_ROOT = path.join(__dirname, "..");
 const BUN_PATH_FILE = path.join(PLUGIN_ROOT, ".bun-path");
-const SCRIPTS_DIR = path.join(PLUGIN_ROOT, "skills", "project-memory", "scripts");
+const SCRIPTS_DIR = path.join(PLUGIN_ROOT, "skills", "tenax", "scripts");
 
 /**
  * Read all stdin data (for hook input).

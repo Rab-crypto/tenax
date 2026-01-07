@@ -15,7 +15,7 @@
     "types": ["bun-types"],
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["skills/project-memory/lib/*"]
+      "@lib/*": ["skills/tenax/lib/*"]
     }
   },
   "include": [

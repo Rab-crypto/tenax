@@ -1,4 +1,4 @@
-# /project-memory:forget
+# /tenax:forget
 
 Remove entries from project memory.
 
@@ -7,9 +7,9 @@ Remove entries from project memory.
 ## Usage
 
 ```
-/project-memory:forget <id>
-/project-memory:forget --type decisions
-/project-memory:forget --all
+/tenax:forget <id>
+/tenax:forget --type decisions
+/tenax:forget --all
 ```
 
 ## Arguments
@@ -22,7 +22,7 @@ Remove entries from project memory.
 
 1. **Single entry deletion:**
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/forget.ts" $ARGUMENTS
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" $ARGUMENTS
    ```
 
 2. **Type deletion (ask for confirmation first):**
@@ -37,12 +37,12 @@ Remove entries from project memory.
 
    If confirmed:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/project-memory/scripts/forget.ts" --type decisions
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" --type decisions
    ```
 
 3. **Delete all (double confirmation):**
    ```
-   ## Delete ALL Project Memory?
+   ## Delete ALL Tenax?
 
    This will permanently delete:
    - 12 sessions
@@ -51,7 +51,7 @@ Remove entries from project memory.
    - 5 tasks
    - 10 insights
 
-   This cannot be undone. Consider `/project-memory:backup` first.
+   This cannot be undone. Consider `/tenax:backup` first.
 
    Type "DELETE ALL" to confirm.
    ```

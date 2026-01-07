@@ -1,6 +1,6 @@
 {
   "name": "tenax",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "description": "Tenax - Persistent project knowledge for Claude Code",
   "type": "module",
   "author": "phil_mybags",
@@ -17,20 +17,24 @@
     "project-context"
   ],
   "scripts": {
-    "postinstall": "node scripts/find-bun.cjs",
+    "postinstall": "node scripts/verify-install.cjs",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "npx tsx --test test/*.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/tokenizer": "^0.0.4",
     "@huggingface/transformers": "^3.5.1",
+    "better-sqlite3": "^11.7.0",
+    "glob": "^11.0.0",
     "sqlite-vec": "^0.1.6"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "engines": {
-    "bun": ">=1.0.0"
+    "node": ">=18.0.0"
   }
 }

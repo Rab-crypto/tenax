@@ -3,7 +3,7 @@
  * Falls back to in-memory cosine similarity if sqlite-vec fails
  */
 
-import { Database } from "bun:sqlite";
+import Database from "better-sqlite3";
 import * as sqliteVec from "sqlite-vec";
 import type { EmbeddingEntry, SearchResult } from "./types";
 import { EMBEDDING_DIM, cosineSimilarity } from "./embeddings";
@@ -97,7 +97,7 @@ export class VectorStore {
           INSERT INTO vec_embeddings (embedding) VALUES (vec_f32(?))
         `);
         const result = insertVec.run(Buffer.from(embedding.buffer));
-        const vecRowid = result.lastInsertRowid;
+        const vecRowid = Number(result.lastInsertRowid);
 
         // Create mapping
         const insertMap = this.db.prepare(`
@@ -148,7 +148,7 @@ export class VectorStore {
               INSERT INTO vec_embeddings (embedding) VALUES (vec_f32(?))
             `);
             const result = insertVec.run(Buffer.from(embedding.buffer));
-            const vecRowid = result.lastInsertRowid;
+            const vecRowid = Number(result.lastInsertRowid);
 
             // Create mapping
             const insertMap = this.db.prepare(`

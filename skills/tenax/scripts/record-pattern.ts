@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Record a new pattern
@@ -22,7 +22,7 @@ import { getEmbedding, createPatternText } from "../lib/embeddings";
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       name: { type: "string", short: "n" },
       usage: { type: "string", short: "u" },

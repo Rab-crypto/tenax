@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * UserPromptSubmit hook - runs on first user message
@@ -16,7 +16,7 @@ async function main(): Promise<void> {
             const output = {
                 hookSpecificOutput: {
                     hookEventName: "UserPromptSubmit",
-                    additionalContext: `⚠️ TENAX NOT INITIALIZED - Run: bun "\${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/init.ts"`
+                    additionalContext: `⚠️ TENAX NOT INITIALIZED - Run /tenax:status to initialize`
                 }
             };
             console.log(JSON.stringify(output));

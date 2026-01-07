@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Mark a task as completed
@@ -12,7 +12,7 @@ import { getEmbedding, createTaskText } from "../lib/embeddings";
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       session: { type: "string", short: "s" },
     },

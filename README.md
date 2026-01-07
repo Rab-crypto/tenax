@@ -53,7 +53,7 @@ git clone https://github.com/Rab-crypto/tenax.git ~/.claude/plugins/tenax
 
 # Install dependencies
 cd ~/.claude/plugins/tenax
-bun install
+npm install
 ```
 
 ### 3. Register the Plugin

@@ -18,6 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Validate bash syntax
         run: bash -n install.sh
 
@@ -37,13 +42,14 @@ jobs:
           # Install jq (needed for permissions)
           sudo apt-get install -y jq
 
-          # Run installer (will install bun, clone repo, etc.)
+          # Run installer (will clone repo, npm install, etc.)
           bash install.sh
 
           # Verify installation
           echo "=== Checking installation ==="
           [ -d ~/.claude/plugins/tenax ] && echo "✓ Tenax directory exists" || echo "✗ Tenax directory missing"
           [ -f ~/.claude/plugins/tenax/package.json ] && echo "✓ package.json exists" || echo "✗ package.json missing"
+          [ -d ~/.claude/plugins/tenax/node_modules ] && echo "✓ node_modules exists" || echo "✗ node_modules missing"
 
           # Check permissions were added
           echo "=== Checking permissions ==="
@@ -53,6 +59,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Validate bash syntax
         run: bash -n install.sh
@@ -65,11 +76,17 @@ jobs:
 
           echo "=== Checking installation ==="
           [ -d ~/.claude/plugins/tenax ] && echo "✓ Tenax directory exists" || echo "✗ Tenax directory missing"
+          [ -d ~/.claude/plugins/tenax/node_modules ] && echo "✓ node_modules exists" || echo "✗ node_modules missing"
 
   test-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Validate PowerShell syntax
         shell: pwsh
@@ -86,17 +103,9 @@ jobs:
           }
           Write-Host "✓ PowerShell syntax valid"
 
-      - name: Install Bun
-        shell: pwsh
-        run: irm bun.sh/install.ps1 | iex
-
       - name: Test install script
         shell: pwsh
         run: |
-          # Add bun to path
-          $env:BUN_INSTALL = "$env:USERPROFILE\.bun"
-          $env:PATH = "$env:BUN_INSTALL\bin;$env:PATH"
-
           # Create mock claude directory
           New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude" -Force | Out-Null
 
@@ -122,6 +131,13 @@ jobs:
             exit 1
           }
 
-          # Check permissions
+          if (Test-Path "$env:USERPROFILE\.claude\plugins\tenax\node_modules") {
+            Write-Host "✓ node_modules exists"
+          } else {
+            Write-Host "✗ node_modules missing"
+            exit 1
+          }
+
+          # Check settings
           Write-Host "=== Checking settings.json ==="
           Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json | ConvertTo-Json -Depth 10

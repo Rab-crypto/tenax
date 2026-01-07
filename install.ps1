@@ -48,38 +48,24 @@ function Write-Err { param([string]$Message); Write-Host "  X $Message" -Foregro
 
 function Test-Command { param([string]$Command); $null = Get-Command $Command -ErrorAction SilentlyContinue; return $? }
 
-function Install-Bun {
-    Write-Info "Installing Bun runtime..."
+function Check-NodeJs {
+    Write-Info "Checking Node.js..."
 
-    if (Test-Command "bun") {
-        $v = & bun --version 2>&1
-        Write-Success "Bun is already installed ($v)"
-        return
-    }
-
-    $bunExe = "$env:USERPROFILE\.bun\bin\bun.exe"
-    if (Test-Path $bunExe) {
-        $env:PATH = "$env:USERPROFILE\.bun\bin;$env:PATH"
-        Write-Success "Found Bun at $bunExe"
-        return
-    }
-
-    try {
-        irm bun.sh/install.ps1 | iex
-        $env:BUN_INSTALL = "$env:USERPROFILE\.bun"
-        $env:PATH = "$env:BUN_INSTALL\bin;$env:PATH"
-
-        if (Test-Command "bun") {
-            $v = & bun --version 2>&1
-            Write-Success "Bun installed ($v)"
+    if (Test-Command "node") {
+        $v = & node --version 2>&1
+        $major = [int]($v -replace 'v(\d+).*', '$1')
+        if ($major -ge 18) {
+            Write-Success "Node.js $v found"
+            return $true
         } else {
-            throw "Bun not available after install"
+            Write-Warn "Node.js $v found but v18+ required"
         }
-    } catch {
-        Write-Err "Bun installation failed: $_"
-        Write-Host "  Please install manually: irm bun.sh/install.ps1 | iex" -ForegroundColor Yellow
-        exit 1
     }
+
+    Write-Err "Node.js 18+ is required"
+    Write-Host "  Install from: https://nodejs.org" -ForegroundColor Yellow
+    Write-Host "  Or use nvm-windows: https://github.com/coreybutler/nvm-windows" -ForegroundColor Yellow
+    exit 1
 }
 
 function Install-Tenax {
@@ -114,7 +100,6 @@ function Install-Tenax {
             return
         } catch {
             Write-Warn "Git clone failed, downloading ZIP..."
-            # Clean up any partial clone
             if (Test-Path $TenaxDir) { Remove-Item -Path $TenaxDir -Recurse -Force }
         }
     }
@@ -126,7 +111,6 @@ function Install-Tenax {
         Write-Info "Downloading Tenax..."
         Invoke-WebRequest -Uri $TenaxZip -OutFile $zipPath -UseBasicParsing
         if (Test-Path $extractPath) { Remove-Item -Path $extractPath -Recurse -Force }
-        # Ensure target doesn't exist before move
         if (Test-Path $TenaxDir) { Remove-Item -Path $TenaxDir -Recurse -Force }
         Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
         $extractedDir = Get-ChildItem -Path $extractPath -Directory | Select-Object -First 1
@@ -145,12 +129,9 @@ function Install-Dependencies {
     $originalLocation = Get-Location
     try {
         Set-Location $TenaxDir
-        $bunExe = "$env:USERPROFILE\.bun\bin\bun.exe"
-        if (-not (Test-Path $bunExe)) { $bunExe = "bun" }
-        # Run bun install - use Start-Process to avoid ErrorActionPreference issues
-        $proc = Start-Process -FilePath $bunExe -ArgumentList "install" -Wait -PassThru -NoNewWindow
+        $proc = Start-Process -FilePath "npm" -ArgumentList "install" -Wait -PassThru -NoNewWindow
         if ($proc.ExitCode -ne 0) {
-            throw "bun install failed with exit code $($proc.ExitCode)"
+            throw "npm install failed with exit code $($proc.ExitCode)"
         }
         Write-Success "Dependencies installed"
     } catch {
@@ -171,7 +152,6 @@ function Configure-Claude {
 
     if (Test-Path $SettingsFile) {
         $content = Get-Content $SettingsFile -Raw -ErrorAction SilentlyContinue
-        # Check if local-plugins is already configured (simple string check to avoid parse issues)
         if ($content -and $content -match "local-plugins") {
             Write-Success "Claude Code already configured for local plugins"
             return
@@ -180,7 +160,6 @@ function Configure-Claude {
             $settings = $content | ConvertFrom-Json
             Copy-Item $SettingsFile "$SettingsFile.backup" -Force
             Write-Warn "Settings backed up to $SettingsFile.backup"
-            # extraKnownMarketplaces is an object with marketplace names as keys
             if (-not $settings.extraKnownMarketplaces) {
                 $settings | Add-Member -NotePropertyName "extraKnownMarketplaces" -NotePropertyValue @{} -Force
             }
@@ -190,7 +169,6 @@ function Configure-Claude {
             [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
             Write-Success "Claude Code configured"
         } catch {
-            # Don't overwrite on parse error - just warn user
             Write-Warn "Could not parse existing settings.json"
             Write-Warn "Please manually add local-plugins marketplace to $SettingsFile"
             Write-Host ""
@@ -198,7 +176,6 @@ function Configure-Claude {
             Write-Host '    "local-plugins": {"source":{"source":"directory","path":"~/.claude/plugins"}}' -ForegroundColor Cyan
         }
     } else {
-        # Create new settings with correct object format
         $json = @'
 {
   "extraKnownMarketplaces": {
@@ -219,10 +196,7 @@ function Configure-Claude {
 function Configure-Permissions {
     Write-Info "Setting up Tenax permissions..."
 
-    # Build permissions - no quotes around path, :* at end for prefix matching
-    $bunPath = "$env:USERPROFILE\.bun\bin\bun.exe"
-    $escapedPath = $bunPath.Replace('\', '\\')
-    $bunPerm = "Bash($escapedPath`:*)"
+    # Permission for skill invocation
     $skillPerm = "Skill(tenax:*)"
 
     if (Test-Path $SettingsFile) {
@@ -235,10 +209,6 @@ function Configure-Permissions {
                 $settings.permissions | Add-Member -NotePropertyName "allow" -NotePropertyValue @()
             }
             $added = $false
-            if ($settings.permissions.allow -notcontains $bunPerm) {
-                $settings.permissions.allow += $bunPerm
-                $added = $true
-            }
             if ($settings.permissions.allow -notcontains $skillPerm) {
                 $settings.permissions.allow += $skillPerm
                 $added = $true
@@ -246,7 +216,7 @@ function Configure-Permissions {
             if ($added) {
                 $json = $settings | ConvertTo-Json -Depth 10
                 [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
-                Write-Success "Permissions configured (bun.exe + skills auto-approved)"
+                Write-Success "Permissions configured (skills auto-approved)"
             } else {
                 Write-Success "Permissions already configured"
             }
@@ -273,7 +243,7 @@ Write-Banner
 if (-not (Test-Command "claude")) {
     Write-Warn "Claude Code CLI not found - install from https://claude.ai/code"
 }
-Install-Bun
+Check-NodeJs
 Install-Tenax
 Install-Dependencies
 Configure-Claude

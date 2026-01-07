@@ -3,6 +3,7 @@
  * Parses the transcript format and extracts structured data
  */
 
+import { readFile, access } from "node:fs/promises";
 import type { TranscriptEntry, TranscriptMessage, TranscriptToolUse, TranscriptToolResult } from "./types";
 
 export interface ParsedTranscript {
@@ -17,13 +18,20 @@ export interface ParsedTranscript {
   fullText: string;
 }
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Parse a JSONL transcript file
  */
 export async function parseTranscript(path: string): Promise<ParsedTranscript> {
-  const file = Bun.file(path);
-
-  if (!(await file.exists())) {
+  if (!(await fileExists(path))) {
     return {
       entries: [],
       userMessages: [],
@@ -33,7 +41,7 @@ export async function parseTranscript(path: string): Promise<ParsedTranscript> {
     };
   }
 
-  const text = await file.text();
+  const text = await readFile(path, "utf8");
   return parseTranscriptText(text);
 }
 

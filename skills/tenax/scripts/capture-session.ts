@@ -1,10 +1,11 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Capture and process session on SessionEnd hook
  * Reads transcript, extracts knowledge, generates embeddings, and stores data
  */
 
+import { readFile, access } from "node:fs/promises";
 import type { HookInput, ProcessedSession, FileChange, EmbeddingEntry } from "../lib/types";
 import {
   loadIndex,
@@ -33,24 +34,31 @@ import {
   createSessionText,
 } from "../lib/embeddings";
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main(): Promise<void> {
   try {
-    // Read hook input from stdin or file argument
+    // Read hook input from file argument (passed by run.cjs)
     let stdin: string;
 
-    // Check if input file is provided as argument
-    const inputArg = Bun.argv[2];
+    const inputArg = process.argv[2];
     if (inputArg && inputArg.endsWith(".json")) {
-      const file = Bun.file(inputArg);
-      if (await file.exists()) {
-        stdin = await file.text();
+      if (await fileExists(inputArg)) {
+        stdin = await readFile(inputArg, "utf8");
       } else {
         console.error(`Input file not found: ${inputArg}`);
         process.exit(0);
       }
     } else {
-      // Read from stdin (for real hook usage)
-      stdin = await Bun.stdin.text();
+      console.error("No input file provided");
+      process.exit(0);
     }
 
     if (!stdin.trim()) {

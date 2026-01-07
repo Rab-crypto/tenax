@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Manually save/capture the current session
@@ -44,7 +44,7 @@ interface SaveOutput {
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       transcript: { type: "string", short: "t" },
       "session-id": { type: "string", short: "s" },

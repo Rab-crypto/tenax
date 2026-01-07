@@ -1,4 +1,4 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile, unlink, access, stat, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import type {
   Config,
@@ -7,6 +7,53 @@ import type {
   SessionMetadata,
 } from "./types";
 import { DEFAULT_CONFIG as defaultConfig, DEFAULT_INDEX as defaultIndex } from "./types";
+
+// ============================================
+// FILE UTILITY FUNCTIONS (Node.js replacements for Bun APIs)
+// ============================================
+
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function readJsonFile<T>(path: string): Promise<T | null> {
+  try {
+    const content = await readFile(path, "utf8");
+    return JSON.parse(content) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function readTextFile(path: string): Promise<string | null> {
+  try {
+    return await readFile(path, "utf8");
+  } catch {
+    return null;
+  }
+}
+
+async function writeJsonFile(path: string, data: unknown): Promise<void> {
+  await writeFile(path, JSON.stringify(data, null, 2), "utf8");
+}
+
+async function writeTextFile(path: string, content: string): Promise<void> {
+  await writeFile(path, content, "utf8");
+}
+
+async function getFileSize(path: string): Promise<number> {
+  try {
+    const stats = await stat(path);
+    return stats.size;
+  } catch {
+    return 0;
+  }
+}
 
 // ============================================
 // PATH UTILITIES
@@ -85,20 +132,13 @@ export async function initializeMemoryDirectory(projectRoot?: string): Promise<v
 
 export async function loadConfig(projectRoot?: string): Promise<Config> {
   const configPath = getConfigPath(projectRoot);
-  try {
-    const file = Bun.file(configPath);
-    if (await file.exists()) {
-      return await file.json();
-    }
-  } catch {
-    // Config doesn't exist or is invalid
-  }
-  return { ...defaultConfig };
+  const config = await readJsonFile<Config>(configPath);
+  return config ?? { ...defaultConfig };
 }
 
 export async function saveConfig(config: Config, projectRoot?: string): Promise<void> {
   const configPath = getConfigPath(projectRoot);
-  await Bun.write(configPath, JSON.stringify(config, null, 2));
+  await writeJsonFile(configPath, config);
 }
 
 // ============================================
@@ -107,15 +147,8 @@ export async function saveConfig(config: Config, projectRoot?: string): Promise<
 
 export async function loadIndex(projectRoot?: string): Promise<ProjectIndex> {
   const indexPath = getIndexPath(projectRoot);
-  try {
-    const file = Bun.file(indexPath);
-    if (await file.exists()) {
-      return await file.json();
-    }
-  } catch {
-    // Index doesn't exist or is invalid
-  }
-  return {
+  const index = await readJsonFile<ProjectIndex>(indexPath);
+  return index ?? {
     ...defaultIndex,
     projectPath: projectRoot || getProjectRoot(),
     lastUpdated: new Date().toISOString(),
@@ -125,7 +158,7 @@ export async function loadIndex(projectRoot?: string): Promise<ProjectIndex> {
 export async function saveIndex(index: ProjectIndex, projectRoot?: string): Promise<void> {
   const indexPath = getIndexPath(projectRoot);
   index.lastUpdated = new Date().toISOString();
-  await Bun.write(indexPath, JSON.stringify(index, null, 2));
+  await writeJsonFile(indexPath, index);
 }
 
 // ============================================
@@ -166,15 +199,7 @@ export async function loadSession(
   projectRoot?: string
 ): Promise<ProcessedSession | null> {
   const sessionPath = getSessionPath(sessionId, projectRoot);
-  try {
-    const file = Bun.file(sessionPath);
-    if (await file.exists()) {
-      return await file.json();
-    }
-  } catch {
-    // Session doesn't exist or is invalid
-  }
-  return null;
+  return await readJsonFile<ProcessedSession>(sessionPath);
 }
 
 export async function saveSession(
@@ -182,7 +207,7 @@ export async function saveSession(
   projectRoot?: string
 ): Promise<void> {
   const sessionPath = getSessionPath(session.metadata.id, projectRoot);
-  await Bun.write(sessionPath, JSON.stringify(session, null, 2));
+  await writeJsonFile(sessionPath, session);
 }
 
 export async function loadSessions(
@@ -201,37 +226,33 @@ export async function loadSessions(
 
 export async function sessionExists(sessionId: string, projectRoot?: string): Promise<boolean> {
   const sessionPath = getSessionPath(sessionId, projectRoot);
-  const file = Bun.file(sessionPath);
-  return await file.exists();
+  return await fileExists(sessionPath);
 }
 
 export async function listSessionFiles(projectRoot?: string): Promise<string[]> {
   const sessionsPath = getSessionsPath(projectRoot);
-  const glob = new Bun.Glob("*.json");
-  const files: string[] = [];
-
-  for await (const file of glob.scan({ cwd: sessionsPath })) {
-    // Extract session ID from filename (e.g., "001.json" -> "001")
-    const id = file.replace(".json", "");
-    files.push(id);
+  try {
+    const files = await readdir(sessionsPath);
+    return files
+      .filter(f => f.endsWith(".json"))
+      .map(f => f.replace(".json", ""))
+      .sort();
+  } catch {
+    return [];
   }
-
-  return files.sort();
 }
 
 /**
  * Delete a session and its associated data
  */
 export async function deleteSession(sessionId: string, projectRoot?: string): Promise<void> {
-  const fs = await import("node:fs/promises");
-
   // Delete session JSON file
   const sessionPath = getSessionPath(sessionId, projectRoot);
-  await fs.unlink(sessionPath).catch(() => {});
+  await unlink(sessionPath).catch(() => {});
 
   // Delete transcript JSONL file
   const transcriptPath = getSessionTranscriptPath(sessionId, projectRoot);
-  await fs.unlink(transcriptPath).catch(() => {});
+  await unlink(transcriptPath).catch(() => {});
 }
 
 /**
@@ -283,11 +304,9 @@ export async function copyTranscript(
   projectRoot?: string
 ): Promise<void> {
   const destPath = getSessionTranscriptPath(sessionId, projectRoot);
-  const sourceFile = Bun.file(sourcePath);
-
-  if (await sourceFile.exists()) {
-    const content = await sourceFile.text();
-    await Bun.write(destPath, content);
+  const content = await readTextFile(sourcePath);
+  if (content !== null) {
+    await writeTextFile(destPath, content);
   }
 }
 
@@ -296,15 +315,7 @@ export async function loadTranscript(
   projectRoot?: string
 ): Promise<string | null> {
   const transcriptPath = getSessionTranscriptPath(sessionId, projectRoot);
-  try {
-    const file = Bun.file(transcriptPath);
-    if (await file.exists()) {
-      return await file.text();
-    }
-  } catch {
-    // Transcript doesn't exist
-  }
-  return null;
+  return await readTextFile(transcriptPath);
 }
 
 // ============================================
@@ -332,14 +343,13 @@ async function acquireLock(projectRoot?: string, maxWaitMs: number = 5000): Prom
 
   while (Date.now() - startTime < maxWaitMs) {
     try {
-      const lockFile = Bun.file(lockPath);
-      if (await lockFile.exists()) {
+      if (await fileExists(lockPath)) {
         // Check if lock is stale (older than 30 seconds)
-        const lockContent = await lockFile.text();
-        const lockTime = parseInt(lockContent, 10);
+        const lockContent = await readTextFile(lockPath);
+        const lockTime = parseInt(lockContent || "", 10);
         if (!isNaN(lockTime) && Date.now() - lockTime > 30000) {
           // Stale lock, remove it
-          await Bun.write(lockPath, String(Date.now()));
+          await writeTextFile(lockPath, String(Date.now()));
           return true;
         }
         // Lock exists and is fresh, wait and retry
@@ -347,7 +357,7 @@ async function acquireLock(projectRoot?: string, maxWaitMs: number = 5000): Prom
         continue;
       }
       // Create lock
-      await Bun.write(lockPath, String(Date.now()));
+      await writeTextFile(lockPath, String(Date.now()));
       return true;
     } catch {
       // Retry on error
@@ -360,14 +370,7 @@ async function acquireLock(projectRoot?: string, maxWaitMs: number = 5000): Prom
 async function releaseLock(projectRoot?: string): Promise<void> {
   const lockPath = getLockFilePath(projectRoot);
   try {
-    const file = Bun.file(lockPath);
-    if (await file.exists()) {
-      // Use unlink equivalent - write empty and let it be overwritten
-      await Bun.write(lockPath, "");
-      // Actually remove the file by using the fs module
-      const fs = await import("node:fs/promises");
-      await fs.unlink(lockPath).catch(() => {});
-    }
+    await unlink(lockPath).catch(() => {});
   } catch {
     // Ignore errors during lock release
   }
@@ -375,15 +378,8 @@ async function releaseLock(projectRoot?: string): Promise<void> {
 
 export async function loadTempFileChanges(projectRoot?: string): Promise<TempFileChange[]> {
   const tempPath = getTempFilePath(projectRoot);
-  try {
-    const file = Bun.file(tempPath);
-    if (await file.exists()) {
-      return await file.json();
-    }
-  } catch {
-    // File doesn't exist or is invalid
-  }
-  return [];
+  const changes = await readJsonFile<TempFileChange[]>(tempPath);
+  return changes ?? [];
 }
 
 export async function saveTempFileChanges(
@@ -391,7 +387,7 @@ export async function saveTempFileChanges(
   projectRoot?: string
 ): Promise<void> {
   const tempPath = getTempFilePath(projectRoot);
-  await Bun.write(tempPath, JSON.stringify(changes, null, 2));
+  await writeJsonFile(tempPath, changes);
 }
 
 export async function appendTempFileChange(
@@ -418,7 +414,7 @@ export async function appendTempFileChange(
 export async function clearTempFileChanges(projectRoot?: string): Promise<void> {
   const tempPath = getTempFilePath(projectRoot);
   try {
-    await Bun.write(tempPath, "[]");
+    await writeJsonFile(tempPath, []);
   } catch {
     // Ignore errors
   }
@@ -430,8 +426,7 @@ export async function clearTempFileChanges(projectRoot?: string): Promise<void> 
 
 export async function isMemoryInitialized(projectRoot?: string): Promise<boolean> {
   const indexPath = getIndexPath(projectRoot);
-  const file = Bun.file(indexPath);
-  return await file.exists();
+  return await fileExists(indexPath);
 }
 
 // ============================================
@@ -444,24 +439,14 @@ export async function getStorageSize(projectRoot?: string): Promise<{
   embeddings: number;
   total: number;
 }> {
-  const indexFile = Bun.file(getIndexPath(projectRoot));
-  const embeddingsFile = Bun.file(getEmbeddingsDbPath(projectRoot));
-
-  const indexSize = (await indexFile.exists()) ? indexFile.size : 0;
-  const embeddingsSize = (await embeddingsFile.exists()) ? embeddingsFile.size : 0;
+  const indexSize = await getFileSize(getIndexPath(projectRoot));
+  const embeddingsSize = await getFileSize(getEmbeddingsDbPath(projectRoot));
 
   let sessionsSize = 0;
   const sessionIds = await listSessionFiles(projectRoot);
   for (const id of sessionIds) {
-    const sessionFile = Bun.file(getSessionPath(id, projectRoot));
-    const transcriptFile = Bun.file(getSessionTranscriptPath(id, projectRoot));
-
-    if (await sessionFile.exists()) {
-      sessionsSize += sessionFile.size;
-    }
-    if (await transcriptFile.exists()) {
-      sessionsSize += transcriptFile.size;
-    }
+    sessionsSize += await getFileSize(getSessionPath(id, projectRoot));
+    sessionsSize += await getFileSize(getSessionTranscriptPath(id, projectRoot));
   }
 
   return {

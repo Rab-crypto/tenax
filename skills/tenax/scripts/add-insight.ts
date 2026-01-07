@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Add a new insight
@@ -21,7 +21,7 @@ import { getEmbedding, createInsightText } from "../lib/embeddings";
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       context: { type: "string", short: "c" },
       session: { type: "string", short: "s" },

@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Get a single session by ID
@@ -12,7 +12,7 @@ import { countObjectTokens, formatTokenInfo } from "../lib/tokenizer";
 
 async function main(): Promise<void> {
   const { positionals } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     strict: false,
     allowPositionals: true,
   });

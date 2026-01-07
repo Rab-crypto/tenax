@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Create a backup of all Tenax data
@@ -7,6 +7,7 @@
 
 import { parseArgs } from "util";
 import { join, relative } from "node:path";
+import { readFile, writeFile, stat, readdir } from "node:fs/promises";
 import type { ScriptOutput } from "../lib/types";
 import { getProjectRoot, getMemoryPath, isMemoryInitialized } from "../lib/storage";
 
@@ -30,32 +31,38 @@ interface BackupOutput {
   fileCount: number;
 }
 
-async function collectFiles(dir: string, baseDir: string): Promise<BackupFile[]> {
+async function collectFilesRecursively(dir: string, baseDir: string): Promise<BackupFile[]> {
   const files: BackupFile[] = [];
-  const glob = new Bun.Glob("**/*");
 
-  for await (const filePath of glob.scan({ cwd: dir, onlyFiles: true })) {
-    const fullPath = join(dir, filePath);
-    const file = Bun.file(fullPath);
+  async function walkDir(currentDir: string): Promise<void> {
+    const entries = await readdir(currentDir, { withFileTypes: true });
 
-    if (await file.exists()) {
-      const content = await file.arrayBuffer();
-      const relativePath = relative(baseDir, fullPath);
+    for (const entry of entries) {
+      const fullPath = join(currentDir, entry.name);
 
-      files.push({
-        path: relativePath.replace(/\\/g, "/"), // Normalize path separators
-        content: Buffer.from(content).toString("base64"),
-        size: file.size,
-      });
+      if (entry.isDirectory()) {
+        await walkDir(fullPath);
+      } else if (entry.isFile()) {
+        const content = await readFile(fullPath);
+        const stats = await stat(fullPath);
+        const relativePath = relative(baseDir, fullPath);
+
+        files.push({
+          path: relativePath.replace(/\\/g, "/"), // Normalize path separators
+          content: content.toString("base64"),
+          size: stats.size,
+        });
+      }
     }
   }
 
+  await walkDir(dir);
   return files;
 }
 
 async function main(): Promise<void> {
   const { values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       output: { type: "string", short: "o" },
     },
@@ -83,7 +90,7 @@ async function main(): Promise<void> {
     const backupPath = (values.output as string) || join(projectRoot, defaultBackupName);
 
     // Collect all files from memory directory
-    const files = await collectFiles(memoryPath, projectRoot);
+    const files = await collectFilesRecursively(memoryPath, projectRoot);
 
     // Create backup data structure
     const backupData: BackupData = {
@@ -95,10 +102,10 @@ async function main(): Promise<void> {
 
     // Write backup file
     const backupContent = JSON.stringify(backupData, null, 2);
-    await Bun.write(backupPath, backupContent);
+    await writeFile(backupPath, backupContent, "utf8");
 
-    const backupFile = Bun.file(backupPath);
-    const size = backupFile.size;
+    const stats = await stat(backupPath);
+    const size = stats.size;
 
     const backupOutput: BackupOutput = {
       backupPath,

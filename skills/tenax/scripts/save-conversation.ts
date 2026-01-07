@@ -1,10 +1,11 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Save all knowledge from conversation text in one go
  * Takes conversation content as input and extracts decisions, patterns, tasks, insights
  */
 
+import { readFile, access } from "node:fs/promises";
 import type { ScriptOutput, EmbeddingEntry, Decision, Pattern, Task, Insight } from "../lib/types";
 import {
   loadIndex,
@@ -40,32 +41,41 @@ interface SaveOutput {
   };
 }
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main(): Promise<void> {
   const output: ScriptOutput<SaveOutput> = {
     success: false,
     message: "",
   };
 
-  // Read conversation text from stdin or file argument
+  // Read conversation text from file argument (passed by run.cjs)
   let conversationText: string;
 
-  const inputArg = Bun.argv[2];
+  const inputArg = process.argv[2];
   if (inputArg && (inputArg.endsWith(".txt") || inputArg.endsWith(".md") || inputArg.endsWith(".jsonl"))) {
-    const file = Bun.file(inputArg);
-    if (await file.exists()) {
-      conversationText = await file.text();
+    if (await fileExists(inputArg)) {
+      conversationText = await readFile(inputArg, "utf8");
     } else {
       output.message = `Input file not found: ${inputArg}`;
       console.log(JSON.stringify(output, null, 2));
       process.exit(1);
     }
   } else {
-    // Read from stdin
-    conversationText = await Bun.stdin.text();
+    output.message = "No input file provided. Usage: save-conversation.ts <conversation.txt>";
+    console.log(JSON.stringify(output, null, 2));
+    process.exit(1);
   }
 
   if (!conversationText.trim()) {
-    output.message = "No conversation text provided. Usage: save-conversation.ts < conversation.txt";
+    output.message = "No conversation text provided";
     console.log(JSON.stringify(output, null, 2));
     process.exit(1);
   }

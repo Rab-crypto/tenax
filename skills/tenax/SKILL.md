@@ -23,13 +23,13 @@ description: |
 
 ### At Session Start
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
 ```
 Do this FIRST, before responding to any user request.
 
 ### Before Any Decision
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
 ```
 Search BEFORE proposing solutions, architecture, or making choices.
 
@@ -54,7 +54,7 @@ When user asks: "Should we use SQLite or PostgreSQL?"
 
 **Step 1: Search first**
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "database"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "database"
 ```
 
 **Step 2: Respond with marker**
@@ -78,7 +78,7 @@ The `[D]` marker labels your explanation - no duplication needed.
 At conversation start, load project context:
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
 ```
 
 Then acknowledge: "Loaded project memory: X sessions, Y decisions."
@@ -118,7 +118,7 @@ Everything between the marker and the blank line is captured.
 Before making architecture, library, or pattern decisions:
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
 ```
 
 **If results found:** Reference them - "Based on session 003, we decided to use X..."
@@ -133,13 +133,13 @@ bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
 
 **Single items:**
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-decision.ts" -t "<topic>" -r "<rationale>" "<decision>"
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-pattern.ts" -n "<name>" -u "<usage>" "<description>"
 ```
 
 **Batch recording (single permission):**
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '<json>'
+npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '<json>'
 ```
 
 Batch JSON format:
@@ -228,7 +228,7 @@ When session data is loaded, cite it:
 ```
 Based on the decision from session 003, we're using SQLite.
 Following the error-handling pattern from session 002...
-Session 004 noted that Bun.stdin.text() hangs in subprocesses.
+Session 004 noted important subprocess handling considerations.
 ```
 
 This creates continuity across sessions.

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Launcher script that runs Bun scripts using the cached Bun path.
- * This allows hooks to work regardless of whether Bun is in PATH.
+ * Launcher script that runs TypeScript scripts using tsx.
+ * This handles stdin data for hooks (tsx doesn't support direct stdin reading well).
  *
- * Usage: node run.js <script-name> [args...]
+ * Usage: node run.cjs <script-name> [args...]
  *
  * Script names map to files in skills/tenax/scripts/:
  *   - capture-session -> capture-session.ts
@@ -19,12 +19,11 @@ const path = require("path");
 const os = require("os");
 
 const PLUGIN_ROOT = path.join(__dirname, "..");
-const BUN_PATH_FILE = path.join(PLUGIN_ROOT, ".bun-path");
 const SCRIPTS_DIR = path.join(PLUGIN_ROOT, "skills", "tenax", "scripts");
 
 /**
  * Read all stdin data (for hook input).
- * Bun.stdin.text() hangs in subprocesses, so we read in Node and pass via temp file.
+ * We read in Node and pass via temp file since tsx subprocess stdin can be tricky.
  */
 async function readStdin() {
   return new Promise((resolve) => {
@@ -52,8 +51,7 @@ async function readStdin() {
       }
     });
 
-    // Longer timeout - hook data can take time to arrive
-    // Only timeout if no data has been received at all
+    // Timeout if no data received
     setTimeout(() => {
       if (!resolved && chunks.length === 0) {
         resolved = true;
@@ -63,51 +61,27 @@ async function readStdin() {
   });
 }
 
-function getBunPath() {
-  // Try cached path first
-  if (fs.existsSync(BUN_PATH_FILE)) {
-    const cachedPath = fs.readFileSync(BUN_PATH_FILE, "utf8").trim();
-    if (fs.existsSync(cachedPath)) {
-      return cachedPath;
-    }
-  }
-
-  // Fallback: try to find bun in common locations
+/**
+ * Get the path to tsx executable
+ */
+function getTsxPath() {
   const isWindows = process.platform === "win32";
-  const home = require("os").homedir();
 
-  const candidates = isWindows
-    ? [
-        path.join(home, ".bun", "bin", "bun.exe"),
-        "bun.exe",
-        "bun",
-      ]
-    : [
-        path.join(home, ".bun", "bin", "bun"),
-        "/usr/local/bin/bun",
-        "/opt/homebrew/bin/bun",
-        "bun",
-      ];
-
-  for (const candidate of candidates) {
-    try {
-      if (path.isAbsolute(candidate) && fs.existsSync(candidate)) {
-        return candidate;
-      }
-    } catch {
-      // Continue to next candidate
-    }
+  // Try local node_modules first
+  const localTsx = path.join(PLUGIN_ROOT, "node_modules", ".bin", isWindows ? "tsx.cmd" : "tsx");
+  if (fs.existsSync(localTsx)) {
+    return localTsx;
   }
 
-  // Last resort
-  return "bun";
+  // Fall back to npx tsx
+  return null;
 }
 
 async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error("Usage: node run.js <script-name> [args...]");
+    console.error("Usage: node run.cjs <script-name> [args...]");
     console.error("Available scripts: capture-session, track-file, search, init, stats");
     process.exit(1);
   }
@@ -123,9 +97,7 @@ async function main() {
     process.exit(1);
   }
 
-  const bunPath = getBunPath();
-
-  // Read stdin and save to temp file (Bun.stdin.text() hangs in subprocesses)
+  // Read stdin and save to temp file
   const stdinData = await readStdin();
   let tempFile = null;
 
@@ -135,19 +107,38 @@ async function main() {
     scriptArgs.push(tempFile);
   }
 
-  // Spawn bun with the script
-  const child = spawn(bunPath, [scriptPath, ...scriptArgs], {
-    stdio: "inherit",
-    cwd: PLUGIN_ROOT,
-    env: {
-      ...process.env,
-      CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT,
-    },
-  });
+  // Get tsx path
+  const tsxPath = getTsxPath();
+
+  let child;
+  if (tsxPath) {
+    // Use local tsx
+    child = spawn(tsxPath, [scriptPath, ...scriptArgs], {
+      stdio: "inherit",
+      cwd: PLUGIN_ROOT,
+      env: {
+        ...process.env,
+        CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT,
+      },
+      shell: process.platform === "win32",
+    });
+  } else {
+    // Use npx tsx
+    const isWindows = process.platform === "win32";
+    child = spawn(isWindows ? "npx.cmd" : "npx", ["tsx", scriptPath, ...scriptArgs], {
+      stdio: "inherit",
+      cwd: PLUGIN_ROOT,
+      env: {
+        ...process.env,
+        CLAUDE_PLUGIN_ROOT: PLUGIN_ROOT,
+      },
+      shell: isWindows,
+    });
+  }
 
   child.on("error", (err) => {
-    console.error(`Failed to start Bun: ${err.message}`);
-    console.error("Please ensure Bun is installed: https://bun.sh");
+    console.error(`Failed to start tsx: ${err.message}`);
+    console.error("Please ensure dependencies are installed: npm install");
     if (tempFile) fs.unlinkSync(tempFile);
     process.exit(1);
   });

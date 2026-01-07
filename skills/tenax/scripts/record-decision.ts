@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Record a new decision
@@ -22,7 +22,7 @@ import { getEmbedding, createDecisionText } from "../lib/embeddings";
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       topic: { type: "string", short: "t" },
       rationale: { type: "string", short: "r" },

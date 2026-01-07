@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Export Tenax to various formats
@@ -7,7 +7,7 @@
 
 import { parseArgs } from "util";
 import { join } from "node:path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import type { ScriptOutput, ExportFormat, ExportOptions } from "../lib/types";
 import { loadIndex, loadSession, getProjectRoot, isMemoryInitialized } from "../lib/storage";
 
@@ -19,7 +19,7 @@ interface ExportOutput {
 
 async function main(): Promise<void> {
   const { values, positionals } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       format: { type: "string", short: "f" },
       output: { type: "string", short: "o" },
@@ -114,7 +114,7 @@ async function exportMarkdown(
       md += `*Recorded: ${decision.timestamp}*\n\n---\n\n`;
       count++;
     }
-    await Bun.write(join(outputDir, "decisions.md"), md);
+    await writeFile(join(outputDir, "decisions.md"), md, "utf8");
   }
 
   // Export patterns
@@ -129,7 +129,7 @@ async function exportMarkdown(
       md += `*Recorded: ${pattern.timestamp}*\n\n---\n\n`;
       count++;
     }
-    await Bun.write(join(outputDir, "patterns.md"), md);
+    await writeFile(join(outputDir, "patterns.md"), md, "utf8");
   }
 
   // Export tasks
@@ -155,7 +155,7 @@ async function exportMarkdown(
       }
       md += "\n";
     }
-    await Bun.write(join(outputDir, "tasks.md"), md);
+    await writeFile(join(outputDir, "tasks.md"), md, "utf8");
   }
 
   // Export insights
@@ -169,7 +169,7 @@ async function exportMarkdown(
       md += "\n";
       count++;
     }
-    await Bun.write(join(outputDir, "insights.md"), md);
+    await writeFile(join(outputDir, "insights.md"), md, "utf8");
   }
 
   // Export sessions (optional)
@@ -197,7 +197,7 @@ async function exportMarkdown(
           }
         }
 
-        await Bun.write(join(outputDir, "sessions", `${session.metadata.id}.md`), md);
+        await writeFile(join(outputDir, "sessions", `${session.metadata.id}.md`), md, "utf8");
         count++;
       }
     }
@@ -215,7 +215,7 @@ async function exportJson(
   let count = 0;
 
   // Export full index
-  await Bun.write(join(outputDir, "index.json"), JSON.stringify(index, null, 2));
+  await writeFile(join(outputDir, "index.json"), JSON.stringify(index, null, 2), "utf8");
   count = index.decisions.length + index.patterns.length + index.tasks.length + index.insights.length;
 
   // Export sessions (optional)
@@ -224,9 +224,10 @@ async function exportJson(
     for (const sessionMeta of index.sessions) {
       const session = await loadSession(sessionMeta.id, projectRoot);
       if (session) {
-        await Bun.write(
+        await writeFile(
           join(outputDir, "sessions", `${session.metadata.id}.json`),
-          JSON.stringify(session, null, 2)
+          JSON.stringify(session, null, 2),
+          "utf8"
         );
         count++;
       }
@@ -259,7 +260,7 @@ async function exportObsidian(
     if (decision.rationale) {
       md += `## Rationale\n\n${decision.rationale}\n`;
     }
-    await Bun.write(join(outputDir, "Decisions", filename), md);
+    await writeFile(join(outputDir, "Decisions", filename), md, "utf8");
     count++;
   }
 
@@ -272,7 +273,7 @@ async function exportObsidian(
     if (pattern.usage) {
       md += `## Usage\n\n${pattern.usage}\n`;
     }
-    await Bun.write(join(outputDir, "Patterns", filename), md);
+    await writeFile(join(outputDir, "Patterns", filename), md, "utf8");
     count++;
   }
 
@@ -285,7 +286,7 @@ async function exportObsidian(
     tasksMd += "\n";
     count++;
   }
-  await Bun.write(join(outputDir, "Tasks", "all-tasks.md"), tasksMd);
+  await writeFile(join(outputDir, "Tasks", "all-tasks.md"), tasksMd, "utf8");
 
   // Export insights
   for (const insight of index.insights) {
@@ -295,7 +296,7 @@ async function exportObsidian(
     if (insight.context) {
       md += `\n\n## Context\n\n${insight.context}`;
     }
-    await Bun.write(join(outputDir, "Insights", filename), md);
+    await writeFile(join(outputDir, "Insights", filename), md, "utf8");
     count++;
   }
 

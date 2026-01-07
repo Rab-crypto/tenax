@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Get multiple sessions by IDs or recent N sessions
@@ -18,7 +18,7 @@ interface SessionsOutput {
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       recent: { type: "string", short: "r" },
       budget: { type: "string", short: "b" },

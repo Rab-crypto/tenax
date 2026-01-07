@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Restore Tenax from a backup
@@ -7,7 +7,7 @@
 
 import { parseArgs } from "util";
 import { join, dirname } from "node:path";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile, writeFile, access } from "node:fs/promises";
 import type { ScriptOutput } from "../lib/types";
 import { getProjectRoot, getMemoryPath } from "../lib/storage";
 
@@ -31,9 +31,18 @@ interface RestoreOutput {
   backupTimestamp: string;
 }
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       force: { type: "boolean", short: "f" },
     },
@@ -58,8 +67,7 @@ async function main(): Promise<void> {
   const projectRoot = getProjectRoot();
 
   try {
-    const backupFile = Bun.file(backupPath);
-    if (!(await backupFile.exists())) {
+    if (!(await fileExists(backupPath))) {
       output.message = `Backup file not found: ${backupPath}`;
       console.log(JSON.stringify(output, null, 2));
       process.exit(1);
@@ -69,8 +77,7 @@ async function main(): Promise<void> {
 
     // Check if memory already exists
     if (!force) {
-      const indexFile = Bun.file(join(memoryPath, "index.json"));
-      if (await indexFile.exists()) {
+      if (await fileExists(join(memoryPath, "index.json"))) {
         output.message = "Project memory already exists. Use --force to overwrite.";
         console.log(JSON.stringify(output, null, 2));
         process.exit(1);
@@ -78,7 +85,7 @@ async function main(): Promise<void> {
     }
 
     // Read and parse backup file
-    const backupContent = await backupFile.text();
+    const backupContent = await readFile(backupPath, "utf8");
     const backupData: BackupData = JSON.parse(backupContent);
 
     // Validate backup format
@@ -97,7 +104,7 @@ async function main(): Promise<void> {
 
       // Decode and write file content
       const content = Buffer.from(file.content, "base64");
-      await Bun.write(targetPath, content);
+      await writeFile(targetPath, content);
       restoredCount++;
     }
 

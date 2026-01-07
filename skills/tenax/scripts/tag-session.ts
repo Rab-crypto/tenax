@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Add or remove tags from a session
@@ -16,7 +16,7 @@ interface TagOutput {
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       remove: { type: "boolean", short: "r" },
     },

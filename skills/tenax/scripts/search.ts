@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Semantic search across all Tenax
@@ -20,7 +20,7 @@ interface SearchOutput {
 
 async function main(): Promise<void> {
   const { positionals, values } = parseArgs({
-    args: Bun.argv.slice(2),
+    args: process.argv.slice(2),
     options: {
       type: { type: "string", short: "t" },
       limit: { type: "string", short: "l" },

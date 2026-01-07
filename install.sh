@@ -18,28 +18,23 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-# Override with TENAX_REPO environment variable if needed
 TENAX_REPO="${TENAX_REPO:-https://github.com/Rab-crypto/tenax.git}"
 TENAX_DIR="$HOME/.claude/plugins/tenax"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
 print_banner() {
     echo ""
-    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║${NC}                                                           ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}   ${BOLD}Tenax Installer${NC}                                       ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}   Persistent project memory for Claude Code              ${CYAN}║${NC}"
-    echo -e "${CYAN}║${NC}                                                           ${CYAN}║${NC}"
-    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${CYAN}  Tenax Installer${NC}"
+    echo -e "  Persistent project memory for Claude Code"
     echo ""
 }
 
 info() {
-    echo -e "${BLUE}→${NC} $1"
+    echo -e "${BLUE}>${NC} $1"
 }
 
 success() {
-    echo -e "${GREEN}✓${NC} $1"
+    echo -e "${GREEN}+${NC} $1"
 }
 
 warn() {
@@ -47,7 +42,7 @@ warn() {
 }
 
 error() {
-    echo -e "${RED}✗${NC} $1"
+    echo -e "${RED}X${NC} $1"
 }
 
 check_command() {
@@ -62,33 +57,24 @@ detect_os() {
     esac
 }
 
-install_bun() {
-    info "Installing Bun runtime..."
+check_nodejs() {
+    info "Checking Node.js..."
 
-    if check_command bun; then
-        success "Bun is already installed ($(bun --version))"
-        return 0
+    if check_command node; then
+        local version=$(node --version)
+        local major=$(echo "$version" | sed 's/v\([0-9]*\).*/\1/')
+        if [ "$major" -ge 18 ]; then
+            success "Node.js $version found"
+            return 0
+        else
+            warn "Node.js $version found but v18+ required"
+        fi
     fi
 
-    # Check for curl
-    if ! check_command curl; then
-        error "curl is required but not installed."
-        error "Install it with your package manager (apt, yum, brew, etc.)"
-        exit 1
-    fi
-
-    curl -fsSL https://bun.sh/install | bash
-
-    # Add to current session (sourcing shell rc files can fail when piped)
-    export BUN_INSTALL="$HOME/.bun"
-    export PATH="$BUN_INSTALL/bin:$PATH"
-
-    if check_command bun; then
-        success "Bun installed successfully ($(bun --version))"
-    else
-        error "Bun installation failed. Please install manually: https://bun.sh"
-        exit 1
-    fi
+    error "Node.js 18+ is required"
+    echo "  Install from: https://nodejs.org"
+    echo "  Or use nvm: https://github.com/nvm-sh/nvm"
+    exit 1
 }
 
 install_tenax() {
@@ -116,7 +102,6 @@ install_tenax() {
         if check_command git; then
             git clone "$TENAX_REPO" "$TENAX_DIR" || {
                 warn "Git clone failed, downloading ZIP instead..."
-                # Clean up any partial clone
                 rm -rf "$TENAX_DIR"
 
                 if ! check_command unzip; then
@@ -127,7 +112,6 @@ install_tenax() {
                 TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/master.zip}"
                 curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
                 unzip -q /tmp/tenax.zip -d /tmp
-                # Ensure target doesn't exist before move
                 rm -rf "$TENAX_DIR"
                 mv /tmp/tenax-master "$TENAX_DIR"
                 rm -f /tmp/tenax.zip
@@ -142,7 +126,6 @@ install_tenax() {
             TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/master.zip}"
             curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
             unzip -q /tmp/tenax.zip -d /tmp
-            # Ensure target doesn't exist before move
             rm -rf "$TENAX_DIR"
             mv /tmp/tenax-master "$TENAX_DIR"
             rm -f /tmp/tenax.zip
@@ -155,7 +138,7 @@ install_tenax() {
 install_dependencies() {
     info "Installing dependencies..."
 
-    (cd "$TENAX_DIR" && bun install)
+    (cd "$TENAX_DIR" && npm install)
 
     success "Dependencies installed"
 }
@@ -180,15 +163,11 @@ configure_claude() {
 
         # Try to merge settings using jq if available
         if check_command jq; then
-            # extraKnownMarketplaces is an object with marketplace names as keys
             local marketplace_obj='{"source":{"source":"directory","path":"~/.claude/plugins"}}'
 
-            # Check if extraKnownMarketplaces exists
             if jq -e '.extraKnownMarketplaces' "$SETTINGS_FILE" >/dev/null 2>&1; then
-                # Add to existing object
                 jq --argjson mp "$marketplace_obj" '.extraKnownMarketplaces["local-plugins"] = $mp' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
             else
-                # Create new object
                 jq --argjson mp "$marketplace_obj" '. + {extraKnownMarketplaces: {"local-plugins": $mp}}' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
             fi
             mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
@@ -200,7 +179,6 @@ configure_claude() {
             return 0
         fi
     else
-        # Create new settings file with correct object format
         cat > "$SETTINGS_FILE" << 'EOF'
 {
   "extraKnownMarketplaces": {
@@ -221,28 +199,22 @@ EOF
 configure_permissions() {
     info "Setting up Tenax permissions..."
 
-    # Build permissions - no quotes around path, :* at end for prefix matching
-    local bun_path="$HOME/.bun/bin/bun"
-    local bun_permission="Bash($bun_path:*)"
     local skill_permission='Skill(tenax:*)'
 
     if [ -f "$SETTINGS_FILE" ]; then
         if check_command jq; then
-            # Check if permissions.allow exists
             if jq -e '.permissions.allow' "$SETTINGS_FILE" >/dev/null 2>&1; then
-                # Add both permissions
-                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
-                    '.permissions.allow += [$bun, $skill] | .permissions.allow |= unique' \
+                jq --arg skill "$skill_permission" \
+                    '.permissions.allow += [$skill] | .permissions.allow |= unique' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Permissions configured (bun + skills auto-approved)"
+                success "Permissions configured (skills auto-approved)"
             else
-                # Create permissions structure
-                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
-                    '. + {permissions: {allow: [$bun, $skill]}}' \
+                jq --arg skill "$skill_permission" \
+                    '. + {permissions: {allow: [$skill]}}' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Permissions configured (bun + skills auto-approved)"
+                success "Permissions configured (skills auto-approved)"
             fi
         else
             warn "jq not found. You may need to manually approve Tenax commands on first use."
@@ -252,11 +224,7 @@ configure_permissions() {
 
 print_success() {
     echo ""
-    echo -e "${GREEN}╔═══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║${NC}                                                           ${GREEN}║${NC}"
-    echo -e "${GREEN}║${NC}   ${BOLD}${GREEN}Installation Complete!${NC}                                ${GREEN}║${NC}"
-    echo -e "${GREEN}║${NC}                                                           ${GREEN}║${NC}"
-    echo -e "${GREEN}╚═══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${GREEN}  Installation Complete!${NC}"
     echo ""
     echo -e "  ${BOLD}Next steps:${NC}"
     echo ""
@@ -270,7 +238,6 @@ print_success() {
     echo -e "     Use markers like ${CYAN}[D] topic: decision${NC} in your conversations"
     echo ""
     echo -e "  ${BOLD}Documentation:${NC} https://github.com/Rab-crypto/tenax#readme"
-    echo -e "  ${BOLD}Commands:${NC}      https://github.com/Rab-crypto/tenax#commands"
     echo ""
 }
 
@@ -293,7 +260,7 @@ main() {
         echo ""
     fi
 
-    install_bun
+    check_nodejs
     echo ""
 
     install_tenax

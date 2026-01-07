@@ -1,18 +1,22 @@
-#!/usr/bin/env bun
+#!/usr/bin/env tsx
 
 /**
  * Unified CLI for tenax plugin
  * Single entry point for all commands - reduces permission prompts to one pattern
  *
  * Usage:
- *   bun cli.ts <command> [args...]
- *   bun cli.ts batch --json '<batch-data>'
+ *   tsx cli.ts <command> [args...]
+ *   tsx cli.ts batch --json '<batch-data>'
  */
 
 import { parseArgs } from "util";
 import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
 
-const SCRIPTS_DIR = join(dirname(import.meta.path), "scripts");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const SCRIPTS_DIR = join(__dirname, "scripts");
 
 const commands = [
   "record-decision",
@@ -277,19 +281,35 @@ async function runBatch(jsonInput: string): Promise<void> {
 
 async function runCommand(command: string, args: string[]): Promise<void> {
   const scriptPath = join(SCRIPTS_DIR, `${command}.ts`);
+  const fs = await import("fs");
+  const path = await import("path");
 
-  const proc = Bun.spawn(["bun", scriptPath, ...args], {
-    stdout: "inherit",
-    stderr: "inherit",
-    stdin: "inherit",
+  // Try to use local tsx first
+  const isWindows = process.platform === "win32";
+  const pluginRoot = join(__dirname, "..", "..");
+  const localTsx = join(pluginRoot, "node_modules", ".bin", isWindows ? "tsx.cmd" : "tsx");
+
+  let proc;
+  if (fs.existsSync(localTsx)) {
+    proc = spawn(localTsx, [scriptPath, ...args], {
+      stdio: "inherit",
+      shell: isWindows,
+    });
+  } else {
+    // Fall back to npx
+    proc = spawn(isWindows ? "npx.cmd" : "npx", ["tsx", scriptPath, ...args], {
+      stdio: "inherit",
+      shell: isWindows,
+    });
+  }
+
+  proc.on("close", (code) => {
+    process.exit(code ?? 0);
   });
-
-  const exitCode = await proc.exited;
-  process.exit(exitCode);
 }
 
 async function main(): Promise<void> {
-  const args = Bun.argv.slice(2);
+  const args = process.argv.slice(2);
 
   if (args.length === 0) {
     console.log(

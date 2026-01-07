@@ -3,7 +3,7 @@
 # Tenax Installer for macOS/Linux
 # Persistent project memory for Claude Code
 #
-# Usage: curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.sh | bash
 #
 
 set -e
@@ -101,7 +101,7 @@ install_tenax() {
     if [ -d "$TENAX_DIR" ]; then
         warn "Existing Tenax installation found, updating..."
         if check_command git; then
-            (cd "$TENAX_DIR" && git pull origin main 2>/dev/null) || {
+            (cd "$TENAX_DIR" && git pull origin master 2>/dev/null) || {
                 warn "Git pull failed, removing and re-cloning..."
                 rm -rf "$TENAX_DIR"
                 git clone "$TENAX_REPO" "$TENAX_DIR"
@@ -122,10 +122,10 @@ install_tenax() {
                 error "Install it with: apt install unzip (Debian/Ubuntu) or brew install unzip (macOS)"
                 exit 1
             fi
-            TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/main.zip}"
+            TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/master.zip}"
             curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
             unzip -q /tmp/tenax.zip -d /tmp
-            mv /tmp/tenax-main "$TENAX_DIR"
+            mv /tmp/tenax-master "$TENAX_DIR"
             rm /tmp/tenax.zip
         fi
     fi

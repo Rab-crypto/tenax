@@ -8,12 +8,12 @@ Persistent, searchable project knowledge that survives across Claude Code sessio
 
 **macOS / Linux:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.sh | bash
 ```
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.ps1 | iex
 ```
 
 > See the [Manual Installation](#manual-installation) section below for troubleshooting.

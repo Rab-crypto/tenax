@@ -9,7 +9,7 @@
     persistent, searchable project knowledge across sessions.
 
 .EXAMPLE
-    irm https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.ps1 | iex
+    irm https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.ps1 | iex
 
 .LINK
     https://github.com/Rab-crypto/tenax
@@ -30,7 +30,7 @@ if ($policy -eq "Restricted") {
 
 # Configuration
 $TenaxRepo = if ($env:TENAX_REPO) { $env:TENAX_REPO } else { "https://github.com/Rab-crypto/tenax.git" }
-$TenaxZip = if ($env:TENAX_ZIP) { $env:TENAX_ZIP } else { "https://github.com/Rab-crypto/tenax/archive/main.zip" }
+$TenaxZip = if ($env:TENAX_ZIP) { $env:TENAX_ZIP } else { "https://github.com/Rab-crypto/tenax/archive/master.zip" }
 $TenaxDir = "$env:USERPROFILE\.claude\plugins\tenax"
 $SettingsFile = "$env:USERPROFILE\.claude\settings.json"
 
@@ -95,7 +95,7 @@ function Install-Tenax {
         if (Test-Command "git") {
             try {
                 Push-Location $TenaxDir
-                & git pull origin main 2>&1 | Out-Null
+                & git pull origin master 2>&1 | Out-Null
                 Pop-Location
                 Write-Success "Tenax updated via git"
                 return

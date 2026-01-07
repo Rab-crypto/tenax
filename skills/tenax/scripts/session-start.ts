@@ -9,7 +9,18 @@ import { getProjectRoot, loadIndex, isMemoryInitialized } from "../lib/storage";
 
 async function main(): Promise<void> {
     try {
-        const projectRoot = getProjectRoot();
+        // Get cwd from hook input file (Claude Code passes this)
+        let projectRoot = getProjectRoot();
+        const inputFile = process.argv[2];
+        if (inputFile) {
+            try {
+                const fs = await import("fs/promises");
+                const input = JSON.parse(await fs.readFile(inputFile, "utf8"));
+                if (input.cwd) {
+                    projectRoot = input.cwd;
+                }
+            } catch {}
+        }
 
         // Check if memory is initialized
         if (!(await isMemoryInitialized(projectRoot))) {

@@ -35,7 +35,7 @@ async function main(): Promise<void> {
 
         // Build compact reminder - consistent with session-start
         const context = `⚠️ CONTEXT COMPACTED - Use /tenax:search <topic> for prior decisions.
-🔴 REQUIRED: End responses with markers - [D] topic: | [P] name: | [T] | [I]
+🔴 REQUIRED: Include markers inline - [D] topic: | [P] name: | [T] | [I]
 
 📚 ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending`;
 

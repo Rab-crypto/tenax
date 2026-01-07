@@ -46,10 +46,9 @@ async function main(): Promise<void> {
             .map(t => `  - ${t.title}`)
             .join("\n");
 
-        // Build context string - clear instruction for natural response + markers
-        let context = `🔴 TENAX REQUIRED: Respond naturally to user, then end with markers for any choices/findings:
+        // Build context string - markers inline, not appended
+        let context = `🔴 TENAX REQUIRED: Include markers inline for any choices/findings:
 [D] topic: decisions | [P] name: patterns | [T] tasks | [I] insights
-Unmarked knowledge is lost forever.
 
 📚 ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending | ${totalInsights} insights`;
 

@@ -1,6 +1,6 @@
 ---
 name: tenax
-description: "Project memory. REQUIRED: End responses with [D] topic: decisions, [P] name: patterns, [T] tasks, [I] insights."
+description: "Project memory. REQUIRED: Include [D] topic: [P] name: [T] [I] markers inline for choices/findings."
 ---
 
 # Tenax Skill

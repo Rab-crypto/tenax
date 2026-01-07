@@ -24,7 +24,7 @@ Load multiple sessions by IDs, load N recent sessions, or load the last 3 sessio
 
 1. Run the get sessions script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-sessions.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-sessions.ts" $ARGUMENTS
    ```
 
 2. Budget-aware loading:

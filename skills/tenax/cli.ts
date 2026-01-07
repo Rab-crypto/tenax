@@ -15,11 +15,11 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 
 // Handle both ESM import.meta.url and fallback to process.argv[1]
-const __filename = import.meta.url
+const currentFile = import.meta.url
   ? fileURLToPath(import.meta.url)
-  : process.argv[1] || __filename;
-const __dirname = dirname(__filename);
-const SCRIPTS_DIR = join(__dirname, "scripts");
+  : process.argv[1] || "";
+const currentDir = dirname(currentFile);
+const SCRIPTS_DIR = join(currentDir, "scripts");
 
 const commands = [
   "record-decision",
@@ -289,7 +289,7 @@ async function runCommand(command: string, args: string[]): Promise<void> {
 
   // Try to use local tsx first
   const isWindows = process.platform === "win32";
-  const pluginRoot = join(__dirname, "..", "..");
+  const pluginRoot = join(currentDir, "..", "..");
   const localTsx = join(pluginRoot, "node_modules", ".bin", isWindows ? "tsx.cmd" : "tsx");
 
   let proc;

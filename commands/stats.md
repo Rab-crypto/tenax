@@ -14,7 +14,7 @@ Show detailed statistics about project memory.
 
 1. Run the stats script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/stats.ts"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/stats.ts"
    ```
 
 2. Display comprehensive statistics:

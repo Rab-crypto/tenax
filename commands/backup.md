@@ -19,7 +19,7 @@ Create a backup of all project memory data.
 
 1. Run the backup script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/backup.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/backup.ts" $ARGUMENTS
    ```
 
 2. Show backup summary:

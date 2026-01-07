@@ -274,7 +274,7 @@ tenax/
 ### Type Checking
 
 ```bash
-bun run typecheck
+npm run typecheck
 ```
 
 ### Testing

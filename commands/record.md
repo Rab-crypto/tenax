@@ -53,16 +53,16 @@ Manually record a decision, pattern, task, or insight.
 2. Run the appropriate script:
    ```bash
    # Decision
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-decision.ts" -t "$TOPIC" -r "$RATIONALE" "$DECISION"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-decision.ts" -t "$TOPIC" -r "$RATIONALE" "$DECISION"
 
    # Pattern
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-pattern.ts" -n "$NAME" -u "$USAGE" "$DESCRIPTION"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/record-pattern.ts" -n "$NAME" -u "$USAGE" "$DESCRIPTION"
 
    # Task
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/add-task.ts" -d "$DESC" -p "$PRIORITY" "$TITLE"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/add-task.ts" -d "$DESC" -p "$PRIORITY" "$TITLE"
 
    # Insight
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/add-insight.ts" -c "$CONTEXT" "$CONTENT"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/add-insight.ts" -c "$CONTEXT" "$CONTENT"
    ```
 
 3. Confirm what was recorded:

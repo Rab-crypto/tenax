@@ -20,7 +20,7 @@ When the user runs `/tenax:save`, automatically:
 
 2. **Save everything in ONE batch call** by piping JSON to the CLI:
    ```bash
-   echo '<batch-json>' | bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
+   echo '<batch-json>' | npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
    ```
 
    The batch JSON format:
@@ -43,7 +43,7 @@ When the user runs `/tenax:save`, automatically:
 
    Alternative: Use a heredoc for complex JSON:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch << 'EOF'
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch << 'EOF'
    {"decisions":[{"topic":"api","decision":"Use REST"}]}
    EOF
    ```
@@ -63,7 +63,7 @@ When the user runs `/tenax:save`, automatically:
 ## Example
 
 ```bash
-echo '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}' | bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
+echo '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}' | npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
 ```
 
 ## Example output

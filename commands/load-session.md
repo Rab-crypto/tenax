@@ -20,7 +20,7 @@ Load a specific session by ID into context.
 
 1. Run the get session script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-session.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-session.ts" $ARGUMENTS
    ```
 
 2. Parse the JSON output and display the session:

@@ -33,7 +33,7 @@ Restore project memory from a backup.
 
 2. If confirmed (or --force), run restore:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/restore.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/restore.ts" $ARGUMENTS
    ```
 
 3. Show restore summary:

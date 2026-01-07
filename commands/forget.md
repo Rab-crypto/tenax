@@ -22,7 +22,7 @@ Remove entries from project memory.
 
 1. **Single entry deletion:**
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" $ARGUMENTS
    ```
 
 2. **Type deletion (ask for confirmation first):**
@@ -37,7 +37,7 @@ Remove entries from project memory.
 
    If confirmed:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" --type decisions
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/forget.ts" --type decisions
    ```
 
 3. **Delete all (double confirmation):**

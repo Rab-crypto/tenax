@@ -14,7 +14,7 @@ List all stored sessions with metadata.
 
 1. Run the list sessions script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/list-sessions.ts"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/list-sessions.ts"
    ```
 
 2. Parse the JSON output and display as a table:

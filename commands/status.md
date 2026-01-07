@@ -18,7 +18,7 @@ Show project memory status and quick summary.
 
 1. Run the summary script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
    ```
 
 2. Parse the JSON output and display in a readable format:

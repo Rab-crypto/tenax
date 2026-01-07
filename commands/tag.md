@@ -21,7 +21,7 @@ Add or remove tags from sessions for better organization.
 
 1. Run the tag script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/tag-session.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/tag-session.ts" $ARGUMENTS
    ```
 
 2. Show updated tags:

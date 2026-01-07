@@ -48,7 +48,7 @@ Markdown format optimized for Notion import.
 
 1. Run the export script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/export.ts" -f $FORMAT -o $OUTPUT $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/export.ts" -f $FORMAT -o $OUTPUT $ARGUMENTS
    ```
 
 2. Show export summary:

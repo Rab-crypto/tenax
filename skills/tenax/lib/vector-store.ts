@@ -3,13 +3,13 @@
  * Falls back to in-memory cosine similarity if sqlite-vec fails
  */
 
-import Database from "better-sqlite3";
+import Database, { Database as DatabaseType } from "better-sqlite3";
 import * as sqliteVec from "sqlite-vec";
 import type { EmbeddingEntry, SearchResult } from "./types";
 import { EMBEDDING_DIM, cosineSimilarity } from "./embeddings";
 
 export class VectorStore {
-  private db: Database;
+  private db: DatabaseType;
   private usingSqliteVec: boolean = false;
 
   constructor(dbPath: string) {

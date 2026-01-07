@@ -27,32 +27,33 @@ Search across all project memory using semantic similarity.
 
 1. Run the search script:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" $ARGUMENTS
+   npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" $ARGUMENTS
    ```
 
-2. Parse the JSON output and display results:
+2. Parse the JSON output and display results using the **`timeAgo` field** (pre-computed):
+
+   Each result includes a `timeAgo` field (e.g., "2hr ago", "3 days ago"). Use it directly.
+
+   Group results by recency when helpful (e.g., "Recent (today)", "Earlier this week", "Older").
 
    ```
    ## Search Results for "authentication"
 
    Found 5 results (892 tokens)
 
-   ### Decisions
-   1. **[auth] JWT over session cookies** (92% match)
+   ### Recent (today)
+   1. **[auth] JWT over session cookies** - 2hr ago
       Using JWT for stateless authentication...
-      *Session 008, 2024-01-10*
 
-   2. **[auth] OAuth2 for third-party login** (87% match)
+   2. **[auth] OAuth2 for third-party login** - 5hr ago
       Implementing OAuth2 flow for Google/GitHub...
-      *Session 005, 2024-01-07*
 
-   ### Patterns
-   3. **Auth Middleware Pattern** (78% match)
+   ### Earlier this week
+   3. **Auth Middleware Pattern** - 3 days ago
       All protected routes use authMiddleware...
-      *Session 008, 2024-01-10*
 
-   ### Sessions
-   4. **Session 008: Authentication implementation** (75% match)
+   ### Older
+   4. **Session 008: Authentication implementation** - 2 weeks ago
       Implemented JWT auth with refresh tokens...
    ```
 

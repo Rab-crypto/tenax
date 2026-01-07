@@ -1,12 +1,16 @@
 ---
 name: tenax
 description: |
-  Project memory system. Use this skill when:
-  - Starting a session (load context)
-  - Making architecture/design decisions (search first)
-  - Discussing libraries, frameworks, patterns, or APIs
+  Project memory system. ALWAYS use markers when making ANY decision.
+
+  Mark ALL decisions - not just architecture, but also:
+  - Operational (commit scope, what to include/exclude)
+  - Verification (config is correct, tests pass)
+  - Process (git workflow, deployment choices)
 
   Protocol: Search -> Decide -> Mark with [D] [P] [T] [I]
+
+  If you made a choice or verified something, MARK IT.
 ---
 
 # Tenax Skill
@@ -119,18 +123,39 @@ Batch JSON format:
 
 ## When to Use Markers
 
-**DO mark:**
-- Confirmed technology choices
-- Agreed-upon patterns
-- Architectural decisions
-- API design choices
-- Naming conventions
+### CRITICAL: Mark ALL Decisions
 
-**DON'T mark:**
-- Temporary workarounds
-- Debugging steps
-- Exploratory code
-- "Just for now" decisions
+**Every response that involves judgment should include a marker.** This includes:
+
+| Category | Examples |
+|----------|----------|
+| **Technical** | Database choice, API design, library selection |
+| **Architectural** | Folder structure, patterns, conventions |
+| **Operational** | Commit scope, what to include/exclude, verification results |
+| **Process** | Git workflow decisions, CI/CD choices, deployment strategy |
+| **Configuration** | Settings verified as correct, config file changes |
+
+### The Rule
+
+If you made a choice, verified something, or concluded anything - **mark it**.
+
+```
+✓ "The gitignore is correct" → [D] gitignore: Verified - properly excludes .claude/, backups, test/
+✓ "Committing these files" → [D] commit-scope: v2.1.0 includes install scripts, removes deprecated commands
+✓ "Using this approach" → [D] approach: Batch API calls to reduce latency
+✓ "This pattern works" → [P] retry-logic: Exponential backoff with max 3 attempts
+```
+
+### DON'T Mark
+
+- Temporary workarounds you'll remove
+- Debugging console.logs
+- Exploratory code that won't persist
+- Explicit "just for now, will change later"
+
+### Common Mistake
+
+❌ Treating operational tasks as "just execution" - commits, verifications, and process choices ARE decisions that should be marked.
 
 ---
 

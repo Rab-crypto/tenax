@@ -1,12 +1,36 @@
 {
-  "name": "local-plugins",
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "tenax-marketplace",
+  "version": "1.0.0",
+  "description": "Persistent project knowledge for Claude Code - remembers decisions, patterns, and context across sessions",
   "owner": {
-    "name": "https://x.com/phil_mybags"
+    "name": "phil_mybags",
+    "url": "https://tenax.wiki"
   },
   "plugins": [
     {
       "name": "tenax",
-      "source": "./"
+      "source": "./",
+      "description": "Project memory that persists across Claude Code sessions. Automatically captures decisions, patterns, tasks, and insights. Semantic search across all knowledge.",
+      "version": "3.0.0",
+      "author": {
+        "name": "phil_mybags"
+      },
+      "category": "productivity",
+      "keywords": [
+        "memory",
+        "knowledge",
+        "context",
+        "decisions",
+        "patterns",
+        "persistence",
+        "sessions"
+      ],
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/Rab-crypto/tenax"
+      },
+      "license": "MIT"
     }
   ]
 }

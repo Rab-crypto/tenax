@@ -169,11 +169,6 @@ function Configure-Claude {
         New-Item -ItemType Directory -Path $claudeDir -Force | Out-Null
     }
 
-    $marketplace = @{
-        name = "local-plugins"
-        source = @{ type = "directory"; path = "~/.claude/plugins" }
-    }
-
     if (Test-Path $SettingsFile) {
         $content = Get-Content $SettingsFile -Raw -ErrorAction SilentlyContinue
         # Check if local-plugins is already configured (simple string check to avoid parse issues)
@@ -185,11 +180,12 @@ function Configure-Claude {
             $settings = $content | ConvertFrom-Json
             Copy-Item $SettingsFile "$SettingsFile.backup" -Force
             Write-Warn "Settings backed up to $SettingsFile.backup"
-            # Handle extraKnownMarketplaces as array
-            if (-not $settings.extraKnownMarketplaces -or $settings.extraKnownMarketplaces -isnot [array]) {
-                $settings | Add-Member -NotePropertyName "extraKnownMarketplaces" -NotePropertyValue @() -Force
+            # extraKnownMarketplaces is an object with marketplace names as keys
+            if (-not $settings.extraKnownMarketplaces) {
+                $settings | Add-Member -NotePropertyName "extraKnownMarketplaces" -NotePropertyValue @{} -Force
             }
-            $settings.extraKnownMarketplaces += $marketplace
+            $marketplaceSource = @{ source = "directory"; path = "~/.claude/plugins" }
+            $settings.extraKnownMarketplaces | Add-Member -NotePropertyName "local-plugins" -NotePropertyValue @{ source = $marketplaceSource } -Force
             $json = $settings | ConvertTo-Json -Depth 10
             [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
             Write-Success "Claude Code configured"
@@ -198,12 +194,23 @@ function Configure-Claude {
             Write-Warn "Could not parse existing settings.json"
             Write-Warn "Please manually add local-plugins marketplace to $SettingsFile"
             Write-Host ""
-            Write-Host '  Add this to extraKnownMarketplaces array:' -ForegroundColor Yellow
-            Write-Host '    {"name":"local-plugins","source":{"type":"directory","path":"~/.claude/plugins"}}' -ForegroundColor Cyan
+            Write-Host '  Add to extraKnownMarketplaces object:' -ForegroundColor Yellow
+            Write-Host '    "local-plugins": {"source":{"source":"directory","path":"~/.claude/plugins"}}' -ForegroundColor Cyan
         }
     } else {
-        $settings = @{ extraKnownMarketplaces = @($marketplace) }
-        $json = $settings | ConvertTo-Json -Depth 10
+        # Create new settings with correct object format
+        $json = @'
+{
+  "extraKnownMarketplaces": {
+    "local-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "~/.claude/plugins"
+      }
+    }
+  }
+}
+'@
         [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
         Write-Success "Claude Code configured"
     }

@@ -180,45 +180,37 @@ configure_claude() {
 
         # Try to merge settings using jq if available
         if check_command jq; then
-            local new_marketplace='{"name":"local-plugins","source":{"type":"directory","path":"~/.claude/plugins"}}'
+            # extraKnownMarketplaces is an object with marketplace names as keys
+            local marketplace_obj='{"source":{"source":"directory","path":"~/.claude/plugins"}}'
 
             # Check if extraKnownMarketplaces exists
             if jq -e '.extraKnownMarketplaces' "$SETTINGS_FILE" >/dev/null 2>&1; then
-                # Add to existing array
-                jq ".extraKnownMarketplaces += [$new_marketplace]" "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
+                # Add to existing object
+                jq --argjson mp "$marketplace_obj" '.extraKnownMarketplaces["local-plugins"] = $mp' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
             else
-                # Create new array
-                jq ". + {extraKnownMarketplaces: [$new_marketplace]}" "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
+                # Create new object
+                jq --argjson mp "$marketplace_obj" '. + {extraKnownMarketplaces: {"local-plugins": $mp}}' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
             fi
             mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
         else
             warn "jq not found. Please manually add local-plugins marketplace to $SETTINGS_FILE"
             echo ""
-            echo "Add this to your settings.json:"
-            echo '  "extraKnownMarketplaces": ['
-            echo '    {'
-            echo '      "name": "local-plugins",'
-            echo '      "source": {'
-            echo '        "type": "directory",'
-            echo '        "path": "~/.claude/plugins"'
-            echo '      }'
-            echo '    }'
-            echo '  ]'
+            echo "Add this to extraKnownMarketplaces in settings.json:"
+            echo '  "local-plugins": {"source":{"source":"directory","path":"~/.claude/plugins"}}'
             return 0
         fi
     else
-        # Create new settings file
+        # Create new settings file with correct object format
         cat > "$SETTINGS_FILE" << 'EOF'
 {
-  "extraKnownMarketplaces": [
-    {
-      "name": "local-plugins",
+  "extraKnownMarketplaces": {
+    "local-plugins": {
       "source": {
-        "type": "directory",
+        "source": "directory",
         "path": "~/.claude/plugins"
       }
     }
-  ]
+  }
 }
 EOF
     fi

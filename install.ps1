@@ -142,22 +142,22 @@ function Install-Tenax {
 
 function Install-Dependencies {
     Write-Info "Installing dependencies..."
-    Push-Location $TenaxDir
+    $originalLocation = Get-Location
     try {
+        Set-Location $TenaxDir
         $bunExe = "$env:USERPROFILE\.bun\bin\bun.exe"
         if (-not (Test-Path $bunExe)) { $bunExe = "bun" }
-        # Run bun install and capture output without triggering ErrorActionPreference
-        $output = & $bunExe install 2>&1
-        $exitCode = $LASTEXITCODE
-        if ($exitCode -ne 0) {
-            throw "bun install failed with exit code $exitCode"
+        # Run bun install - use Start-Process to avoid ErrorActionPreference issues
+        $proc = Start-Process -FilePath $bunExe -ArgumentList "install" -Wait -PassThru -NoNewWindow
+        if ($proc.ExitCode -ne 0) {
+            throw "bun install failed with exit code $($proc.ExitCode)"
         }
-        Pop-Location
         Write-Success "Dependencies installed"
     } catch {
-        Pop-Location
-        Write-Err "Failed to install dependencies: $_"
+        Write-Err "Failed to install dependencies: $($_.Exception.Message)"
         exit 1
+    } finally {
+        Set-Location $originalLocation
     }
 }
 

@@ -36,6 +36,10 @@
     const toggle = document.querySelector('.theme-toggle');
     if (toggle) {
       toggle.addEventListener('click', () => {
+        // Add animating class for pop effect
+        toggle.classList.add('animating');
+        setTimeout(() => toggle.classList.remove('animating'), 500);
+
         const current = document.documentElement.getAttribute('data-theme');
         setTheme(current === 'dark' ? 'light' : 'dark');
       });
@@ -240,11 +244,53 @@
       return;
     }
 
+    // Add stagger delays to grouped elements
+    const staggerGroups = [
+      '.bento-grid .bento-card',
+      '.features__grid .feature-card',
+      '.timeline__item',
+      '.footer-v2__grid > *'
+    ];
+
+    staggerGroups.forEach(selector => {
+      const items = document.querySelectorAll(selector);
+      items.forEach((item, index) => {
+        if (item.classList.contains('fade-in')) {
+          item.setAttribute('data-stagger', Math.min(index + 1, 6));
+        }
+      });
+    });
+
+    // Batch animations by parent container
+    const animatedContainers = new Map();
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
+          const el = entry.target;
+
+          // Check if this element is part of a group
+          const parent = el.parentElement;
+          const siblings = parent ? Array.from(parent.querySelectorAll('.fade-in')) : [];
+
+          if (siblings.length > 1 && siblings.includes(el)) {
+            // Trigger all siblings when any one becomes visible
+            if (!animatedContainers.has(parent)) {
+              animatedContainers.set(parent, true);
+              siblings.forEach((sibling, index) => {
+                // Apply stagger delay dynamically
+                sibling.style.setProperty('--stagger-delay', `${index * 80}ms`);
+                setTimeout(() => {
+                  sibling.classList.add('visible');
+                }, 10); // Small delay to ensure CSS variable is applied
+                observer.unobserve(sibling);
+              });
+            }
+          } else {
+            // Single element, animate immediately
+            el.classList.add('visible');
+            observer.unobserve(el);
+          }
         }
       });
     }, {
@@ -529,6 +575,58 @@
   }
 
   // ============================================
+  // Bento Card Shine Effect (cursor tracking)
+  // ============================================
+  function initBentoCardShine() {
+    const cards = document.querySelectorAll('.bento-card');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+  }
+
+  // ============================================
+  // Button Ripple Effect
+  // ============================================
+  function initButtonRipples() {
+    const buttons = document.querySelectorAll('.btn, .hero__cta, .cta__btn, .commands__cta');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        // Remove existing ripples
+        const existingRipple = this.querySelector('.ripple');
+        if (existingRipple) existingRipple.remove();
+
+        // Create ripple element
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+
+        // Calculate ripple size and position
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+
+        ripple.style.width = ripple.style.height = `${size}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+
+        this.appendChild(ripple);
+
+        // Remove ripple after animation
+        ripple.addEventListener('animationend', () => ripple.remove());
+      });
+    });
+  }
+
+  // ============================================
   // Initialize Everything
   // ============================================
   function init() {
@@ -545,6 +643,8 @@
     initReadingProgress();
     initHeroTerminal();
     initMorphingWords();
+    initBentoCardShine();
+    initButtonRipples();
   }
 
   // Run on DOM ready

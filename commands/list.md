@@ -33,5 +33,5 @@ List all stored sessions with metadata.
 
 3. Include helpful commands at the bottom:
    - `/tenax:load-session <ID>` - Load a specific session
-   - `/tenax:load-recent <N>` - Load N most recent sessions
+   - `/tenax:load-sessions` - Load multiple sessions (defaults to last 3)
    - `/tenax:search <query>` - Search across all sessions

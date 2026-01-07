@@ -17,13 +17,64 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Tenax data (per-project, not plugin source)
-.claude/tenax/
+# ============================================
+# SENSITIVE DATA - DO NOT PUSH
+# ============================================
+
+# All Claude local data (sessions, settings, transcripts)
+.claude/
+
+# Backup files (contain full session data)
+*-backup-*.json
+tenax-backup-*
+project-memory-backup-*
+
+# Export directories
+tenax-export-*/
+project-memory-export-*/
+
+# ============================================
+# TEST & DEBUG FILES
+# ============================================
+
+# Test folder
+test/
+
+# Debug/utility scripts (dev only)
+scripts/clear-all.ts
+scripts/reextract-all.ts
+scripts/rename-helper.ts
+scripts/fix-remaining.ts
 
 # Test artifacts
 *.log
 coverage/
+*.test.ts
+*.spec.ts
+
+# Temp files from testing
+test-*.json
+test-*.jsonl
+*-test-*.json
+
+# ============================================
+# MISC
+# ============================================
 
 # Windows reserved file names
 nul
+con
+aux
+prn
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# Environment files (if any)
+.env
+.env.local
+.env.*.local

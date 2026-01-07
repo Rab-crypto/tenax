@@ -63,18 +63,15 @@ tenax/
 │           ├── extractor.ts
 │           └── tokenizer.ts
 ├── commands/                          # User-facing slash commands
-│   ├── pm.md
-│   ├── pm-list.md
-│   ├── pm-search.md
-│   ├── pm-load-session.md
-│   ├── pm-load-sessions.md
-│   ├── pm-load-recent.md
-│   ├── pm-load-all.md
-│   ├── pm-fresh.md
-│   ├── pm-settings.md
-│   ├── pm-record.md
-│   ├── pm-forget.md
-│   └── pm-export.md
+│   ├── status.md
+│   ├── list.md
+│   ├── search.md
+│   ├── load-session.md
+│   ├── load-sessions.md
+│   ├── settings.md
+│   ├── record.md
+│   ├── forget.md
+│   └── export.md
 ├── hooks/
 │   └── hooks.json
 ├── package.json
@@ -178,15 +175,12 @@ Subsequent checks: ~200–500 tokens each
 All commands are defined in `commands/*.md` with detailed instructions for Claude on how to respond, run scripts, show previews, and ask for confirmation.
 
 Key commands:
-- `/pm` → status + quick summary
-- `/pm list` → table of sessions with token counts
-- `/pm search "topic"`
-- `/pm load-session N`
-- `/pm load-sessions 1,3,5`
-- `/pm load-recent N`
-- `/pm load-all` (smart allocation within budget)
-- `/pm fresh`
-- `/pm settings`
+- `/tenax:status` → status + quick summary
+- `/tenax:list` → table of sessions with token counts
+- `/tenax:search "topic"`
+- `/tenax:load-session N`
+- `/tenax:load-sessions 1,3,5` (or `--recent N` for recent sessions)
+- `/tenax:settings`
 
 ## 8. Hooks
 

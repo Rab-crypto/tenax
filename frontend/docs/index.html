@@ -25,7 +25,8 @@
         </a>
 
         <div class="nav__links">
-          <a href="./" class="nav__link">Documentation</a>
+          <a href="install.html" class="nav__link">Install</a>
+          <a href="./" class="nav__link">Docs</a>
           <a href="commands.html" class="nav__link">Commands</a>
           <a href="concepts.html" class="nav__link">Concepts</a>
         </div>
@@ -61,6 +62,20 @@
 
       <!-- Documentation Cards -->
       <div class="features__grid" style="margin-bottom: var(--space-5xl);">
+        <a href="install.html" class="feature-card" data-searchable style="text-decoration: none; border-color: var(--accent); background: var(--accent-subtle);">
+          <div class="feature-card__icon" style="background: var(--accent); color: white;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </div>
+          <h3 class="feature-card__title">Installation</h3>
+          <p class="feature-card__description">
+            Get started in under a minute with our one-line installer for Windows, macOS, and Linux.
+          </p>
+        </a>
+
         <a href="concepts.html" class="feature-card" data-searchable style="text-decoration: none;">
           <div class="feature-card__icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -168,9 +183,9 @@
                 <td><code>search "auth"</code></td>
               </tr>
               <tr data-searchable>
-                <td><code>/tenax:load-recent</code></td>
-                <td>Load N most recent sessions</td>
-                <td><code>load-recent 3</code></td>
+                <td><code>/tenax:load-sessions</code></td>
+                <td>Load sessions by ID or N most recent</td>
+                <td><code>load-sessions --recent 3</code></td>
               </tr>
               <tr data-searchable>
                 <td><code>/tenax:save</code></td>

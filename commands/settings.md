@@ -32,7 +32,7 @@ View or modify project memory settings.
 
 1. To view settings, read the config:
    ```bash
-   cat $PROJECT_ROOT/.claude/tenax/config.json
+   cat .claude/tenax/config.json
    ```
 
 2. Display settings in a table format:

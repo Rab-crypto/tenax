@@ -56,8 +56,7 @@ All commands use the `tenax:` namespace:
 - `/tenax:search <query>` - Semantic search
 - `/tenax:list` - List all sessions
 - `/tenax:load-session <N>` - Load specific session
-- `/tenax:load-recent <N>` - Load N recent sessions
-- `/tenax:fresh` - Start without history
+- `/tenax:load-sessions [IDs]` - Load multiple sessions (defaults to last 3, use `--recent N` for N recent)
 
 ## Data Storage (Per-Project)
 

@@ -124,8 +124,11 @@
       padding: var(--space-xl);
       overflow: hidden;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --mouse-x: 50%;
+      --mouse-y: 50%;
     }
 
+    /* Ambient gradient overlay */
     .bento-card::before {
       content: '';
       position: absolute;
@@ -133,6 +136,21 @@
       background: linear-gradient(135deg, transparent 0%, rgba(13, 148, 136, 0.03) 100%);
       opacity: 0;
       transition: opacity 0.4s ease;
+    }
+
+    /* Shine/glare effect that follows cursor */
+    .bento-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        600px circle at var(--mouse-x) var(--mouse-y),
+        rgba(13, 148, 136, 0.15),
+        transparent 40%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
     }
 
     .bento-card:hover {
@@ -144,6 +162,10 @@
     }
 
     .bento-card:hover::before {
+      opacity: 1;
+    }
+
+    .bento-card:hover::after {
       opacity: 1;
     }
 
@@ -175,12 +197,26 @@
       margin-bottom: var(--space-lg);
       position: relative;
       z-index: 1;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bento-card:hover .bento-card__icon {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      border-color: var(--accent);
+      transform: scale(1.1) rotate(-5deg);
+      box-shadow: 0 8px 20px var(--accent-glow);
     }
 
     .bento-card__icon svg {
       width: 24px;
       height: 24px;
       color: var(--accent);
+      transition: all 0.3s ease;
+    }
+
+    .bento-card:hover .bento-card__icon svg {
+      color: white;
+      transform: scale(1.1);
     }
 
     .bento-card__title {
@@ -528,16 +564,57 @@
       transform: translateX(4px);
     }
 
-    /* Terminal redesign */
+    /* Terminal redesign with CRT effects */
     .terminal-v2 {
+      position: relative;
       background: linear-gradient(180deg, #0C0C0E 0%, #0A0A0C 100%);
       border-radius: var(--radius-xl);
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow:
         0 50px 100px -20px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-        0 0 80px rgba(13, 148, 136, 0.08);
+        0 0 80px rgba(13, 148, 136, 0.15),
+        inset 0 0 100px rgba(13, 148, 136, 0.03);
       overflow: hidden;
+    }
+
+    /* CRT scan line effect */
+    .terminal-v2::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0.3;
+    }
+
+    /* CRT screen flicker/glow */
+    .terminal-v2::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(13, 148, 136, 0.05) 0%,
+        transparent 70%
+      );
+      pointer-events: none;
+      z-index: 5;
+      animation: crtFlicker 4s ease-in-out infinite;
+    }
+
+    @keyframes crtFlicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.95; }
+      52% { opacity: 1; }
+      54% { opacity: 0.97; }
     }
 
     .terminal-v2__header {
@@ -546,6 +623,8 @@
       padding: var(--space-md) var(--space-lg);
       background: rgba(255, 255, 255, 0.02);
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      position: relative;
+      z-index: 1;
     }
 
     .terminal-v2__dots {
@@ -558,11 +637,21 @@
       height: 12px;
       border-radius: 50%;
       background: var(--bg-tertiary);
+      transition: all 0.2s ease;
     }
 
-    .terminal-v2__dot--red { background: #FF5F57; }
-    .terminal-v2__dot--yellow { background: #FFBD2E; }
-    .terminal-v2__dot--green { background: #28CA42; }
+    .terminal-v2__dot--red {
+      background: #FF5F57;
+      box-shadow: 0 0 8px rgba(255, 95, 87, 0.5);
+    }
+    .terminal-v2__dot--yellow {
+      background: #FFBD2E;
+      box-shadow: 0 0 8px rgba(255, 189, 46, 0.5);
+    }
+    .terminal-v2__dot--green {
+      background: #28CA42;
+      box-shadow: 0 0 8px rgba(40, 202, 66, 0.5);
+    }
 
     .terminal-v2__title {
       flex: 1;
@@ -577,6 +666,8 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: var(--text-sm);
       line-height: 2;
+      position: relative;
+      z-index: 1;
     }
 
     .terminal-v2__line {
@@ -586,18 +677,22 @@
     .terminal-v2__prompt {
       color: var(--accent);
       user-select: none;
+      text-shadow: 0 0 10px var(--accent-glow);
     }
 
     .terminal-v2__command {
       color: #E4E4E7;
+      text-shadow: 0 0 8px rgba(228, 228, 231, 0.3);
     }
 
     .terminal-v2__flag {
       color: #FBBF24;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
     }
 
     .terminal-v2__string {
       color: #34D399;
+      text-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
     }
 
     .terminal-v2__comment {
@@ -614,21 +709,30 @@
 
     .terminal-v2__success {
       color: #34D399;
+      text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
     }
 
     .terminal-v2__cursor {
       display: inline-block;
-      width: 8px;
-      height: 18px;
-      background: var(--accent);
-      animation: blink 1s step-end infinite;
+      width: 10px;
+      height: 20px;
+      background: var(--accent-light);
+      animation: cursorBlink 1s ease-in-out infinite;
       vertical-align: text-bottom;
       margin-left: 2px;
+      border-radius: 1px;
+      box-shadow: 0 0 15px var(--accent-glow), 0 0 30px var(--accent-glow);
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+    @keyframes cursorBlink {
+      0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 15px var(--accent-glow), 0 0 30px var(--accent-glow);
+      }
+      50% {
+        opacity: 0.3;
+        box-shadow: 0 0 5px var(--accent-glow);
+      }
     }
 
     /* ============================================
@@ -964,8 +1068,8 @@
           </p>
 
           <div class="hero__cta-group">
-            <a href="docs/" class="hero__cta hero__cta--primary">
-              <span>Get Started</span>
+            <a href="docs/install.html" class="hero__cta hero__cta--primary">
+              <span>Install Now</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
@@ -1007,6 +1111,11 @@
                   <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.8"/>
                   <stop offset="100%" stop-color="var(--accent-light)" stop-opacity="0.4"/>
                 </linearGradient>
+                <linearGradient id="particleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="var(--accent-light)" stop-opacity="0"/>
+                  <stop offset="50%" stop-color="var(--accent-light)" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="var(--accent-light)" stop-opacity="1"/>
+                </linearGradient>
                 <filter id="glow">
                   <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                   <feMerge>
@@ -1014,68 +1123,166 @@
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
+                <filter id="glowStrong">
+                  <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <!-- Particle trail effect -->
+                <filter id="particleTrail">
+                  <feGaussianBlur stdDeviation="2" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
               </defs>
+
+              <!-- Pulsing rings on central hub -->
+              <circle cx="200" cy="200" r="70" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.2">
+                <animate attributeName="r" values="55;80;55" dur="4s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="200" cy="200" r="90" fill="none" stroke="var(--accent)" stroke-width="0.5" opacity="0.1">
+                <animate attributeName="r" values="70;100;70" dur="5s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.2;0.05;0.2" dur="5s" repeatCount="indefinite"/>
+              </circle>
+
+              <!-- Connection paths (draw behind) -->
+              <path class="hero__flow-path" d="M110 100 Q 150 150 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M290 80 Q 250 130 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M310 280 Q 260 250 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="hero__flow-path" d="M90 300 Q 140 260 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
 
               <!-- Central hub -->
               <g class="hero__flow-hub">
-                <circle cx="200" cy="200" r="50" fill="var(--bg-secondary)" stroke="var(--accent)" stroke-width="2"/>
+                <circle cx="200" cy="200" r="50" fill="var(--bg-secondary)" stroke="var(--accent)" stroke-width="2" filter="url(#glow)"/>
                 <circle cx="200" cy="200" r="35" fill="var(--accent-subtle)" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+                <!-- Inner pulsing core -->
+                <circle cx="200" cy="200" r="8" fill="var(--accent)">
+                  <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite"/>
+                </circle>
                 <text x="200" y="195" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="12" font-weight="600">MEMORY</text>
                 <text x="200" y="212" text-anchor="middle" fill="var(--text-tertiary)" font-family="ui-monospace, monospace" font-size="10">core</text>
               </g>
 
-              <!-- Session nodes -->
+              <!-- Session nodes with glow on hover simulation -->
               <g class="hero__flow-node hero__flow-node--1">
+                <circle cx="80" cy="100" r="32" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0">
+                  <animate attributeName="opacity" values="0;0.4;0" dur="3s" repeatCount="indefinite"/>
+                  <animate attributeName="r" values="30;38;30" dur="3s" repeatCount="indefinite"/>
+                </circle>
                 <circle cx="80" cy="100" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
                 <text x="80" y="96" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
                 <text x="80" y="108" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">001</text>
               </g>
 
               <g class="hero__flow-node hero__flow-node--2">
+                <circle cx="320" cy="80" r="32" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0">
+                  <animate attributeName="opacity" values="0;0.4;0" dur="3.5s" repeatCount="indefinite" begin="0.5s"/>
+                  <animate attributeName="r" values="30;38;30" dur="3.5s" repeatCount="indefinite" begin="0.5s"/>
+                </circle>
                 <circle cx="320" cy="80" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
                 <text x="320" y="76" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
                 <text x="320" y="88" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">002</text>
               </g>
 
               <g class="hero__flow-node hero__flow-node--3">
+                <circle cx="340" cy="280" r="32" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0">
+                  <animate attributeName="opacity" values="0;0.4;0" dur="4s" repeatCount="indefinite" begin="1s"/>
+                  <animate attributeName="r" values="30;38;30" dur="4s" repeatCount="indefinite" begin="1s"/>
+                </circle>
                 <circle cx="340" cy="280" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
                 <text x="340" y="276" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
                 <text x="340" y="288" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">003</text>
               </g>
 
               <g class="hero__flow-node hero__flow-node--4">
+                <circle cx="60" cy="300" r="32" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0">
+                  <animate attributeName="opacity" values="0;0.4;0" dur="3.2s" repeatCount="indefinite" begin="1.5s"/>
+                  <animate attributeName="r" values="30;38;30" dur="3.2s" repeatCount="indefinite" begin="1.5s"/>
+                </circle>
                 <circle cx="60" cy="300" r="30" fill="var(--bg-secondary)" stroke="var(--border-strong)" stroke-width="1.5"/>
                 <text x="60" y="296" text-anchor="middle" fill="var(--text-secondary)" font-family="ui-monospace, monospace" font-size="10">session</text>
                 <text x="60" y="308" text-anchor="middle" fill="var(--accent)" font-family="ui-monospace, monospace" font-size="11" font-weight="600">004</text>
               </g>
 
-              <!-- Connection paths -->
-              <path class="hero__flow-path" d="M110 100 Q 150 150 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
-              <path class="hero__flow-path" d="M290 80 Q 250 130 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
-              <path class="hero__flow-path" d="M310 280 Q 260 250 250 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
-              <path class="hero__flow-path" d="M90 300 Q 140 260 150 200" stroke="url(#flowGrad)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <!-- Animated particles with trails -->
+              <g filter="url(#glowStrong)">
+                <circle class="hero__flow-particle" r="5" fill="var(--accent-light)">
+                  <animateMotion dur="3s" repeatCount="indefinite">
+                    <mpath href="#path1"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="3" fill="var(--accent-light)" opacity="0.6">
+                  <animateMotion dur="3s" repeatCount="indefinite" begin="-0.1s">
+                    <mpath href="#path1"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="2" fill="var(--accent-light)" opacity="0.3">
+                  <animateMotion dur="3s" repeatCount="indefinite" begin="-0.2s">
+                    <mpath href="#path1"/>
+                  </animateMotion>
+                </circle>
+              </g>
 
-              <!-- Animated particles on paths -->
-              <circle class="hero__flow-particle hero__flow-particle--1" r="4" fill="var(--accent-light)">
-                <animateMotion dur="3s" repeatCount="indefinite">
-                  <mpath href="#path1"/>
-                </animateMotion>
-              </circle>
-              <circle class="hero__flow-particle hero__flow-particle--2" r="4" fill="var(--accent-light)">
-                <animateMotion dur="2.5s" repeatCount="indefinite">
-                  <mpath href="#path2"/>
-                </animateMotion>
-              </circle>
-              <circle class="hero__flow-particle hero__flow-particle--3" r="4" fill="var(--accent-light)">
-                <animateMotion dur="3.2s" repeatCount="indefinite">
-                  <mpath href="#path3"/>
-                </animateMotion>
-              </circle>
-              <circle class="hero__flow-particle hero__flow-particle--4" r="4" fill="var(--accent-light)">
-                <animateMotion dur="2.8s" repeatCount="indefinite">
-                  <mpath href="#path4"/>
-                </animateMotion>
-              </circle>
+              <g filter="url(#glowStrong)">
+                <circle class="hero__flow-particle" r="5" fill="var(--accent-light)">
+                  <animateMotion dur="2.5s" repeatCount="indefinite">
+                    <mpath href="#path2"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="3" fill="var(--accent-light)" opacity="0.6">
+                  <animateMotion dur="2.5s" repeatCount="indefinite" begin="-0.08s">
+                    <mpath href="#path2"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="2" fill="var(--accent-light)" opacity="0.3">
+                  <animateMotion dur="2.5s" repeatCount="indefinite" begin="-0.16s">
+                    <mpath href="#path2"/>
+                  </animateMotion>
+                </circle>
+              </g>
+
+              <g filter="url(#glowStrong)">
+                <circle class="hero__flow-particle" r="5" fill="var(--accent-light)">
+                  <animateMotion dur="3.2s" repeatCount="indefinite">
+                    <mpath href="#path3"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="3" fill="var(--accent-light)" opacity="0.6">
+                  <animateMotion dur="3.2s" repeatCount="indefinite" begin="-0.1s">
+                    <mpath href="#path3"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="2" fill="var(--accent-light)" opacity="0.3">
+                  <animateMotion dur="3.2s" repeatCount="indefinite" begin="-0.2s">
+                    <mpath href="#path3"/>
+                  </animateMotion>
+                </circle>
+              </g>
+
+              <g filter="url(#glowStrong)">
+                <circle class="hero__flow-particle" r="5" fill="var(--accent-light)">
+                  <animateMotion dur="2.8s" repeatCount="indefinite">
+                    <mpath href="#path4"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="3" fill="var(--accent-light)" opacity="0.6">
+                  <animateMotion dur="2.8s" repeatCount="indefinite" begin="-0.09s">
+                    <mpath href="#path4"/>
+                  </animateMotion>
+                </circle>
+                <circle class="hero__flow-particle" r="2" fill="var(--accent-light)" opacity="0.3">
+                  <animateMotion dur="2.8s" repeatCount="indefinite" begin="-0.18s">
+                    <mpath href="#path4"/>
+                  </animateMotion>
+                </circle>
+              </g>
 
               <!-- Hidden paths for particle animation -->
               <path id="path1" d="M110 100 Q 150 150 150 200" fill="none"/>
@@ -1321,8 +1528,8 @@
             </div>
             <div class="terminal-v2__line">
               <span class="terminal-v2__prompt">❯</span>
-              <span class="terminal-v2__command">/tenax:load-recent</span>
-              <span class="terminal-v2__flag">3</span>
+              <span class="terminal-v2__command">/tenax:load-sessions</span>
+              <span class="terminal-v2__flag">--recent 3</span>
               <span class="terminal-v2__cursor"></span>
             </div>
           </div>
@@ -1340,8 +1547,8 @@
           Give Claude the memory it deserves. Install Tenax and start building on accumulated knowledge.
         </p>
         <div class="cta__buttons">
-          <a href="docs/" class="cta__btn cta__btn--primary">
-            <span>Get Started</span>
+          <a href="docs/install.html" class="cta__btn cta__btn--primary">
+            <span>Install Now</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
@@ -1380,7 +1587,7 @@
         <div class="footer-v2__column">
           <h4>Documentation</h4>
           <ul class="footer-v2__links">
-            <li><a href="docs/">Getting Started</a></li>
+            <li><a href="docs/install.html">Installation</a></li>
             <li><a href="docs/concepts.html">Core Concepts</a></li>
             <li><a href="docs/commands.html">Commands</a></li>
             <li><a href="docs/markers.html">Markers</a></li>

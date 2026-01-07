@@ -267,12 +267,32 @@ a:hover {
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast);
+  overflow: hidden;
+}
+
+/* Animated underline effect */
+.nav__link::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: var(--space-md);
+  right: var(--space-md);
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 1px;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav__link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .nav__link:hover {
   color: var(--text-primary);
-  background: var(--bg-tertiary);
 }
 
 .nav__link--github {
@@ -304,11 +324,11 @@ a:hover {
   gap: var(--space-sm);
 }
 
-/* Theme Toggle - Refined */
+/* Theme Toggle - Enhanced with morph animation */
 .theme-toggle {
   position: relative;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--border);
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
@@ -316,20 +336,37 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+}
+
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .theme-toggle:hover {
   border-color: var(--accent);
-  background: var(--accent-subtle);
+  transform: scale(1.05);
+}
+
+.theme-toggle:hover::before {
+  opacity: 1;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
 }
 
 .theme-toggle svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   color: var(--text-secondary);
-  transition: all var(--transition-fast);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: absolute;
 }
 
@@ -339,7 +376,7 @@ a:hover {
 
 .theme-toggle__sun {
   opacity: 0;
-  transform: rotate(-90deg) scale(0.5);
+  transform: rotate(-180deg) scale(0);
 }
 
 .theme-toggle__moon {
@@ -347,6 +384,7 @@ a:hover {
   transform: rotate(0deg) scale(1);
 }
 
+/* Dark theme - show sun, hide moon */
 [data-theme="dark"] .theme-toggle__sun {
   opacity: 1;
   transform: rotate(0deg) scale(1);
@@ -354,7 +392,18 @@ a:hover {
 
 [data-theme="dark"] .theme-toggle__moon {
   opacity: 0;
-  transform: rotate(90deg) scale(0.5);
+  transform: rotate(180deg) scale(0);
+}
+
+/* Animation on click */
+.theme-toggle.animating svg {
+  animation: iconPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes iconPop {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+  100% { transform: scale(1) rotate(360deg); }
 }
 
 /* ============================================
@@ -827,7 +876,7 @@ a:hover {
   }
 }
 
-/* Buttons */
+/* Buttons with ripple effect */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -839,6 +888,25 @@ a:hover {
   border: none;
   cursor: pointer;
   transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ripple effect container */
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: rippleEffect 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
 .btn--primary {
@@ -853,6 +921,10 @@ a:hover {
   color: white;
 }
 
+.btn--primary:active {
+  transform: translateY(0);
+}
+
 .btn--secondary {
   background: var(--bg-secondary);
   color: var(--text-primary);
@@ -865,9 +937,51 @@ a:hover {
   color: var(--text-primary);
 }
 
+.btn--secondary .ripple {
+  background: var(--accent-subtle);
+}
+
 .btn svg {
   width: 18px;
   height: 18px;
+}
+
+/* Hero CTA buttons ripple */
+.hero__cta {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__cta .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: rippleEffect 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+.hero__cta--ghost .ripple {
+  background: var(--accent-subtle);
+}
+
+/* CTA section buttons ripple */
+.cta__btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta__btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: rippleEffect 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+.cta__btn--secondary .ripple {
+  background: var(--accent-subtle);
 }
 
 /* ============================================
@@ -1288,13 +1402,50 @@ a:hover {
 
 .fade-in {
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(30px);
+  transition:
+    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: var(--stagger-delay, 0ms);
 }
 
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Stagger delay utilities (set via JS or inline) */
+.fade-in[data-stagger="1"] { --stagger-delay: 100ms; }
+.fade-in[data-stagger="2"] { --stagger-delay: 200ms; }
+.fade-in[data-stagger="3"] { --stagger-delay: 300ms; }
+.fade-in[data-stagger="4"] { --stagger-delay: 400ms; }
+.fade-in[data-stagger="5"] { --stagger-delay: 500ms; }
+.fade-in[data-stagger="6"] { --stagger-delay: 600ms; }
+
+/* Scale up variant for cards */
+.fade-in--scale {
+  transform: translateY(30px) scale(0.95);
+}
+
+.fade-in--scale.visible {
+  transform: translateY(0) scale(1);
+}
+
+/* Slide in from sides */
+.fade-in--left {
+  transform: translateX(-30px);
+}
+
+.fade-in--left.visible {
+  transform: translateX(0);
+}
+
+.fade-in--right {
+  transform: translateX(30px);
+}
+
+.fade-in--right.visible {
+  transform: translateX(0);
 }
 
 /* Scrollbar styling */

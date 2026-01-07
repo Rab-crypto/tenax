@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Install Tenax - Persistent project knowledge for Claude Code. One command installation for Windows, macOS, and Linux.">
+  <title>Installation | Tenax</title>
+  <link rel="stylesheet" href="../css/style.css">
+
+  <!-- Load fonts like the main site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'><circle cx='16' cy='16' r='14' stroke='%230D9488' stroke-width='1.5' opacity='0.3'/><circle cx='16' cy='16' r='10' stroke='%230D9488' stroke-width='1.5' opacity='0.5'/><circle cx='16' cy='16' r='6' stroke='%230D9488' stroke-width='1.5' opacity='0.7'/><circle cx='16' cy='16' r='2.5' fill='%230D9488'/></svg>">
+
+  <style>
+    /* ============================================
+       Install Page - Precision Engineering Style
+       Matches the Tenax dark theme with teal accents
+       ============================================ */
+
+    /* Hero Section */
+    .install-hero {
+      padding: var(--space-4xl) 0 var(--space-3xl);
+      text-align: center;
+      position: relative;
+    }
+
+    .install-hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .install-hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-xs) var(--space-md);
+      background: var(--accent-subtle);
+      border: 1px solid rgba(13, 148, 136, 0.3);
+      border-radius: var(--radius-full);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-lg);
+    }
+
+    .install-hero__badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .install-hero__title {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-md);
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .install-hero__subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Platform Tabs */
+    .install-tabs {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-3xl);
+      flex-wrap: wrap;
+    }
+
+    .install-tab {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .install-tab:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+
+    .install-tab.active {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .install-tab svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.8;
+    }
+
+    .install-tab.active svg {
+      opacity: 1;
+    }
+
+    /* Install Content Areas */
+    .install-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .install-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* One-liner Command Box */
+    .one-liner {
+      position: relative;
+      max-width: 720px;
+      margin: 0 auto var(--space-3xl);
+    }
+
+    .one-liner__label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .one-liner__label::before {
+      content: '//';
+      opacity: 0.5;
+    }
+
+    .one-liner__box {
+      position: relative;
+      background: linear-gradient(180deg, #0D0D0F 0%, #0A0A0C 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl) var(--space-2xl);
+      overflow: hidden;
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+        0 0 60px var(--accent-glow);
+    }
+
+    .one-liner__box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    .one-liner__code {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-base);
+      color: #E4E4E7;
+      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .one-liner__code .prompt {
+      color: var(--accent-light);
+      user-select: none;
+      font-weight: 600;
+    }
+
+    .one-liner__copy {
+      position: absolute;
+      top: 50%;
+      right: var(--space-lg);
+      transform: translateY(-50%);
+      padding: var(--space-sm) var(--space-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-sm);
+      color: var(--text-tertiary);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-xs);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .one-liner__copy:hover {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .one-liner__copy.copied {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: #22C55E;
+      color: #22C55E;
+    }
+
+    /* Prerequisites Box */
+    .prerequisites {
+      max-width: 720px;
+      margin: 0 auto var(--space-3xl);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .prerequisites__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .prerequisites__icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .prerequisites__icon svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    .prerequisites h3 {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .prerequisites ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .prerequisites li {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .prerequisites li svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .prerequisites a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .prerequisites a:hover {
+      text-decoration: underline;
+    }
+
+    /* Manual Installation Steps */
+    .manual-install {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .manual-install__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-2xl);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .manual-install__header h2 {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .manual-install__header span {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Step Cards */
+    .step-card {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+      padding-bottom: var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-card:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .step-card__number {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-secondary);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow);
+      position: relative;
+    }
+
+    .step-card__number::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: calc(100% + var(--space-2xl));
+      background: linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+      opacity: 0.2;
+    }
+
+    .step-card:last-child .step-card__number::after {
+      display: none;
+    }
+
+    .step-card__content h3 {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+      color: var(--text-primary);
+    }
+
+    .step-card__content > p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--space-lg);
+      font-size: var(--text-base);
+    }
+
+    /* Code Blocks within Steps */
+    .step-code {
+      background: var(--code-bg);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .step-code__header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .step-code__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .step-code__dot--red { background: #FF5F57; }
+    .step-code__dot--yellow { background: #FFBD2E; }
+    .step-code__dot--green { background: #28CA42; }
+
+    .step-code__body {
+      padding: var(--space-lg);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: var(--text-sm);
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .step-code .comment {
+      color: var(--code-comment);
+    }
+
+    .step-code .command {
+      color: var(--code-text);
+    }
+
+    .step-code .keyword {
+      color: var(--code-keyword);
+    }
+
+    .step-code .string {
+      color: var(--code-string);
+    }
+
+    /* Note Box */
+    .note-box {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-lg);
+    }
+
+    .note-box svg {
+      width: 20px;
+      height: 20px;
+      color: #FBBF24;
+      flex-shrink: 0;
+    }
+
+    .note-box p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+
+    .note-box code {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.15em 0.4em;
+      background: rgba(251, 191, 36, 0.1);
+      border-radius: var(--radius-sm);
+      color: #FBBF24;
+    }
+
+    /* Success Box */
+    .success-box {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-xl);
+      background: rgba(34, 197, 94, 0.05);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-xl);
+    }
+
+    .success-box__icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .success-box__icon svg {
+      width: 24px;
+      height: 24px;
+      color: #22C55E;
+    }
+
+    .success-box__content h4 {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-weight: 600;
+      font-size: var(--text-base);
+      margin-bottom: var(--space-xs);
+      color: #22C55E;
+    }
+
+    .success-box__content p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+
+    /* Next Steps Section */
+    .next-steps {
+      max-width: 720px;
+      margin: var(--space-4xl) auto 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-3xl);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .next-steps::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .next-steps h3 {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+    }
+
+    .next-steps > p {
+      color: var(--text-tertiary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-xl);
+    }
+
+    .next-steps__links {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .next-steps__link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-md) var(--space-xl);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .next-steps__link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-subtle);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px var(--accent-glow);
+    }
+
+    .next-steps__link svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    .next-steps__link:hover svg {
+      opacity: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .step-card {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+      }
+
+      .step-card__number {
+        width: 48px;
+        height: 48px;
+        font-size: var(--text-lg);
+      }
+
+      .step-card__number::after {
+        display: none;
+      }
+
+      .one-liner__box {
+        padding: var(--space-lg);
+      }
+
+      .one-liner__code {
+        font-size: var(--text-sm);
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .one-liner__copy {
+        position: static;
+        transform: none;
+        margin-top: var(--space-md);
+        width: 100%;
+        text-align: center;
+      }
+
+      .next-steps__links {
+        flex-direction: column;
+      }
+
+      .next-steps__link {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav scrolled">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="../" class="nav__logo">
+          <svg class="nav__logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+            <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+            <circle cx="16" cy="16" r="6" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+            <circle cx="16" cy="16" r="2.5" fill="currentColor"/>
+          </svg>
+          <span class="nav__logo-text">
+            <span class="nav__logo-title">Tenax</span>
+          </span>
+        </a>
+
+        <div class="nav__links">
+          <a href="./" class="nav__link">Docs</a>
+          <a href="commands.html" class="nav__link">Commands</a>
+          <a href="concepts.html" class="nav__link">Concepts</a>
+        </div>
+
+        <div class="nav__actions">
+          <button class="theme-toggle" aria-label="Toggle theme">
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top: 100px; min-height: 100vh; padding-bottom: var(--space-4xl);">
+    <div class="container">
+      <!-- Hero -->
+      <header class="install-hero">
+        <span class="install-hero__badge">Quick Setup</span>
+        <h1 class="install-hero__title">Install Tenax</h1>
+        <p class="install-hero__subtitle">
+          Get persistent project memory for Claude Code in under a minute. Choose your platform below.
+        </p>
+      </header>
+
+      <!-- Platform Tabs -->
+      <div class="install-tabs">
+        <button class="install-tab active" data-platform="windows">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+          </svg>
+          Windows
+        </button>
+        <button class="install-tab" data-platform="macos">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          macOS
+        </button>
+        <button class="install-tab" data-platform="linux">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.504 0c-.155 0-.311.001-.465.003-.653.014-1.302.074-1.943.18-1.285.213-2.542.624-3.723 1.209-1.18.584-2.263 1.344-3.209 2.249-.947.905-1.754 1.959-2.386 3.114-.633 1.158-1.077 2.418-1.303 3.726-.226 1.308-.221 2.66.015 3.964.236 1.305.699 2.557 1.364 3.698.665 1.141 1.529 2.167 2.556 3.028 1.026.862 2.211 1.546 3.496 2.017 1.285.472 2.659.726 4.053.728.041 0 .082 0 .123-.001 1.391-.027 2.76-.297 4.036-.787 1.279-.49 2.452-1.189 3.462-2.066 1.011-.877 1.856-1.916 2.499-3.067.644-1.154 1.082-2.417 1.287-3.73.206-1.31.176-2.66-.09-3.964-.266-1.304-.766-2.544-1.472-3.673-.707-1.129-1.615-2.133-2.678-2.971-1.062-.839-2.273-1.49-3.569-1.918-1.296-.429-2.67-.646-4.054-.642zm-.105 2.242c1.104.013 2.18.186 3.196.509 1.016.323 1.963.8 2.805 1.408.841.609 1.573 1.34 2.165 2.166.591.826 1.037 1.746 1.31 2.722.274.976.371 1.996.288 2.998-.083 1.003-.343 1.987-.768 2.907-.425.921-1.01 1.774-1.729 2.521-.72.747-1.571 1.379-2.513 1.868-.941.489-1.968.828-3.036.997-1.069.17-2.174.167-3.242-.006-1.068-.174-2.092-.519-3.027-1.014-.936-.495-1.78-1.133-2.492-1.885-.713-.752-1.29-1.61-1.706-2.534-.415-.925-.666-1.91-.738-2.915-.072-1.005.035-2.024.32-2.996.285-.971.742-1.886 1.345-2.706.602-.82 1.347-1.544 2.2-2.143.852-.598 1.81-1.063 2.834-1.371 1.024-.308 2.106-.468 3.214-.455z"/>
+          </svg>
+          Linux
+        </button>
+      </div>
+
+      <!-- Windows Installation -->
+      <div class="install-content active" data-platform="windows">
+        <div class="one-liner">
+          <div class="one-liner__label">Quick Install (PowerShell)</div>
+          <div class="one-liner__box">
+            <code class="one-liner__code">
+              <span class="prompt">PS&gt;</span>
+              <span>irm https://tenax.dev/install.ps1 | iex</span>
+            </code>
+            <button class="one-liner__copy" data-copy="irm https://tenax.dev/install.ps1 | iex">Copy</button>
+          </div>
+        </div>
+
+        <div class="prerequisites">
+          <div class="prerequisites__header">
+            <div class="prerequisites__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </div>
+            <h3>Prerequisites</h3>
+          </div>
+          <ul>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>Claude Code CLI</strong> — <a href="https://claude.ai/code" target="_blank">Install from claude.ai/code</a></span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>PowerShell 5.1+</strong> — Comes with Windows 10/11</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="manual-install">
+          <div class="manual-install__header">
+            <h2>Manual Installation</h2>
+            <span>5 steps</span>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">1</div>
+            <div class="step-card__content">
+              <h3>Install Bun Runtime</h3>
+              <p>Tenax uses Bun for fast TypeScript execution. Open PowerShell and run:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">irm bun.sh/install.ps1 | iex</span>
+                </div>
+              </div>
+              <div class="note-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>After installation, restart your terminal for the <code>bun</code> command to be available.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">2</div>
+            <div class="step-card__content">
+              <h3>Download Tenax</h3>
+              <p>Clone or download the plugin to a permanent location:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="comment"># Option A: Clone with git</span><br>
+                  <span class="command">git clone https://github.com/anthropics/tenax.git "$env:USERPROFILE\.claude\plugins\tenax"</span><br><br>
+                  <span class="comment"># Option B: Download ZIP</span><br>
+                  <span class="command">Invoke-WebRequest -Uri "https://github.com/anthropics/tenax/archive/main.zip" -OutFile tenax.zip</span><br>
+                  <span class="command">Expand-Archive tenax.zip -DestinationPath "$env:USERPROFILE\.claude\plugins"</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">3</div>
+            <div class="step-card__content">
+              <h3>Install Dependencies</h3>
+              <p>Navigate to the plugin directory and install packages:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">cd "$env:USERPROFILE\.claude\plugins\tenax"</span><br>
+                  <span class="command">bun install</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">4</div>
+            <div class="step-card__content">
+              <h3>Register the Plugin</h3>
+              <p>Add Tenax to your Claude Code settings. Create or edit <code>~/.claude/settings.json</code>:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">{</span><br>
+                  <span class="command">  </span><span class="string">"extraKnownMarketplaces"</span><span class="command">: [</span><br>
+                  <span class="command">    {</span><br>
+                  <span class="command">      </span><span class="string">"name"</span><span class="command">: </span><span class="string">"local-plugins"</span><span class="command">,</span><br>
+                  <span class="command">      </span><span class="string">"source"</span><span class="command">: {</span><br>
+                  <span class="command">        </span><span class="string">"type"</span><span class="command">: </span><span class="string">"directory"</span><span class="command">,</span><br>
+                  <span class="command">        </span><span class="string">"path"</span><span class="command">: </span><span class="string">"%USERPROFILE%\\.claude\\plugins"</span><br>
+                  <span class="command">      }</span><br>
+                  <span class="command">    }</span><br>
+                  <span class="command">  ]</span><br>
+                  <span class="command">}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">5</div>
+            <div class="step-card__content">
+              <h3>Verify Installation</h3>
+              <p>Start Claude Code and check that Tenax is loaded:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">claude</span><br><br>
+                  <span class="comment"># In Claude Code, run:</span><br>
+                  <span class="keyword">/tenax:status</span>
+                </div>
+              </div>
+              <div class="success-box">
+                <div class="success-box__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div class="success-box__content">
+                  <h4>You're all set!</h4>
+                  <p>Tenax will now automatically capture decisions, patterns, and insights from your sessions. Use markers like <code>[D] topic: decision</code> to save knowledge.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- macOS Installation -->
+      <div class="install-content" data-platform="macos">
+        <div class="one-liner">
+          <div class="one-liner__label">Quick Install (Terminal)</div>
+          <div class="one-liner__box">
+            <code class="one-liner__code">
+              <span class="prompt">$</span>
+              <span>curl -fsSL https://tenax.dev/install.sh | bash</span>
+            </code>
+            <button class="one-liner__copy" data-copy="curl -fsSL https://tenax.dev/install.sh | bash">Copy</button>
+          </div>
+        </div>
+
+        <div class="prerequisites">
+          <div class="prerequisites__header">
+            <div class="prerequisites__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </div>
+            <h3>Prerequisites</h3>
+          </div>
+          <ul>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>Claude Code CLI</strong> — <a href="https://claude.ai/code" target="_blank">Install from claude.ai/code</a></span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>macOS 10.15+</strong> — Catalina or later</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="manual-install">
+          <div class="manual-install__header">
+            <h2>Manual Installation</h2>
+            <span>5 steps</span>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">1</div>
+            <div class="step-card__content">
+              <h3>Install Bun Runtime</h3>
+              <p>Tenax uses Bun for fast TypeScript execution:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">curl -fsSL https://bun.sh/install | bash</span>
+                </div>
+              </div>
+              <div class="note-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>Restart your terminal or run <code>source ~/.zshrc</code> after installation.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">2</div>
+            <div class="step-card__content">
+              <h3>Download Tenax</h3>
+              <p>Clone the repository:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="comment"># Create plugins directory</span><br>
+                  <span class="command">mkdir -p ~/.claude/plugins</span><br><br>
+                  <span class="comment"># Clone the repository</span><br>
+                  <span class="command">git clone https://github.com/anthropics/tenax.git ~/.claude/plugins/tenax</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">3</div>
+            <div class="step-card__content">
+              <h3>Install Dependencies</h3>
+              <p>Install the required packages:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">cd ~/.claude/plugins/tenax</span><br>
+                  <span class="command">bun install</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">4</div>
+            <div class="step-card__content">
+              <h3>Register the Plugin</h3>
+              <p>Add to <code>~/.claude/settings.json</code>:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">{</span><br>
+                  <span class="command">  </span><span class="string">"extraKnownMarketplaces"</span><span class="command">: [</span><br>
+                  <span class="command">    {</span><br>
+                  <span class="command">      </span><span class="string">"name"</span><span class="command">: </span><span class="string">"local-plugins"</span><span class="command">,</span><br>
+                  <span class="command">      </span><span class="string">"source"</span><span class="command">: {</span><br>
+                  <span class="command">        </span><span class="string">"type"</span><span class="command">: </span><span class="string">"directory"</span><span class="command">,</span><br>
+                  <span class="command">        </span><span class="string">"path"</span><span class="command">: </span><span class="string">"~/.claude/plugins"</span><br>
+                  <span class="command">      }</span><br>
+                  <span class="command">    }</span><br>
+                  <span class="command">  ]</span><br>
+                  <span class="command">}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">5</div>
+            <div class="step-card__content">
+              <h3>Verify Installation</h3>
+              <p>Start Claude Code and test:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">claude</span><br><br>
+                  <span class="comment"># In Claude Code:</span><br>
+                  <span class="keyword">/tenax:status</span>
+                </div>
+              </div>
+              <div class="success-box">
+                <div class="success-box__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div class="success-box__content">
+                  <h4>You're all set!</h4>
+                  <p>Tenax will now automatically capture decisions, patterns, and insights from your sessions. Use markers like <code>[D] topic: decision</code> to save knowledge.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Linux Installation -->
+      <div class="install-content" data-platform="linux">
+        <div class="one-liner">
+          <div class="one-liner__label">Quick Install (Terminal)</div>
+          <div class="one-liner__box">
+            <code class="one-liner__code">
+              <span class="prompt">$</span>
+              <span>curl -fsSL https://tenax.dev/install.sh | bash</span>
+            </code>
+            <button class="one-liner__copy" data-copy="curl -fsSL https://tenax.dev/install.sh | bash">Copy</button>
+          </div>
+        </div>
+
+        <div class="prerequisites">
+          <div class="prerequisites__header">
+            <div class="prerequisites__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            </div>
+            <h3>Prerequisites</h3>
+          </div>
+          <ul>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>Claude Code CLI</strong> — <a href="https://claude.ai/code" target="_blank">Install from claude.ai/code</a></span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span><strong>curl</strong> and <strong>git</strong> — Usually pre-installed</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="manual-install">
+          <div class="manual-install__header">
+            <h2>Manual Installation</h2>
+            <span>5 steps</span>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">1</div>
+            <div class="step-card__content">
+              <h3>Install Bun Runtime</h3>
+              <p>Tenax uses Bun for fast TypeScript execution:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">curl -fsSL https://bun.sh/install | bash</span>
+                </div>
+              </div>
+              <div class="note-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>Run <code>source ~/.bashrc</code> after installation, or restart your terminal.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">2</div>
+            <div class="step-card__content">
+              <h3>Download Tenax</h3>
+              <p>Clone the repository:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="comment"># Create plugins directory</span><br>
+                  <span class="command">mkdir -p ~/.claude/plugins</span><br><br>
+                  <span class="comment"># Clone the repository</span><br>
+                  <span class="command">git clone https://github.com/anthropics/tenax.git ~/.claude/plugins/tenax</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">3</div>
+            <div class="step-card__content">
+              <h3>Install Dependencies</h3>
+              <p>Install the required packages:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">cd ~/.claude/plugins/tenax</span><br>
+                  <span class="command">bun install</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">4</div>
+            <div class="step-card__content">
+              <h3>Register the Plugin</h3>
+              <p>Add to <code>~/.claude/settings.json</code>:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">{</span><br>
+                  <span class="command">  </span><span class="string">"extraKnownMarketplaces"</span><span class="command">: [</span><br>
+                  <span class="command">    {</span><br>
+                  <span class="command">      </span><span class="string">"name"</span><span class="command">: </span><span class="string">"local-plugins"</span><span class="command">,</span><br>
+                  <span class="command">      </span><span class="string">"source"</span><span class="command">: {</span><br>
+                  <span class="command">        </span><span class="string">"type"</span><span class="command">: </span><span class="string">"directory"</span><span class="command">,</span><br>
+                  <span class="command">        </span><span class="string">"path"</span><span class="command">: </span><span class="string">"~/.claude/plugins"</span><br>
+                  <span class="command">      }</span><br>
+                  <span class="command">    }</span><br>
+                  <span class="command">  ]</span><br>
+                  <span class="command">}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-card__number">5</div>
+            <div class="step-card__content">
+              <h3>Verify Installation</h3>
+              <p>Start Claude Code and test:</p>
+              <div class="step-code">
+                <div class="step-code__header">
+                  <span class="step-code__dot step-code__dot--red"></span>
+                  <span class="step-code__dot step-code__dot--yellow"></span>
+                  <span class="step-code__dot step-code__dot--green"></span>
+                </div>
+                <div class="step-code__body">
+                  <span class="command">claude</span><br><br>
+                  <span class="comment"># In Claude Code:</span><br>
+                  <span class="keyword">/tenax:status</span>
+                </div>
+              </div>
+              <div class="success-box">
+                <div class="success-box__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </div>
+                <div class="success-box__content">
+                  <h4>You're all set!</h4>
+                  <p>Tenax will now automatically capture decisions, patterns, and insights from your sessions. Use markers like <code>[D] topic: decision</code> to save knowledge.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="next-steps">
+        <h3>What's Next?</h3>
+        <p>Explore the documentation to get the most out of Tenax</p>
+        <div class="next-steps__links">
+          <a href="concepts.html" class="next-steps__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            Core Concepts
+          </a>
+          <a href="markers.html" class="next-steps__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            Knowledge Markers
+          </a>
+          <a href="commands.html" class="next-steps__link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            All Commands
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom" style="margin-top: 0; padding-top: var(--space-xl); border-top: 1px solid var(--border);">
+        <p>Tenax v2.1.0</p>
+        <p>Built for Claude Code</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    // Platform tab switching
+    document.querySelectorAll('.install-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const platform = tab.dataset.platform;
+
+        // Update tabs
+        document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Update content
+        document.querySelectorAll('.install-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`.install-content[data-platform="${platform}"]`).classList.add('active');
+      });
+    });
+
+    // Copy buttons
+    document.querySelectorAll('.one-liner__copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const text = btn.dataset.copy;
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    // Auto-detect platform
+    const platform = navigator.platform.toLowerCase();
+    if (platform.includes('win')) {
+      document.querySelector('[data-platform="windows"]').click();
+    } else if (platform.includes('mac')) {
+      document.querySelector('[data-platform="macos"]').click();
+    } else {
+      document.querySelector('[data-platform="linux"]').click();
+    }
+  </script>
+</body>
+</html>

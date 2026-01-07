@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Complete command reference for Tenax - all 17 commands with examples.">
+  <meta name="description" content="Complete command reference for Tenax - all 14 commands with examples.">
   <title>Commands | Tenax</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D9488'/><path d='M50 25 L70 40 L70 70 L50 85 L30 70 L30 40 Z' fill='white'/></svg>">
@@ -173,77 +173,30 @@
         </div>
         <div class="command-card__body">
           <p class="command-card__description">
-            Load multiple sessions by IDs. If no IDs specified, loads the last 3 sessions. Respects token budget.
+            Load multiple sessions by IDs. If no IDs specified, loads the last 3 sessions. Use <code>--recent N</code> to load N recent sessions. Respects token budget.
           </p>
           <div class="command-card__usage">
-            /tenax:load-sessions [IDs] [-b, --budget &lt;tokens&gt;]
+            /tenax:load-sessions [IDs] [--recent N] [-b, --budget &lt;tokens&gt;]
           </div>
           <div class="table-wrapper" style="margin-top: var(--space-md);">
             <table>
               <thead><tr><th>Argument</th><th>Description</th></tr></thead>
               <tbody>
                 <tr><td><code>IDs</code></td><td>Session IDs (comma or space separated)</td></tr>
+                <tr><td><code>--recent N</code></td><td>Load N most recent sessions</td></tr>
                 <tr><td><code>-b, --budget</code></td><td>Token budget limit</td></tr>
               </tbody>
             </table>
           </div>
-          <p><strong>Example:</strong> <code>/tenax:load-sessions 001,002,003</code></p>
+          <p><strong>Examples:</strong></p>
+          <ul>
+            <li><code>/tenax:load-sessions 001,002,003</code> - Load specific sessions</li>
+            <li><code>/tenax:load-sessions --recent 5</code> - Load 5 most recent sessions</li>
+            <li><code>/tenax:load-sessions</code> - Load last 3 sessions (default)</li>
+          </ul>
         </div>
       </div>
 
-      <div class="command-card" data-searchable>
-        <div class="command-card__header">
-          <span class="command-card__name">/tenax:load-recent</span>
-          <button class="code-block__copy" data-copy="/tenax:load-recent">Copy</button>
-        </div>
-        <div class="command-card__body">
-          <p class="command-card__description">
-            Load the N most recent sessions (default: 5). Most recent first. Respects token budget.
-          </p>
-          <div class="command-card__usage">
-            /tenax:load-recent [N] [-b, --budget &lt;tokens&gt;]
-          </div>
-          <div class="table-wrapper" style="margin-top: var(--space-md);">
-            <table>
-              <thead><tr><th>Argument</th><th>Description</th></tr></thead>
-              <tbody>
-                <tr><td><code>N</code></td><td>Number of sessions (default: 5)</td></tr>
-                <tr><td><code>-b, --budget</code></td><td>Token budget limit</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>Example:</strong> <code>/tenax:load-recent 3</code></p>
-        </div>
-      </div>
-
-      <div class="command-card" data-searchable>
-        <div class="command-card__header">
-          <span class="command-card__name">/tenax:load-all</span>
-          <button class="code-block__copy" data-copy="/tenax:load-all">Copy</button>
-        </div>
-        <div class="command-card__body">
-          <p class="command-card__description">
-            Smart-load all sessions within token budget. Shows preview, loads in reverse chronological order, skips sessions that would exceed budget.
-          </p>
-          <div class="command-card__usage">
-            /tenax:load-all [-b, --budget &lt;tokens&gt;]
-          </div>
-          <p><strong>Use when:</strong> You want comprehensive project history within your token allowance.</p>
-        </div>
-      </div>
-
-      <div class="command-card" data-searchable>
-        <div class="command-card__header">
-          <span class="command-card__name">/tenax:fresh</span>
-          <button class="code-block__copy" data-copy="/tenax:fresh">Copy</button>
-        </div>
-        <div class="command-card__body">
-          <p class="command-card__description">
-            Start a fresh session without loading any history. Memory still records new decisions; you can still search or load on demand.
-          </p>
-          <p><strong>Use when:</strong> You want a clean slate without historical context influencing the conversation.</p>
-        </div>
-      </div>
 
       <!-- Recording Knowledge -->
       <h2 id="recording">Recording Knowledge</h2>

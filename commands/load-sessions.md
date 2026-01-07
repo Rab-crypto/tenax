@@ -1,6 +1,6 @@
 # /tenax:load-sessions
 
-Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
+Load multiple sessions by IDs, load N recent sessions, or load the last 3 sessions by default.
 
 > **CRITICAL**: You MUST follow the exact bash commands specified below. Do NOT assume, modify, or substitute commands. Execute EXACTLY as documented.
 
@@ -10,12 +10,14 @@ Load multiple sessions by IDs, or the last 3 sessions if no IDs specified.
 /tenax:load-sessions
 /tenax:load-sessions 1,3,5
 /tenax:load-sessions 001 003 005
-/tenax:load-sessions --budget 40000
+/tenax:load-sessions --recent 5
+/tenax:load-sessions --recent 10 --budget 40000
 ```
 
 ## Arguments
 
 - `$ARGUMENTS` - Session IDs (comma or space separated). If omitted, loads last 3 sessions.
+- `--recent N` - Load N most recent sessions (alternative to specifying IDs)
 - `-b, --budget` - Token budget limit (default: config tokenBudget)
 
 ## Instructions for Claude

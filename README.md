@@ -4,7 +4,20 @@ Persistent, searchable project knowledge that survives across Claude Code sessio
 
 **Website:** [tenax.wiki](https://tenax.wiki)
 
-## Quick Install
+## Installation
+
+In Claude Code, run:
+
+```
+/plugin marketplace add Rab-crypto/tenax
+/plugin install tenax@tenax-marketplace
+```
+
+Then restart Claude Code or start a new session.
+
+### Alternative: Script Install
+
+If you prefer a one-liner:
 
 **macOS / Linux:**
 ```bash
@@ -16,8 +29,6 @@ curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.sh 
 irm https://raw.githubusercontent.com/Rab-crypto/tenax/master/install.ps1 | iex
 ```
 
-> See the [Manual Installation](#manual-installation) section below for troubleshooting.
-
 ## Overview
 
 Claude Code sessions lose accumulated project knowledge when sessions end or when auto-compact triggers. This plugin solves that by:
@@ -27,60 +38,6 @@ Claude Code sessions lose accumulated project knowledge when sessions end or whe
 - **Proactively checking** history before Claude proposes architecture, libraries, or patterns
 - **Retrieving on-demand** (never pre-loaded, minimal token overhead)
 - **Semantic search** using local embeddings (no API calls required)
-
-## Manual Installation
-
-If the quick install doesn't work, follow these steps:
-
-### 1. Install Bun Runtime
-
-```bash
-# macOS/Linux
-curl -fsSL https://bun.sh/install | bash
-
-# Windows (PowerShell)
-irm bun.sh/install.ps1 | iex
-```
-
-### 2. Download Tenax
-
-```bash
-# Create plugins directory
-mkdir -p ~/.claude/plugins
-
-# Clone the repository
-git clone https://github.com/Rab-crypto/tenax.git ~/.claude/plugins/tenax
-
-# Install dependencies
-cd ~/.claude/plugins/tenax
-npm install
-```
-
-### 3. Register the Plugin
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": [
-    {
-      "name": "local-plugins",
-      "source": {
-        "type": "directory",
-        "path": "~/.claude/plugins"
-      }
-    }
-  ]
-}
-```
-
-### 4. Verify Installation
-
-```bash
-claude
-# In Claude Code:
-/tenax:status
-```
 
 ## Features
 

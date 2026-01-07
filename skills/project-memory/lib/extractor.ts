@@ -1,19 +1,17 @@
 /**
- * Knowledge extractor using improved pattern matching + embedding-based quality scoring
- * Extracts decisions, patterns, tasks, and insights from transcript text
+ * Knowledge extractor - marker-based extraction only
+ * Extracts decisions, patterns, tasks, and insights from transcript text using [D], [P], [T], [I] markers
  */
 
-import type { Decision, Pattern, Task, Insight, TextSegment } from "./types";
+import type { Decision, Pattern, Task, Insight } from "./types";
 import { generateId } from "./storage";
 import type { ParsedTranscript } from "./transcript-parser";
-import { scoreCandidate } from "./extraction-scorer";
 
 // ============================================
 // SYSTEM CONTENT BLOCKLIST
 // ============================================
 
 const SYSTEM_BLOCKLIST = [
-  // Claude system reminders
   /system-reminder/i,
   /<system-reminder>/i,
   /<\/system-reminder>/i,
@@ -21,24 +19,13 @@ const SYSTEM_BLOCKLIST = [
   /malware/i,
   /refuse to improve/i,
   /must not.*edit/i,
-
-  // Function results markers
   /<function_results>/i,
   /<\/function_results>/i,
   /\[Omitted long matching line\]/i,
-
-  // Code/regex patterns (too technical)
-  /^\s*\/[^/]+\/[gimsuvy]*[,;]?\s*$/,
-  /^\s*const\s+\w+_PATTERNS?\s*=/i,
-  /^\s*export\s+(async\s+)?function/,
-
-  // Instructions to Claude
   /you should|you must|you can not|please ensure/i,
   /when.*user.*asks/i,
   /IMPORTANT:/i,
-
-  // Tool output formatting
-  /^\s*\d+→/,  // Line number prefixes from Read tool
+  /^\s*\d+→/,
 ];
 
 /**
@@ -55,15 +42,14 @@ function filterExtractableMessages(messages: string[]): string[] {
   return messages
     .filter((msg) => !isSystemContent(msg))
     .map((msg) => {
-      // Remove system reminder blocks
       let cleaned = msg
         .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/gi, "")
         .replace(/<function_results>[\s\S]*?<\/function_results>/gi, "");
 
-      // Remove code blocks (```...```) - these often contain marker examples
+      // Remove code blocks - these often contain marker examples
       cleaned = cleaned.replace(/```[\s\S]*?```/g, "");
 
-      // Remove inline code (`...`) - prevents matching markers in explanations
+      // Remove inline code - prevents matching markers in explanations
       cleaned = cleaned.replace(/`[^`]+`/g, "");
 
       return cleaned.trim();
@@ -72,197 +58,33 @@ function filterExtractableMessages(messages: string[]): string[] {
 }
 
 /**
- * Check if extracted content looks like documentation/example rather than real content
+ * Check if extracted content looks like documentation/example
  */
 function isDocumentationContent(text: string): boolean {
   const docPatterns = [
-    // Discussing markers rather than using them
     /marker\s+(about|was|for|is|are|isn't|weren't|that)/i,
     /the\s+\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
     /earlier\s+\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
-    /`\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
     /no\s+(new\s+)?\[?(DECISION|PATTERN|TASK|INSIGHT)/i,
-
-    // Partial/truncated content
-    /^\s*`/,  // Starts with backtick
-    /`\s*$/,  // Ends with backtick
-    /^\s*\.\.\./,  // Starts with ellipsis
-    /\.\.\.\s*$/,  // Ends with ellipsis
-
-    // Example/template patterns
-    /\[\/?(DECISION|PATTERN|TASK|INSIGHT)[:\s]*\]/i,  // Just the marker with no content
+    /^\s*`/,
+    /`\s*$/,
+    /^\s*\.\.\./,
+    /\.\.\.\s*$/,
+    /\[\/?(DECISION|PATTERN|TASK|INSIGHT)[:\s]*\]/i,
     /example:/i,
     /template:/i,
     /e\.g\.,?\s*\[/i,
     /for instance.*\[/i,
-
-    // Meta-discussion about extraction
     /extractor?\s+(captured|grabbed|found|matched|picked)/i,
     /extraction\s+(captured|grabbed|found|matched|picked)/i,
     /was(n't)?\s+(captured|extracted|marked)/i,
-    /get(s)?\s+lost\s+in/i,
   ];
 
   return docPatterns.some((pattern) => pattern.test(text));
 }
 
 // ============================================
-// STRUCTURE-AWARE PARSING
-// ============================================
-
-/**
- * Parse text into structural segments (prose, headers, bullets, code)
- */
-function parseStructure(text: string): TextSegment[] {
-  const segments: TextSegment[] = [];
-  const lines = text.split("\n");
-
-  let inCodeBlock = false;
-  let codeBlockContent: string[] = [];
-
-  for (const line of lines) {
-    // Handle code blocks
-    if (line.trim().startsWith("```")) {
-      if (inCodeBlock) {
-        segments.push({ type: "code", content: codeBlockContent.join("\n") });
-        codeBlockContent = [];
-        inCodeBlock = false;
-      } else {
-        inCodeBlock = true;
-      }
-      continue;
-    }
-
-    if (inCodeBlock) {
-      codeBlockContent.push(line);
-      continue;
-    }
-
-    // Headers
-    const headerMatch = line.match(/^(#{1,6})\s+(.+)$/);
-    if (headerMatch && headerMatch[1] && headerMatch[2]) {
-      segments.push({
-        type: "header",
-        content: headerMatch[2],
-        level: headerMatch[1].length,
-      });
-      continue;
-    }
-
-    // Bullets
-    const bulletMatch = line.match(/^(\s*)[-*+]\s+(.+)$/);
-    if (bulletMatch && bulletMatch[2]) {
-      segments.push({
-        type: "bullet",
-        content: bulletMatch[2],
-        level: Math.floor((bulletMatch[1] || "").length / 2),
-      });
-      continue;
-    }
-
-    // Blockquotes
-    if (line.startsWith(">")) {
-      segments.push({ type: "blockquote", content: line.slice(1).trim() });
-      continue;
-    }
-
-    // Regular prose
-    if (line.trim()) {
-      segments.push({ type: "prose", content: line.trim() });
-    }
-  }
-
-  return segments;
-}
-
-/**
- * Get extractable text from segments (skip code blocks)
- */
-function getExtractableText(segments: TextSegment[]): string {
-  return segments
-    .filter((s) => s.type === "prose" || s.type === "bullet")
-    .map((s) => s.content)
-    .join(" ");
-}
-
-// ============================================
-// SENTENCE BOUNDARY DETECTION
-// ============================================
-
-/**
- * Extract complete sentences from text, handling:
- * - Abbreviations (e.g., i.e., etc.)
- * - Code references (fs.mkdir, foo.bar())
- * - Version numbers (v1.0, 2.5.0)
- */
-function extractSentences(text: string): string[] {
-  // Protect common patterns that contain periods
-  const protections: Map<string, string> = new Map();
-  let protectionIndex = 0;
-
-  const protectedPatterns: RegExp[] = [
-    /\b(e\.g\.|i\.e\.|vs\.|etc\.|et al\.|Mr\.|Mrs\.|Dr\.|Sr\.|Jr\.)/gi,
-    /\b(\d+\.\d+(\.\d+)?)/g, // Version numbers
-    /\b([a-zA-Z_]\w*\.[a-zA-Z_]\w*(\([^)]*\))?)/g, // Code refs like fs.mkdir()
-    /(https?:\/\/[^\s]+)/g, // URLs
-    /`[^`]+`/g, // Inline code
-  ];
-
-  let processed = text;
-  for (const pattern of protectedPatterns) {
-    processed = processed.replace(pattern, (match) => {
-      const placeholder = `__PROT${protectionIndex++}__`;
-      protections.set(placeholder, match);
-      return placeholder;
-    });
-  }
-
-  // Split on sentence boundaries (. ! ? followed by space and capital or end)
-  const sentences: string[] = [];
-  const sentencePattern = /[^.!?]+[.!?]+(?=\s+[A-Z]|\s*$)|[^.!?]+$/g;
-  const matches = processed.match(sentencePattern);
-
-  if (matches) {
-    for (const sentence of matches) {
-      let restored = sentence;
-      for (const [placeholder, original] of protections) {
-        restored = restored.replace(placeholder, original);
-      }
-      const trimmed = restored.trim();
-      if (trimmed.length > 0) {
-        sentences.push(trimmed);
-      }
-    }
-  }
-
-  return sentences;
-}
-
-/**
- * Find the complete sentence containing a match
- */
-function findContainingSentence(text: string, matchIndex: number): string {
-  const sentences = extractSentences(text);
-
-  let currentPos = 0;
-  for (const sentence of sentences) {
-    const sentenceStart = text.indexOf(sentence, currentPos);
-    const sentenceEnd = sentenceStart + sentence.length;
-
-    if (matchIndex >= sentenceStart && matchIndex < sentenceEnd) {
-      return sentence;
-    }
-    currentPos = sentenceEnd;
-  }
-
-  // Fallback: return text around the match
-  const start = Math.max(0, text.lastIndexOf(".", matchIndex - 1) + 1);
-  const end = text.indexOf(".", matchIndex);
-  return text.slice(start, end > matchIndex ? end + 1 : matchIndex + 100).trim();
-}
-
-// ============================================
-// DECISION EXTRACTION
+// TOPIC DETECTION
 // ============================================
 
 const DECISION_TOPICS = [
@@ -283,30 +105,28 @@ const DECISION_TOPICS = [
   { pattern: /\b(file|folder|directory|naming)\b/i, topic: "file-organization" },
 ];
 
+function detectTopic(text: string): string {
+  for (const { pattern, topic } of DECISION_TOPICS) {
+    if (pattern.test(text)) {
+      return topic;
+    }
+  }
+  return "general";
+}
+
 // ============================================
 // MARKER-BASED EXTRACTION
 // ============================================
 
-// SINGLE-LINE FORMAT (backward compatible):
-// [D] topic: decision text
-// [P] name: pattern description
-// [I] insight text
-// [T] task description
-const DECISION_MARKER_SINGLE = /^\[D\]\s*([^:\n]+):\s*(.+)$/gim;
-const PATTERN_MARKER_SINGLE = /^\[P\]\s*([^:\n]+):\s*(.+)$/gim;
-const TASK_MARKER_SINGLE = /^\[T\]\s*(.+)$/gim;
-const INSIGHT_MARKER_SINGLE = /^\[I\]\s*(.+)$/gim;
-
-// MULTI-LINE FORMAT (new):
-// [D] First line of content
-//   - bullet point
-//   - more detail
-// (ends at blank line)
+// Single-line format: [D] topic: text (no newlines allowed - use [ \t]* instead of \s*)
+const DECISION_MARKER_SINGLE = /^\[D\][ \t]*([^:\n]+):[ \t]*(.+)$/gim;
+const PATTERN_MARKER_SINGLE = /^\[P\][ \t]*([^:\n]+):[ \t]*(.+)$/gim;
+const TASK_MARKER_SINGLE = /^\[T\][ \t]*(.+)$/gim;
+const INSIGHT_MARKER_SINGLE = /^\[I\][ \t]*(.+)$/gim;
 
 interface MultiLineBlock {
   type: "D" | "P" | "T" | "I";
   content: string;
-  startIndex: number;
 }
 
 /**
@@ -340,22 +160,17 @@ function extractMultiLineBlocks(text: string): MultiLineBlock[] {
       const restOfLine = markerMatch[2] || "";
 
       // Check if this is single-line format: [D] topic: text
-      // Single-line has format "topic: text" where topic has no spaces before colon
       const singleLineMatch = restOfLine.match(/^([^:\s][^:]*?):\s+(.+)$/);
 
       if (singleLineMatch && !restOfLine.includes("\n")) {
-        // This is single-line format, skip it (handled by single-line regex)
+        // Single-line format, skip (handled by single-line regex)
         currentBlock = null;
         blockLines = [];
         continue;
       }
 
       // Start new multi-line block
-      currentBlock = {
-        type: markerType,
-        content: "",
-        startIndex: i,
-      };
+      currentBlock = { type: markerType, content: "" };
       blockLines = restOfLine ? [restOfLine] : [];
       continue;
     }
@@ -389,32 +204,26 @@ function extractMultiLineBlocks(text: string): MultiLineBlock[] {
   return blocks;
 }
 
+/**
+ * Generate a short name for a pattern from its description
+ */
+function generatePatternName(description: string): string {
+  const skipWords = new Set(["the", "a", "an", "to", "for", "with", "use", "we", "i", "will", "should"]);
+  const words = description
+    .split(/\s+/)
+    .map((w) => w.replace(/[^a-zA-Z]/g, "").toLowerCase())
+    .filter((w) => w.length > 2 && !skipWords.has(w))
+    .slice(0, 4);
+
+  return words.join("-").substring(0, 50) || "pattern";
+}
+
 // ============================================
-// FALLBACK PATTERNS (LOWER PRIORITY)
+// EXTRACTION FUNCTIONS
 // ============================================
-
-// Patterns for conversational decisions
-const CONVERSATIONAL_TRIGGERS = [
-  /\b(we(?:'ve)?|I(?:'ve)?|the team)\s+(decided|chose|selected|opted|went with|will use|are using)/i,
-  /\b(going with|choosing|using|picking|selecting)\s+\w+/i,
-  /\b(decided to|chose to|opted to|going to use)\b/i,
-  /\bfor\s+\w+[^,]*,\s*(we|I)(?:'ll)?\s+(use|implement|go with)/i,
-];
-
-// Patterns for structured/action-based content (more common in summaries)
-const ACTION_TRIGGERS = [
-  /\b(updated?|changed?|switched|migrated|converted)\s+/i,
-  /\b(added|implemented|created|built|introduced)\s+/i,
-  /\b(replaced|removed|deprecated)\s+/i,
-  /\b(fixed|resolved|addressed)\s+/i,
-  /\b(using|uses?)\s+\w+\s+(for|to|with|instead)/i,
-];
-
-// Pattern for structured bullet decisions like "- **[topic]** decision text"
-const STRUCTURED_DECISION_PATTERN = /^\*\*\[([^\]]+)\]\*\*\s+(.+)$/;
 
 /**
- * Extract decisions from transcript (async for embedding scoring)
+ * Extract decisions from transcript using [D] markers only
  */
 export async function extractDecisions(
   transcript: ParsedTranscript,
@@ -423,18 +232,15 @@ export async function extractDecisions(
   const decisions: Decision[] = [];
   const seenContent = new Set<string>();
 
-  // Pre-filter messages
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract multi-line blocks first
+  // Extract multi-line blocks first
   const multiLineBlocks = extractMultiLineBlocks(fullText);
   for (const block of multiLineBlocks) {
     if (block.type !== "D") continue;
 
     const decisionText = block.content;
-
-    // Skip documentation/example content
     if (isDocumentationContent(decisionText)) continue;
 
     if (decisionText.length >= 10 && decisionText.length <= 2000) {
@@ -453,14 +259,13 @@ export async function extractDecisions(
     }
   }
 
-  // PHASE 1b: Extract from single-line markers: [D] topic: text
+  // Extract single-line markers: [D] topic: text
   const markerRegex = new RegExp(DECISION_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const topic = (match[1] || "general").trim().toLowerCase();
     const decisionText = (match[2] || "").trim();
 
-    // Skip documentation/example content
     if (isDocumentationContent(decisionText)) continue;
 
     if (decisionText.length >= 10 && decisionText.length <= 500) {
@@ -479,158 +284,11 @@ export async function extractDecisions(
     }
   }
 
-  // PHASE 2: Check bullet points for legacy structured decisions
-  for (const message of extractableMessages) {
-    const segments = parseStructure(message);
-    const bullets = segments.filter((s) => s.type === "bullet");
-
-    for (const bullet of bullets) {
-      const content = bullet.content;
-
-      // Check for structured format: **[topic]** decision text
-      const structuredMatch = content.match(STRUCTURED_DECISION_PATTERN);
-      if (structuredMatch) {
-        const topic = structuredMatch[1] || "general";
-        const decisionText = structuredMatch[2] || "";
-
-        if (decisionText.length >= 15 && decisionText.length <= 500) {
-          const normalized = decisionText.toLowerCase().replace(/\s+/g, " ").trim();
-          if (!seenContent.has(normalized)) {
-            const hasContent = /[a-zA-Z]{3,}/.test(decisionText);
-            if (hasContent) {
-              seenContent.add(normalized);
-              decisions.push({
-                id: generateId(),
-                topic,
-                decision: decisionText,
-                rationale: "",
-                sessionId,
-                timestamp: new Date().toISOString(),
-              });
-            }
-          }
-        }
-        continue;
-      }
-
-      // Check for action-based bullets (Updated X, Replaced Y, etc.)
-      for (const trigger of ACTION_TRIGGERS) {
-        if (trigger.test(content)) {
-          const cleaned = content
-            .replace(/\*\*([^*]+)\*\*/g, "$1")
-            .replace(/`([^`]+)`/g, "$1")
-            .trim();
-
-          if (cleaned.length >= 20 && cleaned.length <= 500) {
-            const normalized = cleaned.toLowerCase().replace(/\s+/g, " ").trim();
-            if (!seenContent.has(normalized)) {
-              const quality = await scoreCandidate(cleaned, "decision");
-              if (quality.score >= 0.15) {
-                seenContent.add(normalized);
-                decisions.push({
-                  id: generateId(),
-                  topic: detectTopic(cleaned),
-                  decision: cleaned,
-                  rationale: "",
-                  sessionId,
-                  timestamp: new Date().toISOString(),
-                });
-              }
-            }
-          }
-          break;
-        }
-      }
-    }
-
-    // PHASE 3: Check prose for conversational decisions
-    const proseText = segments
-      .filter((s) => s.type === "prose")
-      .map((s) => s.content)
-      .join(" ");
-
-    for (const trigger of CONVERSATIONAL_TRIGGERS) {
-      let match;
-      const regex = new RegExp(trigger.source, trigger.flags + "g");
-
-      while ((match = regex.exec(proseText)) !== null) {
-        const fullSentence = findContainingSentence(proseText, match.index);
-
-        if (fullSentence.length < 20 || fullSentence.length > 500) {
-          continue;
-        }
-
-        const quality = await scoreCandidate(fullSentence, "decision");
-        if (!quality.passed) {
-          continue;
-        }
-
-        const normalized = fullSentence.toLowerCase().replace(/\s+/g, " ").trim();
-        if (seenContent.has(normalized)) {
-          continue;
-        }
-        seenContent.add(normalized);
-
-        const rationale = extractRationale(proseText, match.index + fullSentence.length);
-        const topic = detectTopic(fullSentence);
-
-        decisions.push({
-          id: generateId(),
-          topic,
-          decision: fullSentence,
-          rationale,
-          sessionId,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
   return decisions;
 }
 
 /**
- * Detect topic from text
- */
-function detectTopic(text: string): string {
-  for (const { pattern, topic } of DECISION_TOPICS) {
-    if (pattern.test(text)) {
-      return topic;
-    }
-  }
-  return "general";
-}
-
-/**
- * Extract rationale from surrounding context
- */
-function extractRationale(text: string, startIndex: number): string {
-  const context = text.slice(startIndex, startIndex + 300);
-  const sentences = extractSentences(context);
-
-  // Look for rationale in the next 1-2 sentences
-  for (const sentence of sentences.slice(0, 2)) {
-    if (/\b(because|since|due to|as (it|this|they)|this (will|allows|enables|provides)|for (better|improved|easier))\b/i.test(sentence)) {
-      return sentence;
-    }
-  }
-
-  return "";
-}
-
-// ============================================
-// PATTERN EXTRACTION
-// ============================================
-
-const PATTERN_TRIGGERS = [
-  /\b(we|I)(?:'ll)?\s+(always|consistently|follow|use)\s+/i,
-  /\b(the pattern is|convention is|standard is|rule is)\b/i,
-  /\b(for consistency|by convention|as a rule)\b/i,
-  /\b(every|all)\s+\w+\s+(should|must|will)\b/i,
-];
-
-/**
- * Extract patterns from transcript
+ * Extract patterns from transcript using [P] markers only
  */
 export async function extractPatterns(
   transcript: ParsedTranscript,
@@ -642,14 +300,12 @@ export async function extractPatterns(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract multi-line blocks first
+  // Extract multi-line blocks first
   const multiLineBlocks = extractMultiLineBlocks(fullText);
   for (const block of multiLineBlocks) {
     if (block.type !== "P") continue;
 
     const description = block.content;
-
-    // Skip documentation/example content
     if (isDocumentationContent(description)) continue;
 
     if (description.length >= 10 && description.length <= 2000) {
@@ -668,14 +324,13 @@ export async function extractPatterns(
     }
   }
 
-  // PHASE 1b: Extract from single-line markers: [P] name: description
+  // Extract single-line markers: [P] name: description
   const markerRegex = new RegExp(PATTERN_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const name = (match[1] || "pattern").trim().toLowerCase();
     const description = (match[2] || "").trim();
 
-    // Skip documentation/example content
     if (isDocumentationContent(description) || isDocumentationContent(name)) continue;
 
     if (description.length >= 10 && description.length <= 500) {
@@ -694,94 +349,11 @@ export async function extractPatterns(
     }
   }
 
-  // PHASE 2: Fallback to heuristic extraction
-  for (const message of extractableMessages) {
-    const segments = parseStructure(message);
-    const proseText = getExtractableText(segments);
-
-    for (const trigger of PATTERN_TRIGGERS) {
-      let match;
-      const regex = new RegExp(trigger.source, trigger.flags + "g");
-
-      while ((match = regex.exec(proseText)) !== null) {
-        const fullSentence = findContainingSentence(proseText, match.index);
-
-        if (fullSentence.length < 25 || fullSentence.length > 400) {
-          continue;
-        }
-
-        const quality = await scoreCandidate(fullSentence, "pattern");
-        if (!quality.passed) {
-          continue;
-        }
-
-        const normalized = fullSentence.toLowerCase().replace(/\s+/g, " ").trim();
-        if (seenContent.has(normalized)) {
-          continue;
-        }
-        seenContent.add(normalized);
-
-        patterns.push({
-          id: generateId(),
-          name: generatePatternName(fullSentence),
-          description: fullSentence,
-          usage: extractUsage(proseText, match.index + fullSentence.length),
-          sessionId,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    }
-  }
-
   return patterns;
 }
 
 /**
- * Generate a short name for a pattern
- */
-function generatePatternName(description: string): string {
-  // Extract key words, skip common words
-  const skipWords = new Set(["the", "a", "an", "to", "for", "with", "use", "we", "i", "will", "should"]);
-  const words = description
-    .split(/\s+/)
-    .map((w) => w.replace(/[^a-zA-Z]/g, "").toLowerCase())
-    .filter((w) => w.length > 2 && !skipWords.has(w))
-    .slice(0, 4);
-
-  return words.join("-").substring(0, 50) || "pattern";
-}
-
-/**
- * Extract usage context
- */
-function extractUsage(text: string, startIndex: number): string {
-  const context = text.slice(startIndex, startIndex + 200);
-  const sentences = extractSentences(context);
-
-  for (const sentence of sentences.slice(0, 2)) {
-    if (/\b(when|for|in order to|in cases where)\b/i.test(sentence)) {
-      return sentence;
-    }
-  }
-
-  return "";
-}
-
-// ============================================
-// TASK EXTRACTION
-// ============================================
-
-const TASK_TRIGGERS = [
-  /\b(TODO|FIXME|HACK|XXX)[:.]?\s*/i,
-  /\b(we need to|need to|should|must|have to)\s+\w+/i,
-  /\bnext,?\s+(we|I)(?:'ll)?\s+/i,
-  /\b(remaining|left to do|still need)\b/i,
-  /\b(add|implement|fix|update|create|write|test)\s+\w+\s+(to|for|in)/i,
-  /\bneeds?\s+(to be|fixing|updating|testing)/i,
-];
-
-/**
- * Extract tasks from transcript
+ * Extract tasks from transcript using [T] markers only
  */
 export async function extractTasks(
   transcript: ParsedTranscript,
@@ -793,14 +365,12 @@ export async function extractTasks(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract multi-line blocks first
+  // Extract multi-line blocks first
   const multiLineBlocks = extractMultiLineBlocks(fullText);
   for (const block of multiLineBlocks) {
     if (block.type !== "T") continue;
 
     const taskText = block.content;
-
-    // Skip documentation/example content
     if (isDocumentationContent(taskText)) continue;
 
     if (taskText.length >= 10 && taskText.length <= 2000) {
@@ -819,13 +389,12 @@ export async function extractTasks(
     }
   }
 
-  // PHASE 1b: Extract from single-line markers: [T] task description
+  // Extract single-line markers: [T] task description
   const markerRegex = new RegExp(TASK_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const taskText = (match[1] || "").trim();
 
-    // Skip documentation/example content
     if (isDocumentationContent(taskText)) continue;
 
     if (taskText.length >= 10 && taskText.length <= 500) {
@@ -844,62 +413,11 @@ export async function extractTasks(
     }
   }
 
-  // PHASE 2: Fallback to heuristic extraction
-  const allText = extractableMessages.join(" ");
-
-  for (const trigger of TASK_TRIGGERS) {
-    let match;
-    const regex = new RegExp(trigger.source, trigger.flags + "g");
-
-    while ((match = regex.exec(allText)) !== null) {
-      const fullSentence = findContainingSentence(allText, match.index);
-
-      if (fullSentence.length < 15 || fullSentence.length > 200) {
-        continue;
-      }
-
-      // Skip false positives
-      if (/^(that|this|it|they|we|I)\s+(is|are|was|were|be|have|do|can|will|would|should|could)\s*$/i.test(fullSentence)) {
-        continue;
-      }
-
-      const quality = await scoreCandidate(fullSentence, "task");
-      if (!quality.passed) {
-        continue;
-      }
-
-      const normalized = fullSentence.toLowerCase().replace(/\s+/g, " ").trim();
-      if (seenContent.has(normalized)) {
-        continue;
-      }
-      seenContent.add(normalized);
-
-      tasks.push({
-        id: generateId(),
-        title: fullSentence.substring(0, 100),
-        description: fullSentence.length > 100 ? fullSentence : undefined,
-        status: "pending",
-        sessionCreated: sessionId,
-        timestampCreated: new Date().toISOString(),
-      });
-    }
-  }
-
   return tasks;
 }
 
-// ============================================
-// INSIGHT EXTRACTION
-// ============================================
-
-const INSIGHT_TRIGGERS = [
-  /\b(interesting(?:ly)?|notable|important(?:ly)?|key point|worth noting)\b/i,
-  /\b(learned|discovered|realized|found out)\s+(that\s+)?/i,
-  /\b(turns out|apparently|surprisingly)\b/i,
-];
-
 /**
- * Extract insights from transcript
+ * Extract insights from transcript using [I] markers only
  */
 export async function extractInsights(
   transcript: ParsedTranscript,
@@ -911,14 +429,12 @@ export async function extractInsights(
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join("\n");
 
-  // PHASE 1a: Extract multi-line blocks first
+  // Extract multi-line blocks first
   const multiLineBlocks = extractMultiLineBlocks(fullText);
   for (const block of multiLineBlocks) {
     if (block.type !== "I") continue;
 
     const insightText = block.content;
-
-    // Skip documentation/example content
     if (isDocumentationContent(insightText)) continue;
 
     if (insightText.length >= 10 && insightText.length <= 2000) {
@@ -935,13 +451,12 @@ export async function extractInsights(
     }
   }
 
-  // PHASE 1b: Extract from single-line markers: [I] insight text
+  // Extract single-line markers: [I] insight text
   const markerRegex = new RegExp(INSIGHT_MARKER_SINGLE.source, "gim");
   let match;
   while ((match = markerRegex.exec(fullText)) !== null) {
     const insightText = (match[1] || "").trim();
 
-    // Skip documentation/example content
     if (isDocumentationContent(insightText)) continue;
 
     if (insightText.length >= 10 && insightText.length <= 500) {
@@ -958,40 +473,6 @@ export async function extractInsights(
     }
   }
 
-  // PHASE 2: Fallback to heuristic extraction
-  const allText = extractableMessages.join(" ");
-
-  for (const trigger of INSIGHT_TRIGGERS) {
-    let match;
-    const regex = new RegExp(trigger.source, trigger.flags + "g");
-
-    while ((match = regex.exec(allText)) !== null) {
-      const fullSentence = findContainingSentence(allText, match.index);
-
-      if (fullSentence.length < 20 || fullSentence.length > 300) {
-        continue;
-      }
-
-      const quality = await scoreCandidate(fullSentence, "insight");
-      if (!quality.passed) {
-        continue;
-      }
-
-      const normalized = fullSentence.toLowerCase().replace(/\s+/g, " ").trim();
-      if (seenContent.has(normalized)) {
-        continue;
-      }
-      seenContent.add(normalized);
-
-      insights.push({
-        id: generateId(),
-        content: fullSentence,
-        sessionId,
-        timestamp: new Date().toISOString(),
-      });
-    }
-  }
-
   return insights;
 }
 
@@ -1005,35 +486,27 @@ export async function extractInsights(
 export function generateSummary(transcript: ParsedTranscript): string {
   const summaryParts: string[] = [];
 
-  // Find meaningful user requests (skip command messages, system content)
+  // Find meaningful user requests
   const meaningfulUserMessages: string[] = [];
   for (const msg of transcript.userMessages) {
-    // Skip command-only messages
     if (msg.match(/^<command-/)) continue;
-    // Skip skill/command markdown
     if (msg.startsWith("# /")) continue;
-    // Skip system content
     if (isSystemContent(msg)) continue;
 
-    // Clean the message
     const cleaned = msg
-      .replace(/<[^>]+>/g, "") // Remove XML tags
-      .replace(/```[\s\S]*?```/g, "") // Remove code blocks
+      .replace(/<[^>]+>/g, "")
+      .replace(/```[\s\S]*?```/g, "")
       .replace(/\s+/g, " ")
       .trim();
 
-    // Skip if too short or looks like file content
     if (cleaned.length < 15) continue;
     if (cleaned.match(/^\s*[\[{]/) || cleaned.match(/^[0-9]+→/)) continue;
-    // Skip if it's mostly numbers/paths
     if (cleaned.match(/^[A-Z]:\\|^\/[a-z]/i)) continue;
-    // Skip git status/diff output
     if (cleaned.match(/^[MADRCU?!]\s+/)) continue;
 
     meaningfulUserMessages.push(cleaned);
   }
 
-  // Use the first meaningful user request as primary summary
   if (meaningfulUserMessages.length > 0 && meaningfulUserMessages[0]) {
     summaryParts.push(meaningfulUserMessages[0].substring(0, 150));
   }
@@ -1065,55 +538,8 @@ export function generateSummary(transcript: ParsedTranscript): string {
     summaryParts.push(`Files: ${uniqueActions.join(", ")}`);
   }
 
-  // Look for concluding summary from assistant (only if we don't have good user content)
-  if (summaryParts.length === 0 || (summaryParts[0]?.length || 0) < 30) {
-    const assistantSummary = findAssistantSummary(transcript.assistantMessages);
-    if (assistantSummary) {
-      summaryParts.unshift(assistantSummary);
-    }
-  }
-
-  // Build final summary
   const summary = summaryParts.join(". ").substring(0, 400);
   return summary || "Session with no captured summary";
-}
-
-/**
- * Find a summary-like statement in assistant messages
- */
-function findAssistantSummary(messages: string[]): string {
-  // Look for explicit summary markers or conclusion-like statements at end of session
-  const summaryPatterns = [
-    // Explicit summaries
-    /(?:in summary|to summarize)[,:]\s*([^.!?]{20,150}[.!?])/i,
-    // Completion statements (must be complete sentence)
-    /(?:i(?:'ve)?|we(?:'ve)?)\s+(?:successfully\s+)?(?:implemented|created|built|fixed|added|updated|completed)\s+([^.!?]{15,120}[.!?])/i,
-    // "The fix" statements
-    /the (?:fix|change|update|issue)\s+(?:is|was|has been)[:\s]+([^.!?]{15,120}[.!?])/i,
-  ];
-
-  // Only check last few messages (where conclusions typically are)
-  const lastMessages = messages.slice(-10).reverse();
-
-  for (const msg of lastMessages) {
-    // Skip system content, short messages, and code-heavy content
-    if (isSystemContent(msg)) continue;
-    if (msg.length < 50) continue;
-    if (msg.match(/^```|^\s*{|^\s*\[/)) continue;
-
-    for (const pattern of summaryPatterns) {
-      const match = msg.match(pattern);
-      if (match?.[1]) {
-        const summary = match[1].replace(/\s+/g, " ").trim();
-        // Validate it's not just code or technical junk
-        if (summary.length >= 20 && !summary.match(/^[{[\s]/) && !summary.includes("```")) {
-          return summary;
-        }
-      }
-    }
-  }
-
-  return "";
 }
 
 // ============================================
@@ -1130,13 +556,12 @@ export interface ExtractedKnowledge {
 }
 
 /**
- * Extract all knowledge from a transcript (async)
+ * Extract all knowledge from a transcript
  */
 export async function extractAllKnowledge(
   transcript: ParsedTranscript,
   sessionId: string
 ): Promise<ExtractedKnowledge> {
-  // Run extractions (could parallelize but embeddings are cached)
   const [decisions, patterns, tasks, insights] = await Promise.all([
     extractDecisions(transcript, sessionId),
     extractPatterns(transcript, sessionId),
@@ -1160,7 +585,6 @@ export async function extractAllKnowledge(
 function extractKeyTopics(transcript: ParsedTranscript): string[] {
   const topics = new Set<string>();
 
-  // Use filtered text to avoid system content
   const extractableMessages = filterExtractableMessages(transcript.assistantMessages);
   const fullText = extractableMessages.join(" ").toLowerCase();
 

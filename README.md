@@ -2,6 +2,8 @@
 
 Persistent, searchable project knowledge that survives across Claude Code sessions.
 
+**Website:** [tenax.wiki](https://tenax.wiki)
+
 ## Quick Install
 
 **macOS / Linux:**

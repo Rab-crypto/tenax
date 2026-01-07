@@ -45,19 +45,12 @@ When user asks: "Should we use SQLite or PostgreSQL?"
 npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "database"
 ```
 
-**Step 2: Respond with marker**
+**Step 2: Respond with marker INLINE**
 ```
-Based on your embedded storage needs, I recommend SQLite.
-
-[D] database: SQLite for embedded storage - no server, zero config
-
-The main advantages are:
-- Zero configuration required
-- Single file storage
-- Great for embedded applications
+[D] database: I recommend SQLite for your embedded storage needs - zero config, single file, no server required. The main advantages are portability and simplicity for your use case.
 ```
 
-The `[D]` marker labels your explanation - no duplication needed.
+**CRITICAL:** The marker starts the sentence. Don't write your response then add a marker afterward. The marker labels the prose that follows it.
 
 ---
 
@@ -86,18 +79,16 @@ Use these markers to label decisions, patterns, tasks, and insights:
 
 ### Multi-Line Format
 
-For detailed content, use multi-line blocks (ends at blank line):
+For detailed decisions, use multi-line blocks (ends at blank line):
 
 ```
-[D] Frontend redesign includes:
-  - JetBrains Mono + Outfit typography
-  - Bento grid layout with asymmetric cards
-  - Timeline-style "How It Works" section
-
-The changes improve visual hierarchy and...
+[D] frontend-redesign: Implementing new design system with JetBrains Mono + Outfit typography, bento grid layout with asymmetric cards, and a timeline-style "How It Works" section. These changes improve visual hierarchy and modernize the aesthetic.
 ```
 
-Everything between the marker and the blank line is captured.
+For lists, keep the marker at the start:
+```
+[D] api-endpoints: Creating three new endpoints - /users for account management, /projects for CRUD operations, and /webhooks for event subscriptions.
+```
 
 ---
 
@@ -158,13 +149,20 @@ Batch JSON format:
 
 ### The Rule
 
-If you made a choice, verified something, or concluded anything - **mark it**.
+If you made a choice, verified something, or concluded anything - **mark it inline**.
 
+**WRONG** (marker as afterthought):
 ```
-✓ "The gitignore is correct" → [D] gitignore: Verified - properly excludes .claude/, backups, test/
-✓ "Committing these files" → [D] commit-scope: v2.1.0 includes install scripts, removes deprecated commands
-✓ "Using this approach" → [D] approach: Batch API calls to reduce latency
-✓ "This pattern works" → [P] retry-logic: Exponential backoff with max 3 attempts
+The gitignore looks correct.
+[D] gitignore: Verified
+```
+
+**RIGHT** (marker labels the explanation):
+```
+[D] gitignore: Verified correct - properly excludes .claude/, backups, and test/ directories.
+[D] commit-scope: This release (v2.1.0) includes install scripts and removes deprecated commands.
+[P] retry-logic: Using exponential backoff with max 3 attempts for all API calls.
+[I] The rate limiter resets per-user, not globally - discovered while debugging timeouts.
 ```
 
 ### DON'T Mark

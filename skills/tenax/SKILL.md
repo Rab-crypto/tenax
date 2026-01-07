@@ -104,7 +104,13 @@ npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
 
 **If conflicting:** Surface the conflict - "This differs from session 005 which chose Y..."
 
-**If no results:** Proceed and mark the new decision with `[D]`.
+**If no results or poor results:** Search the raw transcripts directly:
+```bash
+grep -r "<keyword>" "${PROJECT_DIR}/.claude/tenax/sessions/"
+```
+Transcripts contain full conversation history that may not be captured as decisions/patterns.
+
+**If still nothing:** Proceed and mark the new decision with `[D]`.
 
 ---
 

@@ -60,3 +60,15 @@ Search across all project memory using semantic similarity.
 3. After showing results, offer to load specific items:
    - "Would you like to load any of these sessions for full context?"
    - If no results, suggest trying different keywords or listing sessions
+
+4. **If semantic search yields poor results**, search the raw transcripts directly:
+   ```bash
+   grep -r "<keyword>" "${PROJECT_DIR}/.claude/tenax/sessions/"
+   ```
+
+   Or extract specific patterns from transcript JSONL files:
+   ```bash
+   grep -oE '<pattern>' "${PROJECT_DIR}/.claude/tenax/sessions/009.jsonl"
+   ```
+
+   Raw transcripts contain the full conversation history and may have information that wasn't captured as decisions/patterns/insights.

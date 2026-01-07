@@ -207,6 +207,38 @@ EOF
     success "Claude Code configured"
 }
 
+configure_permissions() {
+    info "Setting up Tenax permissions..."
+
+    # Build bun permission with user's home path
+    local bun_path="$HOME/.bun/bin/bun"
+    local bun_permission="Bash(\"$bun_path\":*)"
+    local skill_permission='Skill(tenax:*)'
+
+    if [ -f "$SETTINGS_FILE" ]; then
+        if check_command jq; then
+            # Check if permissions.allow exists
+            if jq -e '.permissions.allow' "$SETTINGS_FILE" >/dev/null 2>&1; then
+                # Add both permissions
+                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
+                    '.permissions.allow += [$bun, $skill] | .permissions.allow |= unique' \
+                    "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
+                mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
+                success "Tenax permissions configured (bun auto-approved)"
+            else
+                # Create permissions structure with both permissions
+                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
+                    '. + {permissions: {allow: [$bun, $skill]}}' \
+                    "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
+                mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
+                success "Tenax permissions configured (bun auto-approved)"
+            fi
+        else
+            warn "jq not found. You may need to manually approve Tenax commands on first use."
+        fi
+    fi
+}
+
 print_success() {
     echo ""
     echo -e "${GREEN}╔═══════════════════════════════════════════════════════════╗${NC}"
@@ -260,6 +292,9 @@ main() {
     echo ""
 
     configure_claude
+    echo ""
+
+    configure_permissions
 
     print_success
 }

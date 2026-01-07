@@ -281,6 +281,56 @@ function Configure-Claude {
     Write-Success "Claude Code configured"
 }
 
+function Configure-Permissions {
+    Write-Info "Setting up Tenax permissions..."
+
+    # Build the bun path with escaped backslashes for JSON
+    $bunPath = "$env:USERPROFILE\.bun\bin\bun.exe"
+    $escapedBunPath = $bunPath.Replace('\', '\\')
+    $bunPermission = "Bash(`"$escapedBunPath`":*)"
+
+    # Tenax skill permission
+    $skillPermission = "Skill(tenax:*)"
+
+    # Permissions to add
+    $requiredPermissions = @($bunPermission, $skillPermission)
+
+    if (Test-Path $SettingsFile) {
+        try {
+            $settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+
+            # Ensure permissions.allow exists
+            if (-not $settings.permissions) {
+                $settings | Add-Member -NotePropertyName "permissions" -NotePropertyValue @{}
+            }
+            if (-not $settings.permissions.allow) {
+                $settings.permissions | Add-Member -NotePropertyName "allow" -NotePropertyValue @()
+            }
+
+            # Add missing permissions
+            $added = $false
+            foreach ($perm in $requiredPermissions) {
+                if ($settings.permissions.allow -notcontains $perm) {
+                    $settings.permissions.allow += $perm
+                    $added = $true
+                }
+            }
+
+            if ($added) {
+                $json = $settings | ConvertTo-Json -Depth 10
+                [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
+                Write-Success "Tenax permissions configured (bun.exe auto-approved)"
+            } else {
+                Write-Success "Tenax permissions already configured"
+            }
+        } catch {
+            Write-WarningMessage "Could not update permissions: $_"
+        }
+    } else {
+        Write-WarningMessage "Settings file not found, skipping permissions setup"
+    }
+}
+
 function Write-SuccessBanner {
     Write-Host ""
     Write-Host "  ╔═══════════════════════════════════════════════════════════╗" -ForegroundColor Green
@@ -333,6 +383,9 @@ function Main {
     Write-Host ""
 
     Configure-Claude
+    Write-Host ""
+
+    Configure-Permissions
 
     Write-SuccessBanner
 }

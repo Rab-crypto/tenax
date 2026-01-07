@@ -1,19 +1,41 @@
 ---
 name: tenax
 description: |
-  Project memory system. ALWAYS use markers when making ANY decision.
+  Project memory system. MANDATORY PROTOCOL - YOU MUST FOLLOW THESE STEPS:
 
-  Mark ALL decisions - not just architecture, but also:
-  - Operational (commit scope, what to include/exclude)
-  - Verification (config is correct, tests pass)
-  - Process (git workflow, deployment choices)
+  1. SESSION START: Run get-summary.ts IMMEDIATELY when conversation begins
+  2. BEFORE ANY DECISION: Run search.ts to check for prior decisions on the topic
+  3. AFTER DECIDING: Mark with [D] [P] [T] [I] markers
 
-  Protocol: Search -> Decide -> Mark with [D] [P] [T] [I]
+  This is NOT optional. Skipping search causes contradictory decisions.
 
-  If you made a choice or verified something, MARK IT.
+  Mark ALL decisions including operational, verification, and process choices.
 ---
 
 # Tenax Skill
+
+## ⚠️ MANDATORY PROTOCOL
+
+**You MUST follow these steps. This is not optional.**
+
+### At Session Start
+```bash
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
+```
+Do this FIRST, before responding to any user request.
+
+### Before Any Decision
+```bash
+bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
+```
+Search BEFORE proposing solutions, architecture, or making choices.
+
+### After Deciding
+Include markers `[D]`, `[P]`, `[T]`, `[I]` in your response.
+
+**Why this matters:** Without search, you may contradict prior decisions or re-solve already-solved problems.
+
+---
 
 ## Quick Start Example
 

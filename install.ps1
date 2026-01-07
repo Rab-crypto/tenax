@@ -200,8 +200,10 @@ function Configure-Claude {
 function Configure-Permissions {
     Write-Info "Setting up Tenax permissions..."
 
-    # Note: Claude Code permissions don't support :* wildcards with full paths
-    # Users will need to approve bun commands on first use, or add manual permissions
+    # Build permissions - no quotes around path, :* at end for prefix matching
+    $bunPath = "$env:USERPROFILE\.bun\bin\bun.exe"
+    $escapedPath = $bunPath.Replace('\', '\\')
+    $bunPerm = "Bash($escapedPath`:*)"
     $skillPerm = "Skill(tenax:*)"
 
     if (Test-Path $SettingsFile) {
@@ -213,11 +215,19 @@ function Configure-Permissions {
             if (-not $settings.permissions.allow) {
                 $settings.permissions | Add-Member -NotePropertyName "allow" -NotePropertyValue @()
             }
+            $added = $false
+            if ($settings.permissions.allow -notcontains $bunPerm) {
+                $settings.permissions.allow += $bunPerm
+                $added = $true
+            }
             if ($settings.permissions.allow -notcontains $skillPerm) {
                 $settings.permissions.allow += $skillPerm
+                $added = $true
+            }
+            if ($added) {
                 $json = $settings | ConvertTo-Json -Depth 10
                 [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
-                Write-Success "Skill permissions configured"
+                Write-Success "Permissions configured (bun.exe + skills auto-approved)"
             } else {
                 Write-Success "Permissions already configured"
             }

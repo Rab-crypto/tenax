@@ -210,27 +210,28 @@ EOF
 configure_permissions() {
     info "Setting up Tenax permissions..."
 
-    # Note: Claude Code permissions don't support :* wildcards with full paths
-    # Users will need to approve bun commands on first use
+    # Build permissions - no quotes around path, :* at end for prefix matching
+    local bun_path="$HOME/.bun/bin/bun"
+    local bun_permission="Bash($bun_path:*)"
     local skill_permission='Skill(tenax:*)'
 
     if [ -f "$SETTINGS_FILE" ]; then
         if check_command jq; then
             # Check if permissions.allow exists
             if jq -e '.permissions.allow' "$SETTINGS_FILE" >/dev/null 2>&1; then
-                # Add skill permission
-                jq --arg skill "$skill_permission" \
-                    '.permissions.allow += [$skill] | .permissions.allow |= unique' \
+                # Add both permissions
+                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
+                    '.permissions.allow += [$bun, $skill] | .permissions.allow |= unique' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Skill permissions configured"
+                success "Permissions configured (bun + skills auto-approved)"
             else
                 # Create permissions structure
-                jq --arg skill "$skill_permission" \
-                    '. + {permissions: {allow: [$skill]}}' \
+                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
+                    '. + {permissions: {allow: [$bun, $skill]}}' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Skill permissions configured"
+                success "Permissions configured (bun + skills auto-approved)"
             fi
         else
             warn "jq not found. You may need to manually approve Tenax commands on first use."

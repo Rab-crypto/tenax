@@ -33,13 +33,11 @@ async function main(): Promise<void> {
         const pendingTasks = index.tasks.filter(t => t.status === "pending").length;
         const totalInsights = index.insights.length;
 
-        // Build compact reminder - emphasize using tools to retrieve context
-        const context = `⚠️ CONTEXT COMPACTED - Project memory available via Tenax:
-• Run /tenax:search <topic> before answering questions about prior decisions or patterns
-• Run /tenax:status for full overview of project knowledge
-• Use [D] [P] [T] [I] markers for any new decisions, patterns, tasks, insights
+        // Build compact reminder - consistent with session-start
+        const context = `⚠️ CONTEXT COMPACTED - Use /tenax:search <topic> for prior decisions.
+🔴 REQUIRED: End responses with markers - [D] topic: | [P] name: | [T] | [I]
 
-Available: ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending tasks | ${totalInsights} insights`;
+📚 ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending`;
 
         // Output JSON format for reliable context injection
         const output = {

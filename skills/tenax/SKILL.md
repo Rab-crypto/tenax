@@ -1,18 +1,6 @@
 ---
 name: tenax
-description: |
-  Project memory system. MANDATORY PROTOCOL - YOU MUST FOLLOW THESE STEPS:
-
-  1. SESSION START: Run get-summary.ts IMMEDIATELY when conversation begins
-  2. BEFORE ANY DECISION: Run search.ts to check for prior decisions on the topic
-  3. AFTER DECIDING: Mark with ALL FOUR marker types:
-     - [D] topic: for DECISIONS (choices, selections, configurations)
-     - [P] name: for PATTERNS (conventions, approaches, code styles)
-     - [T] for TASKS (work remaining, follow-ups, TODOs)
-     - [I] for INSIGHTS (discoveries, learnings, gotchas)
-
-  DO NOT just use [D]. Use the appropriate marker for each type of knowledge.
-  This is NOT optional. Skipping markers means knowledge is lost forever.
+description: "Project memory. REQUIRED: End responses with [D] topic: decisions, [P] name: patterns, [T] tasks, [I] insights."
 ---
 
 # Tenax Skill

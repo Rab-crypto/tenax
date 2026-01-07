@@ -56,7 +56,7 @@ function Check-NodeJs {
         $major = [int]($v -replace 'v(\d+).*', '$1')
         if ($major -ge 18) {
             Write-Success "Node.js $v found"
-            return $true
+            return
         } else {
             Write-Warn "Node.js $v found but v18+ required"
         }

@@ -72,3 +72,31 @@ Search across all project memory using semantic similarity.
    ```
 
    Raw transcripts contain the full conversation history and may have information that wasn't captured as decisions/patterns/insights.
+
+## Post-Search Analysis (MANDATORY)
+
+After displaying results, you MUST perform these checks:
+
+### 1. Extract Referenced Data from Transcripts
+
+If search results **mention** that data exists but don't show the actual data (e.g., "credentials found in session 009", "URL was used in session X"), you MUST:
+
+```bash
+# Search the referenced session's raw transcript
+grep -oE '<relevant-pattern>' "${PROJECT_DIR}/.claude/tenax/sessions/<session-id>.jsonl"
+```
+
+**This applies to ALL data types**: URLs, commands, file paths, configuration values, error messages, API responses - not just credentials.
+
+### 2. Note Recency and Avoid Duplicate Work
+
+Check the `timeAgo` field carefully:
+- If results show **"just now"** or very recent activity related to the user's request, **inform the user the task may already be completed**
+- Ask: "I see this was done recently in session X. Should I proceed or is this already handled?"
+
+### 3. Follow Cross-References
+
+When an insight/decision says "found in session X" or "see session Y":
+- Load that session's transcript immediately
+- Extract the specific data mentioned
+- Don't ask the user for information that's already recorded

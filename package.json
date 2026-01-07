@@ -5,10 +5,7 @@
   "type": "module",
   "author": "phil_mybags",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Rab-crypto/tenax"
-  },
+  "repository": "https://github.com/Rab-crypto/tenax",
   "keywords": [
     "claude-code",
     "plugin",

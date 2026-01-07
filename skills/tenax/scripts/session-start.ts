@@ -46,9 +46,11 @@ async function main(): Promise<void> {
             .map(t => `  - ${t.title}`)
             .join("\n");
 
-        // Build context string - minimal tokens, maximum compliance
-        let context = `⛔ TENAX: End responses with markers - [D] topic: decisions, [P] name: patterns, [T] tasks, [I] insights. Required.
-📚 ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns`;
+        // Build context string - MARKER REMINDER FIRST for visibility
+        let context = `🔴 MARK OR LOSE: Use [D] [P] [T] [I] markers for ANY choice, finding, or task—including "small" ones like URLs, configs, tool choices. If unmarked, it's gone forever.
+
+📚 TENAX PROJECT MEMORY
+Stats: ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending tasks | ${totalInsights} insights`;
 
         if (recentDecisions) {
             context += `\n\nRecent decisions:\n${recentDecisions}`;

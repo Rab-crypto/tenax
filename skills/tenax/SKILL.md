@@ -5,11 +5,14 @@ description: |
 
   1. SESSION START: Run get-summary.ts IMMEDIATELY when conversation begins
   2. BEFORE ANY DECISION: Run search.ts to check for prior decisions on the topic
-  3. AFTER DECIDING: Mark with [D] [P] [T] [I] markers
+  3. AFTER DECIDING: Mark with ALL FOUR marker types:
+     - [D] topic: for DECISIONS (choices, selections, configurations)
+     - [P] name: for PATTERNS (conventions, approaches, code styles)
+     - [T] for TASKS (work remaining, follow-ups, TODOs)
+     - [I] for INSIGHTS (discoveries, learnings, gotchas)
 
-  This is NOT optional. Skipping search causes contradictory decisions.
-
-  Mark ALL decisions including operational, verification, and process choices.
+  DO NOT just use [D]. Use the appropriate marker for each type of knowledge.
+  This is NOT optional. Skipping markers means knowledge is lost forever.
 ---
 
 # Tenax Skill
@@ -30,10 +33,18 @@ bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
 ```
 Search BEFORE proposing solutions, architecture, or making choices.
 
-### After Deciding
-Include markers `[D]`, `[P]`, `[T]`, `[I]` in your response.
+### After Deciding - Use ALL FOUR Markers
 
-**Why this matters:** Without search, you may contradict prior decisions or re-solve already-solved problems.
+**DO NOT default to only [D].** Each response should include the appropriate markers:
+
+| Use This | When You... | Example |
+|----------|-------------|---------|
+| `[D] topic:` | Make a choice or select something | `[D] database: Using PostgreSQL for relational data` |
+| `[P] name:` | Establish a convention or pattern | `[P] error-handling: Always wrap async in try-catch` |
+| `[T]` | Identify work that remains | `[T] Add input validation to the form` |
+| `[I]` | Discover something useful | `[I] The API rate limits are per-user, not per-app` |
+
+**Why this matters:** Without search, you may contradict prior decisions. Without ALL markers, patterns and insights are lost.
 
 ---
 

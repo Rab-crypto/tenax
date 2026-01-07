@@ -129,7 +129,7 @@ function Install-Dependencies {
     $originalLocation = Get-Location
     try {
         Set-Location $TenaxDir
-        $proc = Start-Process -FilePath "npm" -ArgumentList "install" -Wait -PassThru -NoNewWindow
+        $proc = Start-Process -FilePath "npm.cmd" -ArgumentList "install" -Wait -PassThru -NoNewWindow
         if ($proc.ExitCode -ne 0) {
             throw "npm install failed with exit code $($proc.ExitCode)"
         }

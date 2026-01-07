@@ -175,35 +175,38 @@ function Configure-Claude {
     }
 
     if (Test-Path $SettingsFile) {
+        $content = Get-Content $SettingsFile -Raw -ErrorAction SilentlyContinue
+        # Check if local-plugins is already configured (simple string check to avoid parse issues)
+        if ($content -and $content -match "local-plugins") {
+            Write-Success "Claude Code already configured for local plugins"
+            return
+        }
         try {
-            $settings = Get-Content $SettingsFile -Raw | ConvertFrom-Json
-            if ($settings.extraKnownMarketplaces) {
-                $existing = $settings.extraKnownMarketplaces | Where-Object { $_.name -eq "local-plugins" }
-                if ($existing) {
-                    Write-Success "Claude Code already configured"
-                    return
-                }
-            }
-            Copy-Item $SettingsFile "$SettingsFile.backup"
+            $settings = $content | ConvertFrom-Json
+            Copy-Item $SettingsFile "$SettingsFile.backup" -Force
             Write-Warn "Settings backed up to $SettingsFile.backup"
-            if (-not $settings.extraKnownMarketplaces) {
-                $settings | Add-Member -NotePropertyName "extraKnownMarketplaces" -NotePropertyValue @()
+            # Handle extraKnownMarketplaces as array
+            if (-not $settings.extraKnownMarketplaces -or $settings.extraKnownMarketplaces -isnot [array]) {
+                $settings | Add-Member -NotePropertyName "extraKnownMarketplaces" -NotePropertyValue @() -Force
             }
             $settings.extraKnownMarketplaces += $marketplace
             $json = $settings | ConvertTo-Json -Depth 10
             [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
+            Write-Success "Claude Code configured"
         } catch {
-            Write-Warn "Could not parse settings, creating new..."
-            $newSettings = @{ extraKnownMarketplaces = @($marketplace) }
-            $json = $newSettings | ConvertTo-Json -Depth 10
-            [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
+            # Don't overwrite on parse error - just warn user
+            Write-Warn "Could not parse existing settings.json"
+            Write-Warn "Please manually add local-plugins marketplace to $SettingsFile"
+            Write-Host ""
+            Write-Host '  Add this to extraKnownMarketplaces array:' -ForegroundColor Yellow
+            Write-Host '    {"name":"local-plugins","source":{"type":"directory","path":"~/.claude/plugins"}}' -ForegroundColor Cyan
         }
     } else {
         $settings = @{ extraKnownMarketplaces = @($marketplace) }
         $json = $settings | ConvertTo-Json -Depth 10
         [System.IO.File]::WriteAllText($SettingsFile, $json, [System.Text.UTF8Encoding]::new($false))
+        Write-Success "Claude Code configured"
     }
-    Write-Success "Claude Code configured"
 }
 
 function Configure-Permissions {

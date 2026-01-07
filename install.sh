@@ -210,28 +210,27 @@ EOF
 configure_permissions() {
     info "Setting up Tenax permissions..."
 
-    # Build bun permission with user's home path
-    local bun_path="$HOME/.bun/bin/bun"
-    local bun_permission="Bash(\"$bun_path\":*)"
+    # Note: Claude Code permissions don't support :* wildcards with full paths
+    # Users will need to approve bun commands on first use
     local skill_permission='Skill(tenax:*)'
 
     if [ -f "$SETTINGS_FILE" ]; then
         if check_command jq; then
             # Check if permissions.allow exists
             if jq -e '.permissions.allow' "$SETTINGS_FILE" >/dev/null 2>&1; then
-                # Add both permissions
-                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
-                    '.permissions.allow += [$bun, $skill] | .permissions.allow |= unique' \
+                # Add skill permission
+                jq --arg skill "$skill_permission" \
+                    '.permissions.allow += [$skill] | .permissions.allow |= unique' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Tenax permissions configured (bun auto-approved)"
+                success "Skill permissions configured"
             else
-                # Create permissions structure with both permissions
-                jq --arg bun "$bun_permission" --arg skill "$skill_permission" \
-                    '. + {permissions: {allow: [$bun, $skill]}}' \
+                # Create permissions structure
+                jq --arg skill "$skill_permission" \
+                    '. + {permissions: {allow: [$skill]}}' \
                     "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp"
                 mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE"
-                success "Tenax permissions configured (bun auto-approved)"
+                success "Skill permissions configured"
             fi
         else
             warn "jq not found. You may need to manually approve Tenax commands on first use."

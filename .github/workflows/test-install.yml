@@ -1,0 +1,111 @@
+name: Test Install Scripts
+
+on:
+  push:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - '.github/workflows/test-install.yml'
+  pull_request:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate bash syntax
+        run: bash -n install.sh
+
+      - name: Run shellcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck install.sh || true
+
+      - name: Test install script
+        run: |
+          # Create mock claude directory structure
+          mkdir -p ~/.claude
+
+          # Create mock settings.json
+          echo '{}' > ~/.claude/settings.json
+
+          # Install jq (needed for permissions)
+          sudo apt-get install -y jq
+
+          # Run installer (will install bun, clone repo, etc.)
+          bash install.sh
+
+          # Verify installation
+          echo "=== Checking installation ==="
+          [ -d ~/.claude/plugins/tenax ] && echo "✓ Tenax directory exists" || echo "✗ Tenax directory missing"
+          [ -f ~/.claude/plugins/tenax/package.json ] && echo "✓ package.json exists" || echo "✗ package.json missing"
+
+          # Check permissions were added
+          echo "=== Checking permissions ==="
+          cat ~/.claude/settings.json | jq '.permissions.allow'
+
+  test-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate bash syntax
+        run: bash -n install.sh
+
+      - name: Test install script
+        run: |
+          mkdir -p ~/.claude
+          echo '{}' > ~/.claude/settings.json
+          bash install.sh
+
+          echo "=== Checking installation ==="
+          [ -d ~/.claude/plugins/tenax ] && echo "✓ Tenax directory exists" || echo "✗ Tenax directory missing"
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate PowerShell syntax
+        shell: pwsh
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "$PWD\install.ps1",
+            [ref]$null,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors) {
+            $errors | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+          Write-Host "✓ PowerShell syntax valid"
+
+      - name: Test install script
+        shell: pwsh
+        run: |
+          # Create mock claude directory
+          New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude" -Force | Out-Null
+
+          # Create mock settings.json
+          '{}' | Set-Content "$env:USERPROFILE\.claude\settings.json"
+
+          # Run installer
+          & .\install.ps1
+
+          # Verify installation
+          Write-Host "=== Checking installation ==="
+          if (Test-Path "$env:USERPROFILE\.claude\plugins\tenax") {
+            Write-Host "✓ Tenax directory exists"
+          } else {
+            Write-Host "✗ Tenax directory missing"
+          }
+
+          # Check permissions
+          Write-Host "=== Checking permissions ==="
+          Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json | ConvertTo-Json -Depth 10

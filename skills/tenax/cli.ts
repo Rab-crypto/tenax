@@ -14,7 +14,10 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 
-const __filename = fileURLToPath(import.meta.url);
+// Handle both ESM import.meta.url and fallback to process.argv[1]
+const __filename = import.meta.url
+  ? fileURLToPath(import.meta.url)
+  : process.argv[1] || __filename;
 const __dirname = dirname(__filename);
 const SCRIPTS_DIR = join(__dirname, "scripts");
 

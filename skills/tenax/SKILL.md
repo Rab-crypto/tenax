@@ -15,11 +15,27 @@ npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
 ```
 Do this FIRST, before responding to any user request.
 
-### Before Any Decision
+### Before Any Decision - MANDATORY SEARCH
+
+**⛔ DO NOT skip this step. ALWAYS search before implementing.**
+
+When the user asks you to implement, change, add, or modify anything:
+
 ```bash
 npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
 ```
-Search BEFORE proposing solutions, architecture, or making choices.
+
+**This applies to:**
+- Adding new features or functionality
+- Changing existing code or configuration
+- Choosing libraries, tools, or approaches
+- Making architectural or design decisions
+- Any task that involves writing or modifying code
+
+**WRONG:** User says "add a hook" → you immediately start implementing
+**RIGHT:** User says "add a hook" → you search "hook" first → check for conflicts → then implement
+
+If search returns no results, briefly note: "Searched for X - no prior decisions found."
 
 ### After Deciding - Use ALL FOUR Markers
 
@@ -94,23 +110,34 @@ For lists, keep the marker at the start:
 
 ## Search Before Decisions
 
-Before making architecture, library, or pattern decisions:
+**⛔ THIS IS MANDATORY - NOT OPTIONAL**
+
+Before ANY implementation task, you MUST search:
 
 ```bash
 npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
 ```
 
-**If results found:** Reference them - "Based on session 003, we decided to use X..."
+### Search Flow
 
-**If conflicting:** Surface the conflict - "This differs from session 005 which chose Y..."
+1. **User requests implementation** → Search relevant topic(s)
+2. **Results found** → Reference them: "Based on session 003, we decided to use X..."
+3. **Conflict found** → Surface it: "This differs from session 005 which chose Y. Should I proceed or align with the prior decision?"
+4. **No results** → Search raw transcripts:
+   ```bash
+   grep -r "<keyword>" "${PROJECT_DIR}/.claude/tenax/sessions/"
+   ```
+5. **Still nothing** → Note "Searched for X - no prior decisions" → Proceed with `[D]` marker
 
-**If no results or poor results:** Search the raw transcripts directly:
-```bash
-grep -r "<keyword>" "${PROJECT_DIR}/.claude/tenax/sessions/"
-```
-Transcripts contain full conversation history that may not be captured as decisions/patterns.
+### Why This Matters
 
-**If still nothing:** Proceed and mark the new decision with `[D]`.
+Without searching first, you may:
+- Contradict a decision from 3 sessions ago
+- Duplicate work already done
+- Break established patterns
+- Miss important context that affects implementation
+
+**Every implementation starts with a search. No exceptions.**
 
 ---
 

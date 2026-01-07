@@ -47,10 +47,9 @@ async function main(): Promise<void> {
             .join("\n");
 
         // Build context string - markers inline, not appended
-        let context = `🔴 TENAX REQUIRED: Include markers inline for any choices/findings:
-[D] topic: decisions | [P] name: patterns | [T] tasks | [I] insights
-
-📚 ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending | ${totalInsights} insights`;
+        let context = `🔴 TENAX REQUIRED:
+1. START your response with: "📚 Loaded: ${totalSessions} sessions, ${totalDecisions} decisions"
+2. Include markers inline for any choices/findings: [D] topic: | [P] name: | [T] | [I]`;
 
         if (recentDecisions) {
             context += `\n\nRecent decisions:\n${recentDecisions}`;

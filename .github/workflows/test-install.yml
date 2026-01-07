@@ -86,26 +86,42 @@ jobs:
           }
           Write-Host "✓ PowerShell syntax valid"
 
+      - name: Install Bun
+        shell: pwsh
+        run: irm bun.sh/install.ps1 | iex
+
       - name: Test install script
         shell: pwsh
         run: |
+          # Add bun to path
+          $env:BUN_INSTALL = "$env:USERPROFILE\.bun"
+          $env:PATH = "$env:BUN_INSTALL\bin;$env:PATH"
+
           # Create mock claude directory
           New-Item -ItemType Directory -Path "$env:USERPROFILE\.claude" -Force | Out-Null
 
           # Create mock settings.json
           '{}' | Set-Content "$env:USERPROFILE\.claude\settings.json"
 
-          # Run installer
-          & .\install.ps1
+          # Run installer with verbose output
+          try {
+            & .\install.ps1
+          } catch {
+            Write-Host "Install script error: $_"
+            Write-Host $_.ScriptStackTrace
+            exit 1
+          }
 
           # Verify installation
           Write-Host "=== Checking installation ==="
           if (Test-Path "$env:USERPROFILE\.claude\plugins\tenax") {
             Write-Host "✓ Tenax directory exists"
+            Get-ChildItem "$env:USERPROFILE\.claude\plugins\tenax" | Select-Object Name
           } else {
             Write-Host "✗ Tenax directory missing"
+            exit 1
           }
 
           # Check permissions
-          Write-Host "=== Checking permissions ==="
+          Write-Host "=== Checking settings.json ==="
           Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json | ConvertTo-Json -Depth 10

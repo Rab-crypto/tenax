@@ -114,6 +114,8 @@ function Install-Tenax {
             return
         } catch {
             Write-Warn "Git clone failed, downloading ZIP..."
+            # Clean up any partial clone
+            if (Test-Path $TenaxDir) { Remove-Item -Path $TenaxDir -Recurse -Force }
         }
     }
 
@@ -124,6 +126,8 @@ function Install-Tenax {
         Write-Info "Downloading Tenax..."
         Invoke-WebRequest -Uri $TenaxZip -OutFile $zipPath -UseBasicParsing
         if (Test-Path $extractPath) { Remove-Item -Path $extractPath -Recurse -Force }
+        # Ensure target doesn't exist before move
+        if (Test-Path $TenaxDir) { Remove-Item -Path $TenaxDir -Recurse -Force }
         Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
         $extractedDir = Get-ChildItem -Path $extractPath -Directory | Select-Object -First 1
         Move-Item -Path $extractedDir.FullName -Destination $TenaxDir -Force

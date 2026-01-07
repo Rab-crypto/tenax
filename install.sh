@@ -114,7 +114,24 @@ install_tenax() {
 
     if [ ! -d "$TENAX_DIR" ]; then
         if check_command git; then
-            git clone "$TENAX_REPO" "$TENAX_DIR"
+            git clone "$TENAX_REPO" "$TENAX_DIR" || {
+                warn "Git clone failed, downloading ZIP instead..."
+                # Clean up any partial clone
+                rm -rf "$TENAX_DIR"
+
+                if ! check_command unzip; then
+                    error "unzip is required but not installed."
+                    error "Install it with: apt install unzip (Debian/Ubuntu) or brew install unzip (macOS)"
+                    exit 1
+                fi
+                TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/master.zip}"
+                curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
+                unzip -q /tmp/tenax.zip -d /tmp
+                # Ensure target doesn't exist before move
+                rm -rf "$TENAX_DIR"
+                mv /tmp/tenax-master "$TENAX_DIR"
+                rm -f /tmp/tenax.zip
+            }
         else
             warn "Git not found, downloading ZIP instead..."
             if ! check_command unzip; then
@@ -125,8 +142,10 @@ install_tenax() {
             TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/master.zip}"
             curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
             unzip -q /tmp/tenax.zip -d /tmp
+            # Ensure target doesn't exist before move
+            rm -rf "$TENAX_DIR"
             mv /tmp/tenax-master "$TENAX_DIR"
-            rm /tmp/tenax.zip
+            rm -f /tmp/tenax.zip
         fi
     fi
 

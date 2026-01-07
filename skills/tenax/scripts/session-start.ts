@@ -46,8 +46,11 @@ async function main(): Promise<void> {
             .map(t => `  - ${t.title}`)
             .join("\n");
 
-        // Build context string
-        let context = `📚 TENAX PROJECT MEMORY\nStats: ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending tasks | ${totalInsights} insights`;
+        // Build context string - MARKER REMINDER FIRST for visibility
+        let context = `🔴 MARK OR LOSE: Use [D] [P] [T] [I] markers for ANY choice, finding, or task—including "small" ones like URLs, configs, tool choices. If unmarked, it's gone forever.
+
+📚 TENAX PROJECT MEMORY
+Stats: ${totalSessions} sessions | ${totalDecisions} decisions | ${totalPatterns} patterns | ${pendingTasks} pending tasks | ${totalInsights} insights`;
 
         if (recentDecisions) {
             context += `\n\nRecent decisions:\n${recentDecisions}`;
@@ -56,8 +59,6 @@ async function main(): Promise<void> {
         if (pendingTasksList) {
             context += `\n\nPending tasks:\n${pendingTasksList}`;
         }
-
-        context += `\n\nPROTOCOL: Use [D] [P] [T] [I] markers in responses. Search before decisions.`;
 
         // Output JSON format for reliable context injection
         const output = {

@@ -6,15 +6,15 @@ Persistent, searchable project knowledge that survives across Claude Code sessio
 
 **macOS / Linux:**
 ```bash
-curl -fsSL https://tenax.dev/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.sh | bash
 ```
 
 **Windows (PowerShell):**
 ```powershell
-irm https://tenax.dev/install.ps1 | iex
+irm https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.ps1 | iex
 ```
 
-> See [Installation Guide](https://tenax.dev/docs/install.html) for manual installation and troubleshooting.
+> See the [Manual Installation](#manual-installation) section below for troubleshooting.
 
 ## Overview
 
@@ -47,7 +47,7 @@ irm bun.sh/install.ps1 | iex
 mkdir -p ~/.claude/plugins
 
 # Clone the repository
-git clone https://github.com/anthropics/tenax.git ~/.claude/plugins/tenax
+git clone https://github.com/Rab-crypto/tenax.git ~/.claude/plugins/tenax
 
 # Install dependencies
 cd ~/.claude/plugins/tenax

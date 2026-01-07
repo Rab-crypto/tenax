@@ -1,13 +1,13 @@
 {
   "name": "tenax",
-  "version": "2.1.0",
+  "version": "2.4.0",
   "description": "Tenax - Persistent project knowledge for Claude Code",
   "type": "module",
-  "author": "Anthony",
+  "author": "phil_mybags",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/anthropics/claude-code-plugins"
+    "url": "https://github.com/Rab-crypto/tenax"
   },
   "keywords": [
     "claude-code",

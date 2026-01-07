@@ -3,7 +3,7 @@
 # Tenax Installer for macOS/Linux
 # Persistent project memory for Claude Code
 #
-# Usage: curl -fsSL https://tenax.dev/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.sh | bash
 #
 
 set -e
@@ -18,8 +18,8 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-# TODO: Update TENAX_REPO when the official repository is published
-TENAX_REPO="${TENAX_REPO:-https://github.com/anthropics/tenax.git}"
+# Override with TENAX_REPO environment variable if needed
+TENAX_REPO="${TENAX_REPO:-https://github.com/Rab-crypto/tenax.git}"
 TENAX_DIR="$HOME/.claude/plugins/tenax"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
@@ -122,7 +122,7 @@ install_tenax() {
                 error "Install it with: apt install unzip (Debian/Ubuntu) or brew install unzip (macOS)"
                 exit 1
             fi
-            TENAX_ZIP="${TENAX_ZIP:-https://github.com/anthropics/tenax/archive/main.zip}"
+            TENAX_ZIP="${TENAX_ZIP:-https://github.com/Rab-crypto/tenax/archive/main.zip}"
             curl -fsSL "$TENAX_ZIP" -o /tmp/tenax.zip
             unzip -q /tmp/tenax.zip -d /tmp
             mv /tmp/tenax-main "$TENAX_DIR"
@@ -226,8 +226,8 @@ print_success() {
     echo -e "  3. Start capturing knowledge:"
     echo -e "     Use markers like ${CYAN}[D] topic: decision${NC} in your conversations"
     echo ""
-    echo -e "  ${BOLD}Documentation:${NC} https://tenax.dev/docs"
-    echo -e "  ${BOLD}Commands:${NC}      https://tenax.dev/docs/commands.html"
+    echo -e "  ${BOLD}Documentation:${NC} https://github.com/Rab-crypto/tenax#readme"
+    echo -e "  ${BOLD}Commands:${NC}      https://github.com/Rab-crypto/tenax#commands"
     echo ""
 }
 

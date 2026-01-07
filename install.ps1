@@ -9,10 +9,10 @@
     persistent, searchable project knowledge across sessions.
 
 .EXAMPLE
-    irm https://tenax.dev/install.ps1 | iex
+    irm https://raw.githubusercontent.com/Rab-crypto/tenax/main/install.ps1 | iex
 
 .LINK
-    https://tenax.dev
+    https://github.com/Rab-crypto/tenax
 #>
 
 $ErrorActionPreference = "Stop"
@@ -28,10 +28,9 @@ if ($policy -eq "Restricted") {
     exit 1
 }
 
-# Configuration
-# TODO: Update these URLs when the official repository is published
-$TenaxRepo = if ($env:TENAX_REPO) { $env:TENAX_REPO } else { "https://github.com/anthropics/tenax.git" }
-$TenaxZip = if ($env:TENAX_ZIP) { $env:TENAX_ZIP } else { "https://github.com/anthropics/tenax/archive/main.zip" }
+# Configuration - Override with TENAX_REPO/TENAX_ZIP environment variables if needed
+$TenaxRepo = if ($env:TENAX_REPO) { $env:TENAX_REPO } else { "https://github.com/Rab-crypto/tenax.git" }
+$TenaxZip = if ($env:TENAX_ZIP) { $env:TENAX_ZIP } else { "https://github.com/Rab-crypto/tenax/archive/main.zip" }
 $TenaxDir = "$env:USERPROFILE\.claude\plugins\tenax"
 $SettingsFile = "$env:USERPROFILE\.claude\settings.json"
 
@@ -308,9 +307,9 @@ function Write-SuccessBanner {
     Write-Host " in your conversations"
     Write-Host ""
     Write-Host "  Documentation: " -NoNewline
-    Write-Host "https://tenax.dev/docs" -ForegroundColor Cyan
+    Write-Host "https://github.com/Rab-crypto/tenax#readme" -ForegroundColor Cyan
     Write-Host "  Commands:      " -NoNewline
-    Write-Host "https://tenax.dev/docs/commands.html" -ForegroundColor Cyan
+    Write-Host "https://github.com/Rab-crypto/tenax#commands" -ForegroundColor Cyan
     Write-Host ""
 }
 

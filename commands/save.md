@@ -18,9 +18,9 @@ When the user runs `/tenax:save`, automatically:
    - Tasks mentioned (TODOs, future work)
    - Insights discovered (learnings, gotchas)
 
-2. **Save everything in ONE batch call** using the CLI:
+2. **Save everything in ONE batch call** by piping JSON to the CLI:
    ```bash
-   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '<batch-data>'
+   echo '<batch-json>' | bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
    ```
 
    The batch JSON format:
@@ -41,6 +41,13 @@ When the user runs `/tenax:save`, automatically:
    }
    ```
 
+   Alternative: Use a heredoc for complex JSON:
+   ```bash
+   bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch << 'EOF'
+   {"decisions":[{"topic":"api","decision":"Use REST"}]}
+   EOF
+   ```
+
 3. **Report summary** using compact markers for visibility:
    ```
    Saved to project memory:
@@ -56,7 +63,7 @@ When the user runs `/tenax:save`, automatically:
 ## Example
 
 ```bash
-bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch --json '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}'
+echo '{"decisions":[{"topic":"storage","decision":"Use SQLite for local data","rationale":"No server needed"}],"insights":[{"content":"Bun native SQLite is fast"}]}' | bun "${CLAUDE_PLUGIN_ROOT}/skills/tenax/cli.ts" batch
 ```
 
 ## Example output

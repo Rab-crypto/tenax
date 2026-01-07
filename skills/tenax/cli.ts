@@ -310,17 +310,47 @@ async function main(): Promise<void> {
       args: args.slice(1),
       options: {
         json: { type: "string", short: "j" },
+        "json-file": { type: "string", short: "f" },
       },
       strict: false,
       allowPositionals: true,
     });
 
-    const jsonInput = values.json as string;
+    let jsonInput = values.json as string | undefined;
+    const jsonFile = values["json-file"] as string | undefined;
+
+    // Priority: --json-file > --json > stdin
+    if (jsonFile) {
+      try {
+        const fs = await import("fs");
+        jsonInput = fs.readFileSync(jsonFile, "utf-8");
+      } catch (e) {
+        console.log(
+          JSON.stringify({
+            success: false,
+            message: `Could not read file: ${jsonFile}`,
+          })
+        );
+        process.exit(1);
+      }
+    } else if (!jsonInput) {
+      // Try reading from stdin (non-blocking check)
+      const fs = await import("fs");
+      try {
+        // Check if stdin has data (non-TTY means piped input)
+        if (!process.stdin.isTTY) {
+          jsonInput = fs.readFileSync(0, "utf-8");
+        }
+      } catch {
+        // No stdin data
+      }
+    }
+
     if (!jsonInput) {
       console.log(
         JSON.stringify({
           success: false,
-          message: "Usage: cli.ts batch --json '<batch-data>'",
+          message: "Usage: cli.ts batch --json '<data>' OR --json-file <path> OR pipe JSON to stdin",
         })
       );
       process.exit(1);

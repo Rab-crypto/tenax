@@ -80,6 +80,17 @@ If search returns no results, briefly note: "Searched for X - no prior decisions
 
 **Why this matters:** Without search, you may contradict prior decisions. Without ALL markers, patterns and insights are lost.
 
+### Before Sending Your Response - VERIFY
+
+**⛔ Do not send your response until you've confirmed:**
+
+- [ ] Checked conversation context for recent duplicates
+- [ ] Searched Tenax for prior decisions on this topic
+- [ ] Noted any conflicts or recency issues to the user
+- [ ] Used appropriate markers ([D], [P], [T], [I]) for any choices made
+
+**If you skipped any step, go back and complete it now.**
+
 ---
 
 ## Quick Start Example

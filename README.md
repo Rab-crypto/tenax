@@ -228,6 +228,39 @@ tenax/
 └── tsconfig.json
 ```
 
+### Hot-Reload Development
+
+Claude Code v2.1.0+ supports skill hot-reload. For instant updates during development:
+
+```bash
+# Create symlink to your dev directory
+# macOS/Linux:
+ln -s /path/to/tenax/skills/tenax ~/.claude/skills/tenax
+
+# Windows (run as admin):
+mklink /D "%USERPROFILE%\.claude\skills\tenax" "C:\path\to\tenax\skills\tenax"
+```
+
+Skills in `~/.claude/skills/` are immediately available without restarting Claude Code.
+
+### Recommended Permissions
+
+For smoother development, add these wildcard permissions to your Claude Code settings:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(npm install:*)",
+      "Bash(bun:*)"
+    ]
+  }
+}
+```
+
+This avoids repeated permission prompts for Tenax scripts.
+
 ### Type Checking
 
 ```bash

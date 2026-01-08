@@ -1,6 +1,18 @@
 ---
 name: tenax
 description: "Project memory. REQUIRED: Include [D] topic: [P] name: [T] [I] markers inline for choices/findings."
+hooks:
+  - type: UserPromptSubmit
+    once: true
+    command: "npx tsx \"${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts\""
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Grep
+  - Glob
+  - Task
+  - Skill
 ---
 
 # Tenax Skill

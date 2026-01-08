@@ -1,6 +1,6 @@
 {
   "name": "tenax",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Tenax - Persistent project knowledge for Claude Code",
   "type": "module",
   "author": "phil_mybags",

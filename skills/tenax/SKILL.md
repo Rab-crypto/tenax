@@ -27,15 +27,29 @@ npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/get-summary.ts"
 ```
 Do this FIRST, before responding to any user request.
 
-### Before Any Decision - MANDATORY SEARCH
+### Before Any Action - MANDATORY CHECKS
 
-**⛔ DO NOT skip this step. ALWAYS search before implementing.**
+**⛔ DO NOT skip these steps. ALWAYS check before acting.**
 
-When the user asks you to implement, change, add, or modify anything:
+#### Step 1: Check Conversation Context (Current Session)
+
+Before executing ANY task, check your conversation history:
+- Did you just complete this exact task in the last few messages?
+- If yes: "I just did X moments ago - is there an issue, or should I redo it?"
+
+#### Step 2: Search Tenax (Previous Sessions)
 
 ```bash
 npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>"
 ```
+
+**Check search results for:**
+
+1. **Recency** - Was this task done recently?
+   - "Uploaded frontend - 3hr ago" → "This was done 3 hours ago. Redo it?"
+
+2. **Prior Decisions** - Does your choice conflict with history?
+   - User says "use SQLite" but search shows "[D] database: PostgreSQL chosen" → Surface the conflict before proceeding
 
 **This applies to:**
 - Adding new features or functionality
@@ -43,9 +57,13 @@ npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<relevant-topic>
 - Choosing libraries, tools, or approaches
 - Making architectural or design decisions
 - Any task that involves writing or modifying code
+- **Repeating tasks that may have been done recently**
 
-**WRONG:** User says "add a hook" → you immediately start implementing
-**RIGHT:** User says "add a hook" → you search "hook" first → check for conflicts → then implement
+**WRONG:** User says "upload frontend" → you immediately upload
+**RIGHT:** User says "upload frontend" → check context (did I just do this?) → search "frontend upload" → note recency → then act
+
+**WRONG:** User says "let's use SQLite" → you implement SQLite
+**RIGHT:** User says "let's use SQLite" → search "database" → find prior PostgreSQL decision → "Session 005 decided PostgreSQL. Switch to SQLite, or keep PostgreSQL?"
 
 If search returns no results, briefly note: "Searched for X - no prior decisions found."
 
@@ -120,36 +138,18 @@ For lists, keep the marker at the start:
 
 ---
 
-## Search Before Decisions
+## Search Flow Details
 
-**⛔ THIS IS MANDATORY - NOT OPTIONAL**
+When search returns results:
 
-Before ANY implementation task, you MUST search:
-
-```bash
-npx tsx "${CLAUDE_PLUGIN_ROOT}/skills/tenax/scripts/search.ts" "<topic>"
-```
-
-### Search Flow
-
-1. **User requests implementation** → Search relevant topic(s)
-2. **Results found** → Reference them: "Based on session 003, we decided to use X..."
-3. **Conflict found** → Surface it: "This differs from session 005 which chose Y. Should I proceed or align with the prior decision?"
+1. **Results found** → Reference them: "Based on session 003, we decided to use X..."
+2. **Conflict found** → Surface it: "This differs from session 005 which chose Y. Should I proceed or align with the prior decision?"
+3. **Recent task found** → Note it: "This was done 2hr ago in session 017. Redo it?"
 4. **No results** → Search raw transcripts:
    ```bash
    grep -r "<keyword>" "${PROJECT_DIR}/.claude/tenax/sessions/"
    ```
 5. **Still nothing** → Note "Searched for X - no prior decisions" → Proceed with `[D]` marker
-
-### Why This Matters
-
-Without searching first, you may:
-- Contradict a decision from 3 sessions ago
-- Duplicate work already done
-- Break established patterns
-- Miss important context that affects implementation
-
-**Every implementation starts with a search. No exceptions.**
 
 ---
 

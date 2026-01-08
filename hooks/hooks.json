@@ -23,6 +23,7 @@
     ],
     "UserPromptSubmit": [
       {
+        "once": true,
         "hooks": [
           {
             "type": "command",

@@ -12,7 +12,7 @@
       "name": "tenax",
       "source": "./",
       "description": "Project memory that persists across Claude Code sessions. Automatically captures decisions, patterns, tasks, and insights. Semantic search across all knowledge.",
-      "version": "3.3.2",
+      "version": "3.3.3",
       "author": {
         "name": "phil_mybags"
       },

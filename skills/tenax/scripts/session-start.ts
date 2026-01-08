@@ -57,10 +57,13 @@ async function main(): Promise<void> {
             .map(t => `  - ${t.title}`)
             .join("\n");
 
-        // Build context string - markers inline, not appended
-        let context = `🔴 TENAX REQUIRED:
-1. START your response with: "📚 Loaded: ${totalSessions} sessions, ${totalDecisions} decisions"
-2. Include markers inline for any choices/findings: [D] topic: | [P] name: | [T] | [I]`;
+        // Build context string - MANDATORY instruction to load full context
+        let context = `🔴 TENAX MANDATORY - DO NOT SKIP:
+1. YOUR FIRST ACTION must be: Invoke the Skill tool with skill="tenax:status" to load full session context
+2. ONLY AFTER loading context, respond to the user
+3. Include markers inline for any choices/findings: [D] topic: | [P] name: | [T] | [I]
+
+Stats preview: ${totalSessions} sessions, ${totalDecisions} decisions, ${pendingTasks} pending tasks`;
 
         if (recentDecisions) {
             context += `\n\nRecent decisions:\n${recentDecisions}`;
